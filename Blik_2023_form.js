@@ -16,6 +16,7 @@
  export var syndication={rss2json:{key:undefined}};
  var address=new URL(import.meta.url).pathname;
  await publish("./Blik_2024_comments.json",/.*\/author.*[^\/]$/);
+ import fonts from "./Blik_2025_fonts.json";
 
  export default
  {...local,wikipedia,modules
@@ -133,6 +134,15 @@
  // ,"https:":source=>compose(fetch,"json")("https:/"+source)
  // ,"http:":source=>compose(fetch,"json")("http:/"+source)
  ,medium:request=>compose(fetch,"text",note,slip(new DOMParser()),"text/xml","parseFromString","item","querySelectorAll")("https://medium.com/feed/"+new URL(request.url).pathname.split("/").slice(2).join("/"))
+ ,fonts:compose(Object.entries,infer("map",([name,variants])=>
+[name,compose(Object.entries,infer("map",([variant,truetype])=>
+[variant||"regular"
+,{src:"url(data:font/truetype;charset=utf-8;base64,"+truetype+")"
+ ,"font-family":[name,variant].filter(Boolean).join("-")
+ ,"font-weight":"normal","font-style":"normal"
+ }
+]),Object.fromEntries)(variants.length?{"":variants}:variants)
+]),Object.fromEntries,["truetype"],record,fonts,merge).bind(fonts.truetype)
  };
 
  async function toggle(method)
@@ -232,7 +242,7 @@
  if(globalThis.window)
  this.ownerDocument.defaultView.history.pushState({},null,[origin,path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
  let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
- resource=resource||compose(fetch,digest)(route);
+ resource=resource||compose(fetch,digest)(route+query);
  compose(profile,labels,note,annotate,["get"],record,form.bind(this))(resource);
  let frame=this?.ownerDocument.defaultView.frame||insert(document({div:{id:"frame"}}),"before",this);
  frame.dataset.source=route;
@@ -248,8 +258,8 @@
  let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
  let [status,author]=await compose(fetch,combine("status","text"))(action,request);
  if(status!==200)
- return toggle.call(this,"send"),
- this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
+ return toggle.call(this,"send")
+,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
 ,{data:JSON.stringify({action:"message",message:author})}));
  let expires=new Date(Date.now()+1000*60*60).toUTCString();
  this.ownerDocument.cookie=cookie({author:name,path:"/",expires});

@@ -1,4 +1,4 @@
- import {note,each,drop,compose,either,infer,tether,is,record,slip,numeric,collect,provide,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
+ import {note,each,drop,compose,either,infer,tether,is,record,remember,slip,numeric,collect,provide,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
  import {fetch,path,query} from "./Blik_2023_interface.js";
  import {merge,search,extract,unfold,prune,sum,extreme} from "./Blik_2023_search.js";
  let parameters={query:{format:"json",origin:"*"}};
@@ -7,9 +7,9 @@
  {async get(request)
 {let {title,depth=1,height,section,homogeneous=true}=query(request.url);
  let pages=await expand(title,depth,height,section,homogeneous);
- if(path(request).at(-1)==="wikipedia")
- return {[title]:prune.call(pages,({1:page})=>
- page.title?page.pages?{[page.title]:page.pages||{}}:page.title:page)};
+ if(path(request).split("/").at(-1)==="wikipedia")
+ return note({[title]:prune.call(pages,({1:page})=>
+ page.title?page.pages?{[page.title]:page.pages||{}}:page.title:page)});
  return unfold.call({title,pages},"pages").filter(page=>page.pages);
 },async coedits(request)
 {let pages=await this.get(request);
@@ -21,7 +21,7 @@
  })));
  let edits=revisions.flat().flatMap(({query:{pages}})=>pages.map(({title,revisions})=>(
  {[title]:Array.from(new Set(revisions?.map(({user})=>user)||[]))}))).reduce(compose(crop(2),0,merge));
- let {implicit}=request.query;
+ let {implicit}=query(request.url);
  return compose
 (Object.entries,infer("map",([title,editors],index,entries)=>
 [title,implicit
@@ -30,7 +30,7 @@
 ]),Object.fromEntries
 )(edits);
 },async coreference(request)
-{let pages=await this.get(request);
+{let pages=await this.get(request); note(pages)
  return pages.map(page=>
  merge(page,{pages:page.pages.map(({title})=>title)})).map(({title,pages:links},index,pages)=>(
  {[title]:pages.slice(index+1).filter(({pages:colinks})=>
@@ -43,14 +43,15 @@
  cotitle!==title&&pages.includes(title)).map(({title})=>title)})).reduce(merge);
 }};
 
- var harvest=record(async function harvest(query,rate=1000,limit=50,history=[])
+ var harvest=remember.call({},async function harvest(query,rate=1000,limit=50,history=[])
 {let entry=performance.now();
- this.requests=this.requests||new Map(),this.buffer=this.buffer||new Set();
+ this.requests=this.requests||new Map()
+,this.buffer=this.buffer||new Set();
  let throttle=pass(expect(infer((pool,index)=>pool.size<limit||
  (pool.set&&index.pop()&&console.log(colors.busy+"throttling "+JSON.stringify(query)+"..."+colors.steady)),[true]),60000));
  if(!history.length)
- await compose.call(this.requests,throttle,query,entry,"set"),
- console.log(colors.busy+"harvesting wikipedia: "+JSON.stringify(query)+"..."+colors.steady);
+ await compose.call(this.requests,throttle,query,entry,"set")
+,console.log(colors.busy+"harvesting wikipedia: "+JSON.stringify(query)+"..."+colors.steady);
  await compose.call(this.buffer,throttle,entry,"add");
  compose(wait(rate),"delete")(this.buffer,entry);
  return compose
@@ -62,7 +63,7 @@
  result
 ]
 )("https://en.wikipedia.org/w/api.php?"+new URLSearchParams([history.at(-1)?.continue,query].reduce(merge,{})));
-},JSON.stringify).bind({});
+},JSON.stringify);
 
  export function expand(title,depth,height,section,homogeneous)
 {// request page with subpages/subcategories. 

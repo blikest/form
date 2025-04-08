@@ -2,7 +2,7 @@
  import {color} from "./Blik_2023_layout.js";
  import {search,merge,extreme,sum,extract,unfold,prune} from "./Blik_2023_search.js";
  import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate} from "./Blik_2023_fragment.js";
- import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,record,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when} from "./Blik_2023_inference.js";
+ import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,record,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,remember} from "./Blik_2023_inference.js";
  import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
@@ -20,14 +20,14 @@
 {// parse object as a nodes. 
  // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
  if(typeof resource==="string")
- return compose(fetch,digest,infer(sprawl,options))(resource);
+ return compose(fetch,digest,infer(sprawl,Object.assign(options,{source:resource})))(resource);
+ if(resource.nodeName)
+ return Graph(resource);
  if(options.source)
  resource=record(resource,[options.source==="/get"?window.location.origin:options.source]),options.linear=true;
  if(resource.constructor.name==="Node")
  return resource;
  let {relations,spread,title,monospace=10,still,source,gradual,depth}=options;
- if(resource.nodeName)
- return Graph(resource);
  let {resource:{nodes}}=prune.call({resource},split,false,"value");
  prune.call(nodes,crosslink,false,["source","value"]);
  let cluster=unfold.call(note({nodes}),childfold).slice(1);
@@ -119,6 +119,7 @@
 :{svg:
  {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
  ,class:"d3"
+ ,"data-source":options.source
  ,style:{"#text":css({".d3":layout.media})}
  ,defs:{filter:[vectors.shadow.defs.filter,vectors.shadow_white.defs.filter]}
  }
@@ -206,7 +207,7 @@
  ,fill({name}){return "url(#"+name?.replace(/ /g,"_")+")"}
  }
 ],text:
- {fold:wrap,update:false,class:"label"
+ {fold:infer(wrap,17),update:false,class:"label"
  ,fill()
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
  return force?"black":undefined;
@@ -219,19 +220,19 @@
 },"stroke-width":function()
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
  return this.parentNode.querySelector("circle").getAttribute("r")*0.02+"px";
-},"font-size":function()
+},"font-size":function(text,index,{length})
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
  let node=select(ascend.call(this,1)[0]).datum();
  let size=this.parentNode.querySelector("circle").getAttribute("r");
- return size/2+"px";
+ return force?size/4:size/2+"px";
 },dx()
 {let {spread}=select(ascend.call(this)[0]).datum();
  let {force,left,up}={[spread]:true};
  let {nodes}=select(ascend.call(this,1)[0]).datum();
  return !force?[7,-7][sum([Boolean(nodes?.length),left])%2]:null;
-},dy(text,index,wrap)
+},dy(text,index,{length})
 {let force=select(ascend.call(this)[0]).datum().spread==="force";
- return force?scale(index+1-(wrap.length)/2)+"em":".25em";
+ return force?scale(index+1-(length)/2)+"em":".25em";
 },transform()
 {let radial=select(ascend.call(this)[0]).datum().spread==="radial";
  return radial?left(this)?"rotate(180)":null:null;
@@ -441,14 +442,22 @@
  (scale||color.rainbow).call(color,node.height/(node.depth+node.height));
 };
 
- function wrap({name,source})
+ function wrap(node,radius,{name})
 {if(trace(arguments[0],[])?.[0]?.includes("image"))
  return [];
- let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
- return force?!name||(name.toString().match(/.+?(_|\/|$)/g)||[]).reduce((wrap,split,index,splits)=>
- wrap.concat(index&&(split.length+wrap[wrap.length-1].length<18)
-?wrap.pop()+split
-:split.match(new RegExp(".{1,"+18+"}","g"))),[])
+ let {force}={[select(ascend.call(node)[0]).datum().spread]:true};
+ return force?!name||Array(8).fill(length).map((max,index,{length})=>
+ Math.floor(Math.acos(Math.abs(index-length/2)/(length/2))*2/Math.PI*radius)).sort((past,next)=>
+ next-past).filter((slot,index,slots)=>
+ !index||sum(slots.slice(0,index))<name.length).reduce((axis,slot,index)=>
+ merge(axis,{[index%2]:[slot]},0)
+,[[],[]]).map((axis,index)=>!index?axis.sort((past,next)=>past-next):axis).flat().map((slot,index,slots)=>
+ name.slice(...Array(2).fill(sum(slots.slice(0,index))).map((field,index)=>field+index*slot)))
+//   (String(name).match(/.+?(_|\/|$)/g)||[]).flatMap(split=>
+//  split.match(new RegExp(".{1,"+radius+"}","g"))).reduce((wrap,split,index,{length})=>
+// [wrap
+// ,index&&(split.length+wrap.at(-1).length<radius)?wrap.pop()+split:split
+// ].flat(),[])
 :[name];
 };
 

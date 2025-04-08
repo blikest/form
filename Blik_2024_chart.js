@@ -2,6 +2,8 @@
  import {extreme,extract,cluster,prune} from "./Blik_2023_search.js";
  import {note,infer,buffer,exit,compose,tether,defined,string,numeric,when,major,wait,pass,observe,slip} from "./Blik_2023_inference.js";
  import extend from './Blik_2023_d4.js';
+ import * as d3 from './Bostock_2011_d3.js';
+ import {axisBottom} from './Bostock_2016_axis.js';
  import {resolve,window,fetch,digest} from "./Blik_2023_interface.js";
  import {document,css,capture,ascend,keyboard} from "./Blik_2023_fragment.js";
  import * as vectors from "./Blik_2024_svg.js";
@@ -45,7 +47,7 @@
  {fill:"black",x:({x})=>x,y:({y})=>y,text:({value})=>value,"text-anchor":"middle","text-size":5,dy:6
  }
  }
-,{class:"x axis",transform:"translate(0,"+height+")",call:axis=>d3.axisBottom(axis.datum().x)(axis),each(){this.firstChild.remove();this.querySelectorAll("text").forEach(n=>n.textContent=n.textContent.replace(",",""));this.querySelectorAll("line").forEach(n=>n.remove())}}
+,{class:"x axis",transform:"translate(0,"+height+")",call:axis=>axisBottom(axis.datum().x)(axis),each(){this.firstChild.remove();this.querySelectorAll("text").forEach(n=>n.textContent=n.textContent.replace(",",""));this.querySelectorAll("line").forEach(n=>n.remove())}}
 //,{class:"y axis",call:axis=>d3.axisLeft(axis.datum().y)(axis)}
 ]}
  },tether(extend));
@@ -192,3 +194,44 @@
 ,0,depth);
 };
 
+ export function table(source,depth,palette)
+{depth=typeof depth=="number"?depth:2;
+ palette=palette||["rgba(247,194,35,0)","rgba(27,154,89,0)","rgba(66,133,244,0)"];
+ let top=Object.entries(source).reduce((row,[key,value],index,records)=>
+{let shade=depth>2&&Array.isArray(palette)?d3.scaleLinear().range([palette[index],(palette[index]||palette[0]||spectrum(index/records.length).replace(")","0)")).replace("0)","1)")]):palette;
+ row=row.appendChild(window.document.createElement("tr"));
+ row.appendChild(window.document.createElement("td")).appendChild(window.document.createElement("span")).textContent=key;
+ row.appendChild(document({"td":{"style":"text-align:center;width:150px;"}})).appendChild(typeof value=="string"
+?document({"span":{"#text":value,"style":"background-color:"+(typeof value=="string"?value.match(/\d+/)?color.rainbow((15-new Number(new Number(value.match(/\d+/)[0]))+1)/20)+";color:#212121;":"black;color:#848484;":"transparent;")+"border-radius:1em 1em 1em 1em;height:1em;padding:0 5px 0 5px;white-space:nowrap"}})
+:table(value,depth+1,shade));
+ if(depth>2)row.style.backgroundColor=shade(1/depth);
+ return row.parentNode
+},window.document.createElement("table").appendChild(window.document.createElement("tbody")));
+ // if(depth==2)
+ // top.lastChild.appendChild(document({td:{span:{"#text":Object.keys(source)[0]=="CICES"?"adaptáció":Object.keys(source)[0]=="functional ecology"?"ecological economics":"ökológiai közgazdaságtan"}}}));
+ top.appendChild(document({style:{"#text":css(
+ {"font-size":"inherit",transition:"all 1s"
+ ,"&#dashboard tr":{"vertical-align":"top"}
+ ,"& tr input[type=checkbox]":
+ {appearance:"none","font-family":"inherit",cursor:"pointer",width:"auto","line-height":"1.3em","font-size":"1.5em",margin:0
+ ,"&:not(:disabled):hover":{"text-shadow":"rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px"}
+ ,"&:after":{content:"'✘'",color:"var(--isle)","margin-left":"3px","margin-right":"3px"}
+ //,"&:last-of-type:after":{content:"'🔓'"}
+ ,"&:focus:after":{"text-shadow":"rgb(255,255,255) 0px 0px 10px, rgb(255,255,255) 0px 0px 10px, rgb(255,255,255) 0px 0px 10px"}
+ ,"&:checked:after":{content:"'✓'",color:"var(--highlight)","font-weight":800}
+ }
+ ,"&.homogenous>tbody>tr":{"flex-direction":"row",width:"90vw","justify-content":"center"}
+ ,"&.heterogenous,&.homogenous":
+ {position:"relative","font-family":"averia","font-size":"10px",display:"block"
+ ,"&>tbody":
+ {display:"block"
+ ,"&>tr":
+ {position:"relative",display:"flex","flex-wrap":"wrap",width:"90vw","justify-content":"center",margin:"auto"
+ ,"&>td":{position:"relative","text-align":"center",display:"block","& div":{width:"150px",height:"150px","text-align":"center",margin:"auto",overflow:"hidden"}}
+ ,"& svg":{height:"30px"}
+ }
+ }
+ }
+ })}}));
+ return top.parentNode;
+};
