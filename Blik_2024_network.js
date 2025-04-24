@@ -1,18 +1,19 @@
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
- import {search,merge,extreme,sum,extract,unfold,prune} from "./Blik_2023_search.js";
- import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate} from "./Blik_2023_fragment.js";
+ import {search,merge,extreme,sum,extract,unfold,prune,isolate} from "./Blik_2023_search.js";
+ import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate,canvas,image} from "./Blik_2023_fragment.js";
  import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,record,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,remember} from "./Blik_2023_inference.js";
  import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
+ import {forceSimulation as force3d,forceX,forceY,forceZ,forceLink,forceCenter,forceCollide,forceManyBody} from './Vasturiano_2016_force3d.js';
  import extend from "./Blik_2023_d4.js";
  var {default:vectors}=await resolve("./Blik_2020_svg.json");
  var browser=Boolean(globalThis.window);
  let location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
-(drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),chart,simulate
+(drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),note,chart,simulate
 ,pass(tether(capture,["",location,"actions"].join("/"))),pass(report)
 );
 
@@ -23,11 +24,28 @@
  return compose(fetch,digest,infer(sprawl,Object.assign(options,{source:resource})))(resource);
  if(resource.nodeName)
  return Graph(resource);
- if(options.source)
- resource=record(resource,[options.source==="/get"?window.location.origin:options.source]),options.linear=true;
+ let {relations,spread,title,monospace=10,still,source,gradual,depth,matrix}=options;
  if(resource.constructor.name==="Node")
  return resource;
- let {relations,spread,title,monospace=10,still,source,gradual,depth}=options;
+ matrix=matrix?isolate.call(resource,[matrix].flat())
+:search.call(resource,([field,records])=>
+ array(records)&&records.some(record=>
+ array(record)&&record.every(numeric)));
+ if(Object.values(matrix).length)
+ return compose.call
+(resource,infer(({fields,records,direction},matrix)=>
+ Object.values(Object.entries(matrix).reduce(infer(project,direction)
+,sprawl({fields,records}).map(({nodes})=>
+ unfold.call({nodes},childfold).filter(({nodes})=>
+ !nodes)).reduce((range,domain)=>({range,domain})))).flat(),matrix)
+,pass(nodes=>merge(options
+,{direction:Array.from(new Set(Array.from(nodes.reduce((direction,{source:[{name:source}],relations})=>
+ Array.from(relations?.entries()||[]).reduce((direction,[{source:[{name:target}]}])=>
+ direction.set(source,target),direction),new Map()).entries()).flat()))
+ }))
+);
+ if(source)
+ resource=record(resource,[source==="/get"?window.location.origin:source]),options.linear=true;
  let {resource:{nodes}}=prune.call({resource},split,false,"value");
  prune.call(nodes,crosslink,false,["source","value"]);
  let cluster=unfold.call(note({nodes}),childfold).slice(1);
@@ -81,6 +99,8 @@
 
  function spread(nodes,{spread="force",monospace=10,matrix}={})
 {let {force,radial,up,down,left,right}={[spread]:true};
+ if(matrix)
+ nodes=nodes.filter(({occurrence})=>occurrence);
  if(force)
  return nodes;
 //  nodes.reverse().reduce(({x,y},node)=>Object.assign(node,{x,y})
@@ -95,7 +115,7 @@
  d3.tree().size([Math.PI*2,height/2]).separation(({depth,source},next)=>(source==next.source?1:2)/depth)(nodes[0]);
  else
  nodes.forEach(node=>Object.assign(node,
-[[-breadth/2,measure(node).breadth/2,unfold.call(node,"source").flatMap(offset)]
+[[-breadth/2,measure(node,0).breadth/2,unfold.call(node,"source").flatMap(offset)]
 ,[-length/2,node.nodes?10:20,unfold.call(node,"source").slice(node.nodes?1:2).map(indent)]
 ].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:1).reduce((x,y)=>({x,y}))));
  if(inverse)
@@ -105,7 +125,7 @@
 
  function offset(node)
 {return [node.source].flat().flatMap(node=>node?.nodes||[]).flatMap((child,index,nodes)=>
- child===node?nodes.splice(index)&&[]:child).map(node=>measure(node).breadth);
+ child===node?nodes.splice(index)&&[]:child).map(node=>measure(node,0).breadth);
 };
 
  function indent(node)
@@ -114,6 +134,7 @@
 
  function chart(nodes,options,fragment)
 {merge(options,{spread:"force"},0);
+ let {axis}=options;
  return compose.call
 (fragment?.nodeName?.toLowerCase()==="svg"?fragment
 :{svg:
@@ -123,8 +144,9 @@
  ,style:{"#text":css({".d3":layout.media})}
  ,defs:{filter:[vectors.shadow.defs.filter,vectors.shadow_white.defs.filter]}
  }
- }
-,document,{datum:Object.assign(nodes,options),...svg},tether(extend)
+ },document
+,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve):undefined
+,{datum:Object.assign(nodes,options),...svg},tether(extend)
 );
 };
 
@@ -134,20 +156,21 @@
  observe.call(d3.zoom().scaleExtent([0.1,100]),{zoom({transform}){extend.call(this,{fold:false,g:{fold:false,class:"graph",transform}});}})(fragment);
 },id:({source})=>deselect(source||"get"),class:"d3"
  ,"data-options":(nodes)=>JSON.stringify(prune.call(nodes,([field,value])=>isNaN(field)?value:undefined,1,0))
- ,title(concept){return trace(concept,[])[0];}
+ ,title(node){return unfold.call(node,({source})=>source).at(-1).name;}
  ,viewBox({monospace=10,spread="force"})
 {let {up,down,force,radial}={[spread]:true},vertical=Boolean(up||down);
- let {breadth,length}=measure(arguments[0]);
+ let {breadth,length}=measure(arguments[0],0);
  let [nodes,links]=forage(this);
  let density=links.size()/(nodes.size()*(nodes.size()-1)/2);
  let [width,height]=force
 ?Array(2).fill(scale(nodes.size()/density||0))
-:[breadth,length].map(size=>size*monospace).sort(size=>vertical?1:-1);
- let viewBox=radial?[-width,-height,width*2,height*2]:[-width/2,-height/2,width,height];
- return viewBox.join(" ");
+:[breadth,length||breadth].map(size=>size*monospace).sort(size=>vertical?1:-1);
+ let space=radial?[-width,-height,width*2,height*2]:[-width/2,-height/2,width,height];
+ merge(arguments[0],{space});
+ return space.join(" ");
 },g:
  {update:true,class:"graph",transform({monospace,spread})
-{let [width,height]=demarkup(ascend.call(this)[0],"viewBox").viewBox.split(" ").map((side,index,sides)=>sides[index+2]-side);
+{let [width,height]=box(ascend.call(this)[0]);
  let translate={radial:[width/2,height/2],right:[10,0],left:[-10,0],down:[0,10],up:[0,-10]}[spread]||[0,0];
  return "translate("+translate+")";
 },g:
@@ -183,13 +206,11 @@
  ,text:{fold:false,update:true,...extract.call(node.text,"font-size")}
  }
  });
-},each(node)
-{if(trace(node,[])?.[0]?.includes?.("image"))
- pattern(node);
 },call(nodes){if(browser)drag(nodes);}
  ,fill:node=>paint(node)
- ,transform({x,y})
-{let {spread}=select(ascend.call(this)[0]).datum();
+ ,transform({x,y,source})
+{let svg=ascend.call(this)[0];
+ let {spread}=select(svg).datum();
  let {up,down,right,left,radial,force}={[spread]:true};
  return force?"translate("+[x,y]+")"
 :radial?"rotate("+(x*180/Math.PI-90)+") translate("+y+",0)"
@@ -197,14 +218,17 @@
 },title:{text:({name})=>name}
  ,circle:
 [{name({name,source,nodes}){return source&&!nodes?source.name+"_"+name:null;}
- ,r(node){return select(ascend.call(this)[0]).datum().spread==="force"?scale(size(node)):5;}
- ,fill:node=>paint(node)
+ ,r(node)
+{let {size:field,spread}=select(ascend.call(this)[0]).datum();
+ return spread==="force"?scale(size(node,field)):5;
+},fill:node=>paint(node)
  ,title:{text({value,name}){return value?.progress?.concat("%")||this.remove();}}
  }
-,{fold(node){return trace(node,[])?.[0]?.includes("image")?[node]:[];}
- ,class:"label"
+,{fold(node)
+{return ["image","wiki"].includes(select(ascend.call(this)[0]).datum().labels)?[node]:[];
+},class:"label"
  ,r(node){return this.previousSibling.getAttribute("r")*0.9;}
- ,fill({name}){return "url(#"+name?.replace(/ /g,"_")+")"}
+ ,fill(node){pattern.call(this,node);return "url(#"+node.name?.replace(/ /g,"_")+")"}
  }
 ],text:
  {fold:infer(wrap,17),update:false,class:"label"
@@ -267,10 +291,14 @@
  Number(side)+(sides.splice(2,1)[0])/2).reduce((x,y)=>({x,y}));
  unlocated.forEach(node=>[parent,node].reduce(({x,y},node)=>Object.assign(node,{x,y})));
 },id:linkindex,class:"link",opacity:0.5
- ,title:{text:(link)=>[link,link.source,link.target].map(({value,name},index)=>
- index?name:{R:"responsible",A:"accountable",C:"consulted",I:"informed"}[value]||value).join("\n")}
+ ,title:{text:(link)=>
+[{R:"responsible",A:"accountable",C:"consulted",I:"informed"}[link.value]||
+ link.value,...[link.source,link.target].map(({name})=>name)
+].join("\n")}
  ,transform(link,index,links)
-{let twins=selectAll(links).select(function(twin){return ["source","target"].every(key=>twin[key]==link[key])&&this}).data();
+{let twins=selectAll(links).select(function(twin)
+{return ["source","target"].every(key=>twin[key]===link[key])&&this;
+}).data();
  let twinindex=twins.indexOf(link);
  return "translate(0,"+(scale(!link.value||isNaN(link.value)?1:link.value)/7/twins.length)*Math.ceil(twinindex/2)*(twinindex%2||-1)+")";
 },path:
@@ -304,8 +332,8 @@
 ]};
 
  function line(link,index,paths)
-{let fragment=select(ascend.call(this)[0]);
- let {spread}=fragment.datum();
+{let fragment=ascend.call(this)[0];
+ let {spread,layered,direction,space}=select(fragment).datum();
  let {up,down,right,left,radial,force}={[spread]:true};
  let [vertical,horizontal]=[up||down,left||right];
  let [field]=Object.entries({vertical,horizontal,radial}).find(({1:value})=>value)||[];
@@ -313,24 +341,32 @@
  if(line)
  return line()[radial?"angle":"x"](({x})=>x)[radial?"radius":"y"](({y})=>y)(link);
  let {source,target:{x,y}}=link;
- let curve=!horizontal&&!vertical?""
+ let {0:x0,2:width}=space;
+ let curve=!horizontal&&!vertical&&!layered?""
 ://"C"+source.x+","+(source.y+y)/2+" "+x+","+(source.y+y)/2:
  compose.call(
- {distance:Math.sqrt((source.x-x)**2+(source.x-x)**2),middle:(y+source.y)/2,ascent:Math.sqrt(Math.abs(y*source.y))
- ,side:(size[0]/2<source.x?1:-1)
- ,steer:Math.abs(source.x-size[0]/2)
- ,feedback:trace(source)=="stakeholder",scope:0,descent:0
+ {distance:Math.sqrt((source.x-x)**2+(source.x-x)**2)
+ ,middle:(y+source.y)/2
+ ,side:(width/2+x0)<source.x?1:-1
+ ,steer:Math.abs(source.x-width/2)
+ ,feedback:direction.at(-2)===source.source[0].name
  }
-,({steer,...curve})=>({...curve,steer,descent:y+source.y-ascent,scope:((size[0]/2/steer)*Math.sqrt(steer*steer/4))})
+,({steer,...curve})=>(
+ {...curve,steer
+ ,ascent:curve.middle-(y-source.y)/4
+ ,descent:curve.middle+(y-source.y)/4
+ ,scope:((width/2/steer)*Math.sqrt(steer**2/4))
+ })
 ,({distance,middle,side,steer,scope,feedback,ascent,descent})=>
- "C"+(feedback?source.x+","+(source.y-scope/3):source.x+","+ascent)
-    +(feedback?" "+(source.x+scope*side)+","+(source.y-scope/3):"")
-+" "+(feedback?source.x+scope*side+","+middle:x+","+descent)
-    +(feedback?" "+(source.x+scope*side)+","+(y+distance):"")
-    +(feedback?" "+(x)+","+(y+scope/3):"")
+["C",feedback?[source.x,source.y-scope/3]:[source.x,ascent]
+    ,feedback?" "+[source.x+scope*side,source.y-scope/3]:""
+," ",feedback?[source.x+scope*side,middle]:[x,descent]
+    ,feedback?" "+[source.x+scope*side,y+distance]:""
+    ,feedback?" "+[x,y+scope/3]:""
+].join("")
 );
  let end=radial?Math.cos(x-Math.PI/2)*y+","+Math.sin(x-Math.PI/2)*y:[x,y];
- return "M"+[source.x,source.y]+curve+" "+end;
+ return "M"+source.x+","+source.y+curve+" "+end;
 };
 
  function pattern(node)
@@ -339,27 +375,31 @@
  {fold(){return select(this).selectAll("pattern").data().concat(node);}
  ,match:patternindex
  ,id:patternindex,name({value,name}){return value||name;}
- ,x:0,y:0,width:1,height:1,viewBox({centrality:size}){return [0,0,size,size];}
- ,each(node,index,patterns)
-{let {id}=this,name=this.getAttribute("name"),pattern=this,color=paint(node);
- (name!="image"
-?fetch("https://www.googleapis.com/customsearch/v1/"
-+(name=="wiki image"?"siterestrict":"")
-+"?q="+label(node)+"&searchType=image&cx="
-+(name==="wiki image"?"014735265259933203879:xaftz2zw4io":"014735265259933203879:qgusnjqnuxk")
-+"&key="+keys.google.api).then(response=>response.json()).then(json=>(json.items||[{link:undefined}])[0].link)
-:new Promise(done=>done(name.startsWith("http")?name:name=="image"
-?vectors[name]?"vector/"+name:("icon/"+label(node)+".png")
-:"icon/"+name.replace(/ /g,"_")+".png"))).then(canvas).then(canvas=>
-{pattern.appendChild(document(
+ ,viewBox({centrality:size}){return [0,0,size,size];}
+ ,width:1,height:1,x:0,y:0
+ ,each({name,centrality,source:[{name:category}]},index,patterns)
+{let {labels}=select(ascend.call(this)[0]).datum();
+ let color=paint(arguments[0]);
+ let diameter=scale(centrality);
+ let src=labels!=="image"
+?compose(fetch,"json",json=>json.items?.[0].link)("/google/search?scope=wiki&q="+name)
+:name.startsWith("http")?name:name==="image"
+?search.call(vectors,name.split("/"))?"/vector/"+name:("/icon/"+name+".png")
+:("/icon/"+name.replace(/ /g,"_")+".png");
+ compose(image,canvas,combine(infer(),compose("2d","getContext")),Math
+,(canvas,context,{ceil})=>[canvas.width,canvas.height].reduce((x,y)=>
+[canvas,x/y
+,[[1,1],[1,ceil(y/2)],[ceil(x/2),1],[x,y]].every(([x,y])=>
+ !context?.getImageData(x-1,y-1,x,y).data[3])?diameter*0.15:0
+])
+,([canvas,ratio,inset])=>this.appendChild(document(
  {image:
- {width:scale(node.centrality)
- ,height:!src.endsWith("png")&&canvas.height>canvas.width?null:scale(node.centrality)
- ,y:label(node)=="desertification"||(color=["hazard","stakeholder"].includes(color))?scale(node.centrality)*.2:undefined
- ,[color=canvas.width>canvas.height&&color?"width":"height"]:color?undefined:scale(node.centrality)*(color=="width"?1:label(node)=="desertification"?1:.6)
+ {[ratio<1?"width":"height"]:diameter*(!inset||0.7)
+ ,[ratio<1?"y":"x"]:diameter*(ratio<1?ratio-1:1-ratio)/2+inset
+ ,[ratio<1?"x":"y"]:inset
  }
- },"svg")).setAttributeNS("http://www.w3.org/1999/xlink","href",canvas.toDataURL("image/"+src.slice(-3)));
-})
+ },"svg")).setAttributeNS("http://www.w3.org/1999/xlink","href"
+,canvas.toDataURL("image/"+canvas.dataset?.source.slice(-3))))(src);
 }}}
  });
 };
@@ -419,34 +459,39 @@
  //simulation.restart();
 }});
 
- function nodeindex(node){return node?trace(node,[]).join("/"):this.getAttribute("id");};
+ function nodeindex(node){return node?[node.source?.[0].name||[],node.name].join("/"):this.getAttribute("id");};
  function linkindex(link){return link?[link.source,link.target].map(nodeindex).join("_"+link.value+"_"):this.getAttribute("id");};
- function patternindex({title}){return title.replace(/[^\d\w]/g,"");};
- function size(node){return Math.cbrt(node.value?.weight)||node.centrality||1;};
+ function patternindex({name}){return name.replace(/[^\d\w]/g,"");};
+ function size(node,field){return node[field]||Math.cbrt(node.value?.weight)||node.centrality||1;};
  function scale(value){return value};
  function period(node){return ["start","end"].map(field=>search.call(node.value,field));};
-
+ function box(svg)
+{return demarkup(svg,"viewBox").viewBox.split(" ").map((side,index,sides)=>
+ sides[index+2]-side);
+};
  var childfold=["nodes",node=>Array.from(node.relations?.keys()||[])];
 
- export var trace=(node,path)=>!path&&color[node.name]?node.name:!node.source
+ export function trace(node,path)
+{console.log(node);return !node.source?.[0]
 ?[node.name,...path||[]]
-:trace(node.source,path?[node.name,...path]:path);
+:trace(node.source[0],path?[node.name,...path]:path);
+};
 
  function paint(node,scale)
-{if(typeof node=="string")
+{if(string(node))
  return {R:color.red,A:color.yellow,C:color.green}[node]||color.indigo;
  let {progress}=node.value||{};
  return defined(progress)
 ?Number(progress)?color.health(Number(progress)/100):"#616161"
-:node.color||color[trace(node)]||
+:node.color||color[node.source?.[0].name]||
  (scale||color.rainbow).call(color,node.height/(node.depth+node.height));
 };
 
  function wrap(node,radius,{name})
-{if(trace(arguments[0],[])?.[0]?.includes("image"))
+{if(select(ascend.call(node)[0]).datum().labels==="image")
  return [];
  let {force}={[select(ascend.call(node)[0]).datum().spread]:true};
- return force?!name||Array(8).fill(length).map((max,index,{length})=>
+ return force?!name||Array(8).fill(0).map((max,index,{length})=>
  Math.floor(Math.acos(Math.abs(index-length/2)/(length/2))*2/Math.PI*radius)).sort((past,next)=>
  next-past).filter((slot,index,slots)=>
  !index||sum(slots.slice(0,index))<name.length).reduce((axis,slot,index)=>
@@ -497,13 +542,14 @@
  return links.filter(({source,target})=>[source,target].every(node=>cluster.includes(node)));
 };
 
- var measure=node=>
-[unfold.call({nodes:node},childfold).slice(1).filter(node=>!node?.nodes).length
-,(node.name?.length||0)+
+ function measure(node,length=true)
+{return [unfold.call({nodes:node},childfold).slice(1).filter(node=>!node?.nodes).length
+,numeric(length)?length:(node.name?.length||0)+
  extreme(unfold.call({nodes:node},childfold).filter(node=>!node.nodes).map(node=>
  sum(unfold.call(node,"source").map((node,index)=>
  extreme(node.nodes?.map(node=>node.name?.length))[1]))))[1]
 ].reduce((breadth,length)=>({breadth,length}));
+};
 
  function degree(link,rate=1)
 {if(!link)return [];
@@ -531,16 +577,28 @@
  function simulate(fragment)
 {//let {requestAnimationFrame:frame}=fragment.ownerDocument.defaultView;
  //let throttle=frame?revert((tick,simulation)=>frame(time=>tick(simulation))):infer();
- let {force}={[select(fragment).datum().spread]:true};
+ let {spread,layered,direction}=select(fragment).datum();
+ let {force}={[spread]:true};
+ let layer=layered
+?function layer(alpha)
+{let {1:y,2:height}=demarkup(fragment,"viewBox").viewBox.split(" ");
+ for(let node of fragment.simulation.nodes())
+ node.y=(direction.length-0.5-(direction.indexOf(node.source[0]?.name)+1)%direction.length)/direction.length*height+Number(y);
+}
+:forceY(0).strength(0);
  return compose
 (0.01,"alphaTarget"
-,infer("force","link",d3.forceLink([]).strength(0))
-,infer("force","charge",d3.forceManyBody().strength(0))
-,infer("force","collision",d3.forceCollide().radius(0))
+,!layered&&infer("force","link",forceLink([]).strength(0))
+,infer("force","charge",forceManyBody().strength(0))
+,infer("force","collision",forceCollide().radius(0))
+,infer("force","center",forceCenter(0,0).strength(0.25))
+,infer("force","z",forceZ(0).strength(0))
+,infer("force","x",forceX(0).strength(layered?0.01:0))
+,infer("force","y",layer)
 ,{fragment,clock:0},Object.assign
 ,tether(observe,{tick:buffer(compose(populate,force&&charge),note.bind(1))})
 ,"fragment"
-)(fragment.simulation=fragment.simulation||merge(d3.forceSimulation(),{fragment}));
+)(fragment.simulation=fragment.simulation||merge(force3d(),{fragment}));
 };
 
  function populate(simulation)
@@ -576,8 +634,8 @@
  function charge(simulation)
 {let [cluster,network]=forage(simulation.fragment);
  let [population,connections]=[cluster,network].map(selection=>selection.size());
- let [nodes,links]=[simulation.nodes(),simulation.force("link").links()];
- let change=[population,connections].some((size,index)=>size!==[nodes,links][index].length);
+ let [nodes,links]=[simulation.nodes(),simulation.force("link")?.links()];
+ let change=[population,connections].some((size,index)=>size!==[nodes,links][index]?.length);
  if(!change||!simulation.alpha())return simulation;
  [nodes,links]=[cluster.data(),network.data()];
  let density=connections/(population*(population-1)/2)||0;
@@ -593,18 +651,16 @@
  //let charge=-population/complexity||1;
  let tension=complexity;
  let spacing=scale(population/complexity||1);
+ let {size:field}=select(simulation.fragment).datum();
  combine
 (infer(),infer("alpha",1)//,infer("alphaDecay",0.3)
 ,infer("nodes",nodes,nodeindex)
-,infer("force","center",d3.forceCenter(0,0).strength(0.25))
-,infer("force","x",d3.forceX(0).strength(0))
-,infer("force","y",d3.forceY(0).strength(0))
-,compose("charge","force",infer("strength",node=>scale(node.centrality)*-3))
-,compose("collision","force",infer("radius",node=>scale(size(node))+1))
+,compose("charge","force",infer("strength",node=>scale(node.centrality)*-4))
+,compose("collision","force",infer("radius",node=>scale(size(node,field))))
 ,compose("link","force"
 ,infer("links",links,linkindex)
-,infer("strength",({value})=>value||tension)
-,infer("distance",({source,target})=>scale(size(source)*3+size(target)*3)||spacing)
+,infer("strength",({value})=>(value||tension)+density)
+,infer("distance",({source,target})=>scale(size(source,field)*3+size(target,field)*3)||spacing)
 ))(simulation);
  return simulation;
 };
@@ -695,6 +751,25 @@
 };
 };
 
+ function project({domain,range},direction,[name,records])
+{records.forEach((vector,record)=>vector.forEach((value,field)=>
+{if(!value)return;
+ let [source,target]=[domain[record],range[field]].map(node=>
+ merge(node,{occurrence:new Set([name])},0)).sort((source,target)=>
+ ["i","lastI"].map(i=>
+ sum([source,target].map(({source:[{name}]},target)=>
+ direction[i+"ndexOf"](name)*(!target||-1)))).find((sum,index,sums)=>
+ Math.min(...[sum,sums[(index+1)%2]].map(Math.abs))===Math.abs(sum)));
+ merge(source,{adjacency:{[target.name]:new Set([name])}},0);
+ merge(source,{relations:new Map([
+[target,isNaN(value)
+?[source.relations?.get(target)||[],value].flat()
+:sum(source.relations?.get(target),value)/source.adjacency[target.name].size
+]])},0);
+}));
+ return {domain,range};
+};
+
 //  function descend(value,{relations,title,routed})
 // {// split data structure into node hierarchy. cyclical references 
 //  if(!value)return [];
@@ -712,34 +787,6 @@
 // :(routed&&Object.values(value).every(value=>string(value)||array(value)))
 // ?[]:value
 // :{[field]:value})
-// };
-
-//  function records(resource)
-// {// extract matrix definitions as {domain,range,matrix:{[domain]:[...range]}}.
-//  if(resource.constructor.name!=="Object")return [];
-//  let records=Object.entries(resource).filter(([field,records])=>
-//  array(records)&&records.some(record=>
-//  array(record)&&record.every(vector=>!isNaN(vector))));
-//  if(records.length)
-//  return records;
-//  if(Object.entries(resource).length==2)
-//  // they may also be referential values by title or index 
-//  // with uniform "record" keys as {scope,matrix:{path:{in:{scope:{record:[[...fields]]}}}}}.
-//  // WARNING binary trees may contain such arrays intended as children, not records. 
-//  return Object.entries(resource).map(([field,value])=>[[field],value]).reduce(function trace(matrix,[path,value])
-// {if(!compound(value))return matrix;
-//  let references=Object.entries(value||[]).map(([field,references])=>
-// [field,Object.entries(references||[]).find(({1:record})=>
-//  array(record)&&!record.flat().some(field=>!string(field)&&field))||[]
-// ]);
-//  let records=references.every(({1:{0:field}},index,[{1:{length,0:first}}])=>length&&field===first);
-//  if(records)
-//  return references.reduce((matrix,[field,{1:record}])=>Object.assign(matrix
-// ,{[matrix.length]:[[...path,field],[record]]})
-// ,matrix);
-//  return Object.entries(value).reduce((matrix,[field,value])=>trace(matrix,[[...path,field],value]),matrix);
-// },[]);
-//  return records;
 // };
 
 //  function relate(node)

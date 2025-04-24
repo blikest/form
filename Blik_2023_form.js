@@ -13,16 +13,29 @@
  import * as svg from "./Blik_2024_svg.js";
  import local,{persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
  export {encryption,classify,classified,published,permit};
- export var syndication={rss2json:{key:undefined}};
  var address=new URL(import.meta.url).pathname;
  await publish("./Blik_2024_comments.json",/.*\/author.*[^\/]$/);
  import fonts from "./Blik_2025_fonts.json";
+ export var syndication=
+ {rss2json:{key:undefined}
+ ,google:{api:undefined,search}
+ ,elsevier:{api:undefined}
+ };
 
  export default
- {...local,wikipedia,modules
+ {...local,modules
  ,svg(){return svg;}
- ,overpass(){return fetch('https://www.overpass-api.de/api/interpreter?'+new URLSearchParams({data:'[out:json];rel[admin_level=2]'/*'convert item ::=::,::geom=geom(),_osm_type=type();'*/+';out geom;'}))}
- ,author:persistence("Blik_2024_author.json")
+ ,fonts:compose.call
+(fonts.truetype,Object.entries,infer("map",([name,variants])=>
+[name,compose(Object.entries,infer("map",([variant,truetype])=>
+[variant||"regular"
+,{src:"url(data:font/truetype;charset=utf-8;base64,"+truetype+")"
+ ,"font-family":[name,variant].filter(Boolean).join("-")
+ ,"font-weight":"normal","font-style":"normal"
+ }
+]),Object.fromEntries)(variants.length?{"":variants}:variants)
+]),Object.fromEntries,["truetype"],record,fonts,merge
+),author:persistence("Blik_2024_author.json")
  ,document:compose(crop(1),{width:50},merge,infer(record,["svg"]),document)
  ,media:compose(crop(1),"toString",media,collect,document)
  ,interface:async function(request)
@@ -124,26 +137,59 @@
  {rss_url:string(request)?request:query(request.url).url
  ,api_key:syndication.rss2json.key
  }))
- //,wordpress:request=>compose.call("./wordpress_2019_wpcom.js","WPCOM",resolve,request.url.split("/").slice(2).join("/"),"site",{number:15},"postsList",request.url.split("/").slice(2),record,note)
- //,facebook:source=>compose(fetch,"json")("/facebook/"+source)
- // new Promise(resolve=>!window.FB?featurefacebook().then(f=>
- // insert(f,"after",window.document.body)).then(f=>
- // feed.face(source)).then(resolve):FB.api("/"+/*source*/"10210793350908906"+"/feed","GET",{},response=>resolve(response)))
- // ,google(request){"https://www.googleapis.com/drive/v3/files/"+"?alt=media&key="+keys.googleapi}
- //,facebook(){FB.api("/"+room.getAttribute("source"),"GET",{fields:'id,name,from,created_time,message,type,timeline_visibility,link,object_id'},response=>resolve(response)).then(response=>{return response.object_id?new Promise(resolve=>FB.api("/"+response.object_id,"GET",{fields:'id,title,format,source,embed_html'},responseobject=>resolve(responseobject))).then(responseobject=>{return responseobject.embed_html+" \n"+response.message}):deform(response.message+" \n "+(response.name&&response.link?response.name.replace(/ /g,"_")+"@"+response.link:""))});
- // ,"https:":source=>compose(fetch,"json")("https:/"+source)
- // ,"http:":source=>compose(fetch,"json")("http:/"+source)
+ ,wordpress(request)
+{return compose
+(resolve,request.url.split("/").slice(2).join("/"),"site"
+,{number:15},"postsList",request.url.split("/").slice(2),record,note
+)("./wordpress_2019_wpcom.js","WPCOM")
+},google:
+ {files(request)
+{return compose(fetch,"json",["body"],record)("https://www.googleapis.com/drive/v3/files/"+"?alt=media&key="+syndication.google.api);
+},search(request)
+{let {q,type="image"}=query(request.url);
+ return compose(fetch,"json",["body"],record)(
+["https://www.googleapis.com/customsearch/v1?"+new URLSearchParams(
+ {q,searchType:type,key:syndication.google.api
+ ,cx:syndication.google.search
+ })
+].join(""));
+},map(request)
+{let options=query(request.url);
+ merge(options,{zoom:1,size:"600x500",maptype:"satellite",key:syndication.google.api},0);
+ return compose(fetch)("https://maps.googleapis.com/maps/api/staticmap?"+new URLSearchParams(options));
+}}
+ ,facebook(request)
+{return compose(revert((resolve,reject,{source},fields)=>
+ FB.api("/"+source,"GET",{fields},resolve)),note
+,({object_id:id,message,name,link})=>id?compose
+(revert((resolve,reject,id,fields)=>
+ FB.api("/"+id,"GET",{fields},resolve)),note
+,responseobject=>responseobject.embed_html+" \n"+message
+)(id,'id,title,format,source,embed_html')
+:[response.message,name&&link?name.replace(/ /g,"_")+"@"+link:""].join())
+(query(request.url)
+,'id,name,from,created_time,message,type,timeline_visibility,link,object_id'
+);
+},https:({url})=>compose(fetch,"json")("https:/"+url)
+ ,http:({url})=>compose(fetch,"json")("http:/"+url)
  ,medium:request=>compose(fetch,"text",note,slip(new DOMParser()),"text/xml","parseFromString","item","querySelectorAll")("https://medium.com/feed/"+new URL(request.url).pathname.split("/").slice(2).join("/"))
- ,fonts:compose(Object.entries,infer("map",([name,variants])=>
-[name,compose(Object.entries,infer("map",([variant,truetype])=>
-[variant||"regular"
-,{src:"url(data:font/truetype;charset=utf-8;base64,"+truetype+")"
- ,"font-family":[name,variant].filter(Boolean).join("-")
- ,"font-weight":"normal","font-style":"normal"
- }
-]),Object.fromEntries)(variants.length?{"":variants}:variants)
-]),Object.fromEntries,["truetype"],record,fonts,merge).bind(fonts.truetype)
- };
+ ,wikipedia
+ ,overpass()
+{return fetch('https://www.overpass-api.de/api/interpreter?'+new URLSearchParams({data:'[out:json];rel[admin_level=2]'/*'convert item ::=::,::geom=geom(),_osm_type=type();'*/+';out geom;'}));
+},elsevier(request)
+{if(!syndication.elsevier.token)
+ return compose(note,fetch,note,"text",note)("https://api.elsevier.com/authenticate?platform=SCOPUS",{headers: 
+ {"X-ELS-APIKey":syndication.elsevier.api
+ }})
+ let address="https://api.elsevier.com/content/search/scidir";
+ let options=query(request.url);
+ let field="dc:title,dc:creator,prism:publicationName,prism:coverDate,dc:description,prism:doi";
+ merge(options,{field,count:25,view:"COMPLETE"},0);
+ return compose(fetch,note,"text",note)(note(address+"?"+new URLSearchParams(options)),{headers:
+ {"X-ELS-APIKey":syndication.elsevier.api
+ ,Accept:"application/json"
+ }})
+}};
 
  async function toggle(method)
 {let filter=whether(this.contains.bind(this),infer(),swap(undefined));
@@ -486,7 +532,7 @@
  actions.broadcast.call(this,event,peer);
 },message({message,room,put},peer)
 {let event={action:"message",author:peer.author,message,room,put};
- this.rooms[room].messages.push({message,author:peer.author,put});
+ note(this.rooms)[room].messages.push({message,author:peer.author,put});
  actions.broadcast.call(this,event);
 },broadcast(event,peer)
 {let message=JSON.stringify(event);

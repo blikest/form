@@ -53,25 +53,34 @@ epistemologies#[[{"":
  {"Transcendentalism":{"Phenomenology":"Husserl","Process philosophy":"Whitehead","Non-philosophy":"Laruelle"}
  ,"Materialism":{"Monism":"Spinoza","Object-oriented ontology":"Harman","Agential realism":"Barad"}
  ,"Pluralism":"Aristotle"
- ,"Cybernetics":"Bateson, Deleuze, Latour"
+ ,"Cybernetics":"Bergson, Bateson, Deleuze, Latour"
  }
- ,"Empiricism":{"Positivism":"Bacon","Pragmatism":"William James"}
+ ,"Empirical":{"Positivism":"Bacon","Pragmatism":"William James"}
  }
  ,"Idealism":
- {"Hermeticism":"Neitzsche"
- ,"Hermeneutics":
+ {"Hermetic":"Neitzsche"
+ ,"Hermeneutic":
  {"Scholasticism":"Aquinas, Duns Scotus"
  ,"Existentialism":"Kant, Hegel, Kierkegaard, Heidegger"
- ,"Grammatology":"Derrida"
+ ,"Solipsism":"Wittgenstein, Derrida"
  }
- ,"Relativism":{"Dualism":"Descartes, Hegel","Post-phenomenology":"Ihde"}
+ ,"Relativist":
+ {"Dualism":"Descartes, Hegel"
+ ,"Subjectivism":"Kuhn, Fayerabend, Lyotard, Woolgar"
+ ,"Post-phenomenology":"Ihde"
+ }
+ ,"Critical":{"Constructivism":"Engels, Marcuse, Foucault"}
  }
  ,"Skepticism":{"Stoicism":"Seneca","Pyrrhonism":"Sextus empiricus","Nihilism":"Cioran"}
  }}],"./Blik_2024_chart.js/table"]{display:inline-block;text-align:center;max-width:100%;overflow:scroll;color:black;-webkit-print-color-adjust:exact}
 Figure 2: classification of epistemologies (or ontologies? - I may require a bipartite matrix eventually). (should be cladistic taxonomy) 
 {text-align:left}
 
- Given Whitehead's theory and Husserl's methodology, we can proceed to investigate epistemologies, as opposed to social orders. As alluded to earlier, the realist-idealist debate that Husserl failed to dissolve, existed already in Hellenism, where Stoicism and Skepticism, and earlier the Socratic tradition and Sophists were divided by the same controversy. Similar to idealists, the sophists and skeptics believed that a quest for objectivity is a fool's errand, and truth is at best relative, if not entirely subjective. In their times, divination (astrology, augury, oneiromancy, haruspicy &c.) was still an esteemed "scientific" method for predicting the future. In De Divinatione (44 BC), Cicero offered an implicit account of pseudo-science as theories claiming this title without suitable "demarcation" criteria, that coincide with ones supported, or at least undisputed by modern philosophers of science, suggesting a core heuristic set: internal logical consistency, coherent causality, integrity of principles, supportive empirical evidence (past or predicted), and engagement with criticism ((Fernandez-Beanato 2019)@/epistemology/Fernandez-Beanato_2019_Cicero_demarcation.pdf). Cicero's consistent modus tollens (P→Q, ¬P→¬Q) refutation of genethliac astrology was formalized by Popper (1934) for the fourth principle as "falsifiability" (along with caveats of representativity; for its demonstration on astrology, see Dean & Kelly 2003), to distinguish it from positivist "verificationism". 
+ Given Whitehead's theory and Husserl's methodology, we can proceed to investigate epistemologies, as opposed to social orders. As alluded to earlier, the realist-idealist debate that Husserl failed to dissolve, existed already in Hellenism, where Stoicism and Skepticism, and earlier the Socratic tradition and Sophists were divided by the same controversy. Similar to idealists, the sophists and skeptics believed that a quest for objectivity is a fool's errand, and truth is at best relative, if not entirely subjective. In their times, divination (astrology, augury, oneiromancy, haruspicy &c.) was still an esteemed "scientific" method for predicting the future. In De Divinatione (44 BC), Cicero offered an implicit account of pseudo-science as theories claiming this title without suitable "demarcation" criteria, that coincide with ones supported, or at least undisputed by modern philosophers of science, suggesting a core heuristic set: internal logical consistency, coherent causality, integrity of principles, supportive empirical evidence (past or predicted), and engagement with criticism ((Fernandez-Beanato 2019)@/epistemology/Fernandez-Beanato_2019_Cicero_demarcation.pdf). Cicero's consistent modus tollens (P→Q,¬Q⊢¬P) refutation of genethliac astrology was formalized by Popper (1934) for the fourth principle as "falsifiability" (along with caveats of representativity; for its demonstration on astrology, see Dean & Kelly 2003), to distinguish it from positivist "verificationism". 
+
+ religion 3: gives rise to duties of conscience
+ idealism: abdication of virtues. 
+ we're living in a virtueless age. 
  
 {text-align:left;color:grey;opacity:.2}
  Scholasticism. 
@@ -108,6 +117,7 @@ Figure 2: classification of epistemologies (or ontologies? - I may require a bip
 - Cybernetics vs. realism (Husserl + Whitehead; Russel's paradox, Mereology) 
 {text-align:left} 
 
+ Casper_1998@Casper_1998_Reframing_and_Grounding_Nonhum.pdf
  Hjorland_1998@/epistemology/Hjorland_1998_Metatheory_information_science.pdf
  Harlin_2003@/epistemology/Harlin_2003_Taxon_paradigms.pdf
  Ereshefsky_2002@https://plato.stanford.edu/entries/species/
@@ -133,6 +143,7 @@ Figure 2: classification of epistemologies (or ontologies? - I may require a bip
  Fadaie_2008@/epistemology/Fadaie_2008_Classification_Epistemology.pdf
 
  Heyman_2005@/epistemology/Heyman_2005_Critique_of_anthropology.pdf
+ Al-Ababneh_2020@/science/Al-Ababneh_2020_Linking_Ontology_Epistemology_and_Methods.pdf
  
 (Digital epistemology)#h3
 
@@ -145,6 +156,7 @@ Figure 2: classification of epistemologies (or ontologies? - I may require a bip
 {text-align:left;color:grey;opacity:.2}
  Discuss "value capture" (Nguyen 2024) and the QQD further. 
  Trace dichotomies to epistemology and ontology. 
+ classification and it's consequences. 
  Revert social sciences' induction of static (inorganic) ontology. 
  Techno-anthropology resists static materialism 
  (OOO's encapsulation, ANT's volatility, PP's static relations, AR's induction). 

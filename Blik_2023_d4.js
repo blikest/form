@@ -69,7 +69,7 @@
  return Object.entries(value).reduce((selection,entry)=>selection[field](...entry),this);
 },operation(field,value)
 {// specify operations to include in case of namespace collision with fragments/attributes.
- //const operations = ['data', 'datum', 'each', 'call', 'attrs', 'text', 'classed', 'sort', 'transition'] as const;
+ //const operations=['data','datum','each','call','attrs','text','classed','sort','transition'] as const;
  const fragment=Object.entries({text:['object'],filter:['object','string']}).some(([name,types])=>
  field===name&&types.includes(typeof value));
  if(fragment)
