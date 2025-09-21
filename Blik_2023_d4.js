@@ -3,7 +3,7 @@
  import {merge,prune} from './Blik_2023_search.js';
  import {window} from "./Blik_2023_interface.js";
  import {numeric,note,defined,simple,exit} from "./Blik_2023_inference.js";
- import {qualify} from "./Blik_2023_fragment.js";
+ import {qualify,document} from "./Blik_2023_fragment.js";
 
 // Data-Driven Document Declarations (D4).
 
@@ -16,7 +16,8 @@
  // To preserve unmatched nodes, consume them in a "drop" function. 
  // To spawn extension of an empty selection, specify "name". 
  // eg: ul:{datum:1,li:{fold:n=>[n,n,n],update:true,text:n=>n}} = 1 ul, 3 li text, updated on each call.
- if(!this)return;
+ if(!this)
+ return extend.call(document({span:{style:"display:inline-block"}}),...arguments);
  const [cast]=[[select,window.Node],[selectAll,window.NodeList]].find(({1:selectable})=>this instanceof selectable)||[];
  let selection=cast?.(this)||this;
  if(name)

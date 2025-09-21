@@ -21,4 +21,4 @@ check(){
  echo "Restarting Form: $process";
  kill $process;
  cd $(pwd)/..;
- NODE_TLS_REJECT_UNAUTHORIZED=0 node --inspect --experimental-vm-modules --import=./Blik_2023_interface.js ./Blik_2023_host.js expose ./Blik_2023_form.js ./Blik_2020_parameters.json/https > log 2>&1 &
+ node --inspect --import=./Blik_2023_interface.js ./Blik_2023_host.js expose ./Blik_2023_form.js ./Blik_2020_parameters.json/https > log 2>&1 &

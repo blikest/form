@@ -1,88 +1,173 @@
-(Separating concerns)#h3{text-align:center}
+Chapters#h2{"id":"chapters"}
 
-{text-align:left}
-  Browsers are programs to display#b interactive text files. Like this one. 
-By default, it would be a line of characters, without linebreaks, because they consider them a formatting decision that may only be due to how the text was edited: 
-unformatted#["this",["#frame"],"tether fragment/ascend",["shift"],"fragment/textcontent","meta/demarkup","meta/quote",[["&:after","content"]],"inference/record",[["#unformatted"]],"inference/record","fragment/css",[["div","style","#text"]],"inference/record","fragment/document"]{font-family:courier;color:#757575;white-space:nowrap;max-width:100%;overflow:scroll;} 
-  If it is in ("hypertext markup language")#b (an archaic document syntax of IBM's GML from 1969), it replaces <keywords>#b ("tags") between angle brackets in it with some alternative ways of doing so, such as <div>#span{font-weight:bold} for a new paragraph, <a>#b for this@https://html.spec.whatwg.org/multipage/indices.html ("anchor") link, <h1>#b for a title like above, or <svg>#b for a drawing like this: drawing#fragment/document({"svg":{"viewBox":"0 0 92.27 122.88","path":[{"fill-rule":"evenodd","clip-rule":"evenodd","fill":"#EC6F59","d":"M18.61,54.89C15.7,28.8,30.94,10.45,59.52,0C42.02,22.71,74.44,47.31,76.23,70.89 c4.19-7.15,6.57-16.69,7.04-29.45c21.43,33.62,3.66,88.57-43.5,80.67c-4.33-0.72-8.5-2.09-12.3-4.13C10.27,108.8,0,88.79,0,69.68 C0,57.5,5.21,46.63,11.95,37.99C12.85,46.45,14.77,52.76,18.61,54.89L18.61,54.89z"},{"fill-rule":"evenodd","clip-rule":"evenodd","fill":"#FAD15C","d":"M33.87,92.58c-4.86-12.55-4.19-32.82,9.42-39.93c0.1,23.3,23.05,26.27,18.8,51.14 c3.92-4.44,5.9-11.54,6.25-17.15c6.22,14.24,1.34,25.63-7.53,31.43c-26.97,17.64-50.19-18.12-34.75-37.72 C26.53,84.73,31.89,91.49,33.87,92.58L33.87,92.58z"}]}}){height:1em}. 
+(Separating concerns)#h3{margin-left:.6em}
 
-  Over a 100 of them are defined in HTML's namespace#b to reproduce common layout practices, but since the </keywords>#b need to be repeated to end their effect, it quickly proves to be a rather cumbersome format to write directly. Notice also that each keyword introduced features we did not yet consider. To split lines, we were really only interested in "div"#b, the others instead changed the design#b or functionality#b of a segment, while all providing some (semantic association)#b for mechanical interaction (eg. crawlers, screen readers). For a title image link on a new line, should we write "<div><a><h1><svg/></h1></a></div>"#b? 
+{"style":{"text-align":"left","h3":{"margin":"0"}}}
+  Browsers are programs to display#b interactive#b text files. 
 
-  Not separating these different concerns of customization becomes a recipe for confusion very quickly as you start layering the implicit, arbitrary and limited combinations of them inherent in keywords. To avoid this, the <span>#b keyword exhausts html's otherwise confusing effects in serving its only necessary one of (isolating content)#b. To display content that isn't text, we'll also remember <svg>#b, <canvas>#b, <video>#b and <audio>#b. 
+  Like this one. 
+
+  By default, it would be a line of characters, without linebreaks, because they consider those a formatting decision that may only be due to how the text was edited: 
+unformatted#["this",["#frame"],"inference/tether fragment/ascend",["shift"],"fragment/textcontent","meta/demarkup","meta/quote",[["span","style","@scope",":scope:after","content"]],"search/record","fragment/document"]{display:block;font-family:courier;color:#757575;white-space:nowrap;max-width:100%;overflow:scroll;} 
+  If it is in ("hypertext markup language")#b (an archaic document syntax of IBM's GML from 1969), it replaces <keywords>#b ("tags") between angle brackets in it with some alternative ways to display the text, such as <div>#span{font-weight:bold} for a new paragraph, <a>#b for this@https://html.spec.whatwg.org/multipage/indices.html ("anchor") link, <h1>#b for a title like above title#["this",["parentNode","h3",-1],"inference/tether fragment/seek",["textContent","(\""],"inference/flip",["\")","concat"]], or <svg>#b for a drawing like this: drawing#fragment/document({"svg":{"viewBox":"0 0 92.27 122.88","path":[{"fill-rule":"evenodd","clip-rule":"evenodd","fill":"#EC6F59","d":"M18.61,54.89C15.7,28.8,30.94,10.45,59.52,0C42.02,22.71,74.44,47.31,76.23,70.89 c4.19-7.15,6.57-16.69,7.04-29.45c21.43,33.62,3.66,88.57-43.5,80.67c-4.33-0.72-8.5-2.09-12.3-4.13C10.27,108.8,0,88.79,0,69.68 C0,57.5,5.21,46.63,11.95,37.99C12.85,46.45,14.77,52.76,18.61,54.89L18.61,54.89z"},{"fill-rule":"evenodd","clip-rule":"evenodd","fill":"#FAD15C","d":"M33.87,92.58c-4.86-12.55-4.19-32.82,9.42-39.93c0.1,23.3,23.05,26.27,18.8,51.14 c3.92-4.44,5.9-11.54,6.25-17.15c6.22,14.24,1.34,25.63-7.53,31.43c-26.97,17.64-50.19-18.12-34.75-37.72 C26.53,84.73,31.89,91.49,33.87,92.58L33.87,92.58z"}]}}){height:1em}. 
+
+  Over a 100 of them are defined in HTML's namespace#b to reproduce common layout practices, but since the </keywords>#b need to be repeated with a forward slash to end their effect, it quickly proves to be a rather cumbersome format to write directly. Notice also that each keyword introduced features we did not yet consider. To split lines, we were really only interested in "div"#b, the others instead changed the design#b or functionality#b of a segment, while of course providing their (semantic distinction)#b for computer recognition. For an image title as a link on a new line, should we write "<div><a><h1><svg/></h1></a></div>"#b? 
+
+  Not separating these different concerns of editing becomes a recipe for confusion very quickly as you start layering their implicit, arbitrary and limited combinations inherent in keywords. To avoid this, the <span>#b keyword exhausts html's otherwise confusing effects in serving its only necessary one of (isolating content)#b. To display content that isn't text, we'll also remember <svg>#b, <canvas>#b, <video>#b and <audio>#b. 
 
   HTML's second feature, allowing us to control these other aspects separately, are field="value"#b pairs ("attributes"), included with keywords between their angle brackets: (<a href="https://jsinterface.org">)#b specifies the address of a link, (<svg width="500">)#b the dimensions of an image. Every keyword has several of them, still arbitrarily controlling design, functionality or semantics. Luckily, all also share one dedicated to each respectively: 
   (1. style)#b for a (still problematic, but at least) (dedicated design language)@https://drafts.csswg.org/css2/, 
-  (2.)#b a (slightly inconvenient) (long list)@https://www.htmlref.com/reference/appa/events1.htm{"class":"invert reference","style":{"& *":{"filter":"invert(0.8)"}}} of action and arbitrary metadata fields starting with on-#b (click, focus, mouseover &c.) and data-#b for a (general programming language)@https://tc39.es/ecma262/, 
+  (2.)#b a (slightly inconvenient) (long list)@https://www.htmlref.com/reference/appa/events1.htm{"class":"invert reference","style":{"& *":{"filter":"invert(0.8)"}}} of action and data fields starting with on#b (click, focus, mouseover &c.) and data-#b for a (general programming language)@https://tc39.es/ecma262/, 
   (3.)#b and id#b, class#b and role#b to assign unique, collective or (conventional)@https://www.digitala11y.com/wai-aria-1-1-cheat-sheet/{"class":"invert reference","style":{"& *":{"filter":"invert(0.8)"}}} semantics. 
 
-  Design#h3{"id":"Design","style":{"margin-left":"1em","font-size":"1.1em"}}
+(Layout)#h3{margin-left:.6em}
 
   To begin explicitly designing our text, we need the design language of "style" called ("cascading stylesheets")#b (css), consisting of semicolon-separated series of "field:value;"#b pairs. Its field to control linebreaks is actually called display#b, which we saw implicitly set from the default inline#b to block#b by <div>. Color#b made the font blue#b, font-weight#b made it bold#b, font-size#b scaled it to 2em#b ((em quad)@https://en.wiktionary.org/wiki/em_quad). A title link is therefore simply: 
 inference#script/highlight(` <span class="link" style="display:block;color:blue;font-weight:bold;font-size:2em;">Interface</span>`){max-width:100%;overflow:scroll}
 
-  While easier to track, style rules can be long and redundant. This prompts the second most important html element, the <style>#b tag which instead of displaying text, reads CSS rules between {accolades} after selectors#b referencing elements by eg. #id#b or .class#b: 
-inference#script/highlight(` <style>span.link{display:block;color:blue;font-weight:bold;font-size:2em;`}</style>){max-width:100%;overflow:scroll}
+  While easier to track, style rules can be long and repetitive. This prompts the second most important html element, the <style>#b tag which instead of displaying text, reads CSS rules between {accolades} after selectors#b referencing their elements by name#b, #id#b, .class#b or [attribute]#b, combinable with +#b (neighbor), ~#b (sibling), >#b (child), ( ){highlight:var(--text);} (descendant): 
+inference#script/highlight(` <style>span.link{display:block;color:blue;font-weight:bold;font-size:2em;}</style>`){max-width:100%;overflow:scroll}
 
-  This declutters a document well for us, but sets a distance between content and style, splitting our attention when editing one or the other. This is a problem of semantics, with #id and .class being arbitrary custom references that may be edited (maybe not for a "link", but for more complex elements). Finding more constant selectors can alleviate this concern from the style's side. We can apply the semantics of the "a" tag with the "link"#b role, and reference it with attribute style selector instead: 
-inference#script/highlight(` <span role="link">Interface</span>
- <style>span[role=link]{display:block;color:blue;font-weight:bold;font-size:2em;}</style>`){max-width:100%;overflow:scroll}
+  This declutters a document well for us, but sets a distance between content and style, splitting our attention when editing one or the other. This is a problem of semantics, namely the lack of ("referential transparency")#b between CSS and HTML, especially with #id and .class being arbitrary custom references that may change on the elements (maybe not on a link, but for more complex elements), breaking their correspondence. Finding more constant selectors can alleviate this concern from the style's side. We can apply the semantics of the "a" tag with the "link"#b role, and reference it with attribute style selector instead. Since the stylesheet is read synchronously as part of the document, they should also be placed before the referenced elements to prevent a 'flash of unstyled content' (FOUC) before they load:
+inference#script/highlight(` <style>span[role=link]{display:block;color:blue;font-weight:bold;font-size:2em;}</style>
+ <span role="link">Interface</span>
+`){max-width:100%;overflow:scroll}
 
   This leaves style rules meaningful enough even in isolation, that we can move them as far as to a separate file from the content: 
-  
+
 inference#script/highlight(` /* /style */
  span[role=link]{display:block;color:blue;font-weight:bold;font-size:2em;}`){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
-A third element in HTML exists to "link" such adjacent files to a document as modules#b, provided their (Multipurpose Internet Mail Extension)@https://mimetype.io/all-types{"class":"invert reference","style":{"& *":{"filter":"invert(0.8)"}}} (mime) file format in its particular semantic/data fields: 
-inference#script/highlight(` <link rel="stylesheet" type="text/css" href="./style"/>`){max-width:100%;overflow:scroll}
 
-  Interaction#h3{"id":"Interaction","style":{"margin-left":"1em","font-size":"1.1em"}}
+  A third element in HTML exists to "link" such adjacent files to a document as modules#b, provided their (Multipurpose Internet Mail Extension)@https://mimetype.io/all-types{"class":"invert reference","style":{"& *":{"filter":"invert(0.8)"}}} (mime) file format in its particular type#b field, along with href#b for address and rel#b to make this purpose explicit: 
 
-  With design and semantics under control, we can address functionality. Similar to style, action#b fields expose a language to customize interactions, but with much more freedom. HTML and CSS were only an imperative#b interface to pre-defined expressions, with little declarative#b capacity (selectors, themes; neither worth exploring far because of the base expression complexity). What makes a language declarative is its ability to assign custom semantics ((names)#b) to parts of its memory ((variables)#b) for reference elsewhere. Procedures#b are an extension of this ability to syntax itself, to direct its order of execution ((stack)#b), and dereference variables they declared ((scope)#b) as they conclude. 
-  Functions#b are declared procedures that can isolate variables ((arguments)#b) and conclude by yielding a variable. Javascript is a declarative, procedural and functional programming language with simple expressions#b that are mutually exclusive, and collectively exhaustive: 
-{display:block;text-align:center;margin:.5em 10%;color:#616161}string#b, number#b, boolean#b, object#b, array#b, promise#b, generator#b, undefined#b, null#b, NaN#b, function#b, this#b, arguments#b
+inference#script/highlight(` <link href="./style" rel="stylesheet" type="text/css"/>`){max-width:100%;overflow:scroll}
+
+  While this shows referential stability being under control, the second problem with distance is that referenced elements may not just change, but also disappear, making rules in a stylesheet obsolete which is only exacerbated by isolating them into modules. In addition, modules are loaded asynchronously, introducing the risk of FOUC. A second type of CSS statements called directives#b, starting with an @#b character, define operations or variables to use within the stylesheets like @import#b, @font-face#b, @keyframes#b (animations) and @media "query" (device dimension conditions), and including some that are loaded asynchronously anyway for which this won't matter. But at risk of trading distance back for redundancy, the @scope#b directive exists specifically to resolve referential transparency, when placing a stylesheet directly inside an element, enabling the corresponding :scope#b 'pseudo-class', a miscellaneous type of selectors to reference adjacent elements, in this case the one containing the stylesheet: 
+inference#script/highlight(` <span role="link">
+ <style>@scope{:scope{display:block;color:blue;font-weight:bold;font-size:2em;}}</style>
+ Interface
+ </span>
+`){max-width:100%;overflow:scroll}
+
+  This in fact leaves redundancy as the only problem, while still allowing its management by carefully balancing scope frequency and proximity. The pseudo-class can still be combined with other selectors to reference other elements, and even extended within each other's rules with the final &#b selector prefix: 
+inference#script/highlight(` <style>@scope
+{:scope
+{& span[role=link]{display:block;color:blue;font-weight:bold;font-size:2em;}
+}
+}</style>
+ <span role="link">Interface</span>
+`){max-width:100%;overflow:scroll}
+
+(Operation)#h3{margin-left:.6em}
+
+  With layout and semantics under control, we can address functionality. Similar to style, action#b fields expose a language to customize interactions, but with much more freedom. HTML and CSS were only an imperative#b interface to pre-defined expressions, with little declarative#b capacity (selectors, "themes"; neither worth exploring far because of the base expression complexity). What makes a language declarative is its ability to assign custom semantics ((names)#b) to parts of its memory ((variables)#b) for reference elsewhere. Procedures#b are an extension of this ability to syntax itself, to direct its order of execution ((stack)#b), and dereference variables they declared ((scope)#b) as they conclude. 
+  Functions#b are such declared procedures that can isolate variables ((arguments)#b) and conclude by yielding one. Javascript is a declarative, procedural and functional programming language with simple expressions#b that are mutually exclusive, and collectively exhaustive: 
+{display:block;text-align:center;margin:.5em 10%;color:#616161}string#b, number#b, boolean#b, object#b, array#b, promise#b, generator#b, symbol#b, undefined#b, null#b, NaN#b, function#b, this#b, arguments#b
 {text-align:left}  and operators#b: 
 {display:block;text-align:center;margin:.5em 10%;color:#616161}= ((assignment)#b), ==, != ((equivalence)#b), ===, !== ((equality)#b), !, &&, ||, ?? ((logical)#b), +, -, *, /, %, <, >, <=, >=, ((arithmetic)#b), &, |, ^, ~, <<, >>, >>> ((bitwise)#b), import, export, let, var, const, if, else, do, while, for, in, of, try, catch, yield, return ((procedural)#b), (), {}, [], :, ?., ., ... (inference or ("destructuring")#b). 
 {text-align:left}
-  The browser itself in fact uses Javascript to process documents, reading every word, tag, attribute and style rule and translating them into pixels, semantics, design and (event listeners)#b. Action fields provide an entry point to take over this mechanism by defining procedures (actions) to be executed at given events. Browsers implicitly include their values in a function declaration to pass them two arguments: a model of the event and the containing element (as "this"#b). To operate a link, we need to set a click#b action and an address#b as a metadata field: 
+  The browser itself in fact uses Javascript to process documents, reading every word, tag, attribute and style rule and translating them into pixels, semantics, design and (procedures)#b. Action fields provide an entry point for the latter to take over this mechanism at given events. Browsers implicitly include their values in a function declaration to receive two arguments from their (event listener)#b: a model of the containing element (as "this"#b) and the occurred event#b. To operate a link, we need to assign its procedure to a click#b action, along with its address#b to a data- field on the element: 
 inference#script/highlight(` <span role="link" data-address="https://jsinterface.org" onclick="this.ownerDocument.defaultView.open(this.dataset.address,'_blank');">Interface</span>`){max-width:100%;overflow:scroll}
 
-  Spelling out this procedure every time can again be redundant, so we can reach for the last important element, <script>#b, where we can write proper javascript modules to reference elements and declare functions in isolation. Out of an action field's context, functions are also declared in {accolades}, but following their name and argument list in parentheses: 
+  Spelling out this procedure every time can again be redundant, so we can reach for the last important element, <script>#b, where we can write proper javascript to reference elements and declare functions in isolation. Like CSS rules, functions are also declared between {accolades} outside of an action field's context, but following their name and argument list between parentheses: 
 function#script/highlight(
 ` function action(event){this.ownerDocument.defaultView.open(this.dataset.address,'_blank');}`){max-width:100%;overflow:scroll}
-  In our case, the arguments will only include the event#b - the "this" argument is a special, default one to distinguish two possible types of arguments in computer functions (scope#b and context#b). 
+  In this case, the arguments will only include the event#b - the "this"#b argument where the element model is received is a special, default one to distinguish a peculiar type, the scope#b, from the context#b arguments. 
 Its existence has a long history of misunderstanding, leading to a common, redundant classification of seemingly distinct function types: 
 {text-align:left;margin-left:1em}
 (1. free function)#b when it is undefined: 
 free#script/highlight("action(...arguments)"){display:inline}
-(2. closure)#b when it is permanently assigned (bound) to a variable: 
-closure#script/highlight("action.bind(scope)"){display:inline}
-(3. method)#b when it is implicitly bound to a variable by being accessed as a member on it (particular to object-oriented programming): 
+(2. closure)#b when it is explicitly assigned (bound) to a variable: 
+closure#script/highlight("action.bind(scope)(...arguments)"){display:inline}
+(3. method)#b when it is implicitly bound to a variable by being accessed as a "member" on it (typical of object-oriented programming): 
 method#script/highlight("scope.action(...arguments)"){display:inline}
 (4. functor)#b when it is dynamically passed along with free arguments: 
 functor#script/highlight("action.call(...arguments)"){display:inline}.
 {text-align:left}
+  Before getting confused by this diversity, notice that the first three are all simply assuming a value for the scope argument, while a functor doesn't. This is generally called ("partial application")#b of a functor#b (pre-assigning some of its arguments), which in turn is only the mathematically accurate term ((category)#b) for functions between domains beyond arithmetic, such as spatial or structural types (which actually occur more in computer programs). What truly differentiates these functions then is rather their return type: operators#b return values, combinators#b return other functions. The "bind"#b method on Javascript functions is therefore simply a combinator returning the function in its scope with a scope of its own - be it an object or undefined: 
+{text-align:left;margin-left:1em}
+(1-3. partial application)#b: 
+functor#script/highlight("action.bind.call(action,scope)(...arguments)"){display:inline}.
+{text-align:left}
+ Now calling the "call" method on this "bind" function seems superfluous: closure#script/highlight(`action.bind(scope)`){display:inline;white-space:normal;word-break:break-all} already implies "action" as its own scope - much like inference#script/highlight(`scope.action.call(scope,...arguments)`){display:inline;white-space:normal;word-break:break-all} is made unnecessary by this implicit binding of methods. The object-oriented paradigm has made this popular for reducing complexity in the short term, but it also adds an unnecessary dependency on membership. Should a function be compatible with multiple types, they all need to include it in their definition, "inherit" them from a more abstract class, or re-bind it from each other. Unfortunately, the Javascript base expressions listed above are littered with such unnecessary "method" bindings, achieved by all descending from actual abstract classes ("prototypes"): String, Number, Boolean, Array, Object, or in the current case Function: 
 
-  Before getting confused by this diversity, notice that the first three are all simply assuming a value for the "this" (scope) argument, while the fourth doesn't. This is collectively called "partial application" of a functor#b, which in turn is only the mathematically accurate term ((category)#b) for functions present in computer procedures. What truly differentiates functions is rather their return value: operators#b return constants, combinators#b return other functors. Javascript's "bind"#b method simply acts as a function returning its bound scope with a default argument, whatever that may be (object, variable or undefined). Unfortunately, the Javascript base expressions listed above are littered with these unnecessary "method" bindings, but I present alternative combinators to abandon this confusing practice in my notes on Inference@Blik_2023_inference. For now, all we need to understand is that our action functions will need to be bound to an element reference and an event type for the browser to find them. While the obvious "node.event=action" works indeed, browsers offer an "addEventListener" (and corresponding "removeEventListener") method to bind some further conditions with an optional third argument. Functions being only a declaration of a procedure, we need a second procedure to do this explicitly, for which the module scope ("this") exposes a window#b object containing the model of the entire document: 
+types#["meta/types",[["types"]],"search/record",[0],"inference/flip",[{"spread":"right","linear":true,"gap":2,"monospace":10,"still":true}],"inference/tether network"]
+
+ These are all functions themselves, but the capitalization conventionally indicates that they contain a prototype, which is simply a field assigned to the function that gets copied and returned ("constructed") as its scope by Reflect.construct: 
+
 inference#script/highlight(
-'<script>
- function action(event){this.ownerDocument.defaultView.open(this.dataset.address,"_blank");}
+` function Constructor(scope){Object.assign(this,scope)};
+ Object.assign(Constructor.prototype,{tether,infer});
+ let functor=Reflect.construct(Constructor,{name:"monad"});
+ functor.infer("name");
+
+ function tether(term,...context)
+{if(!this)
+ return function(scope){return tether.call(scope,...arguments);};
+ return term.call(this,...context);
+};
+
+ function infer(term,...context)
+{if(!this)
+ return tether(infer,...arguments);
+ let node=this[term];
+ if(!node)
+ return [this,...arguments];
+ if(typeof node==='function')
+ return tether.call(this,node,...context):
+ return node;
+};
+`){max-width:100%;overflow:scroll}
+
+ The Function prototype similarly contains the {call,bind} methods, but this Functor prototype shows how unnecessary it is to group them with their scope: "infer" allows accessing any scope dynamically with a simple recursion. "Call" is still used internally, and can be used to prevent recursion, but both are made obsolete by "tether" re-binding regardless of membership: functor#script/highlight(`action.bind(scope)(...context)===tether(action)(scope,...context)`){display:inline;white-space:normal;word-break:break-all}. These and further combinators are discussed in my notes on the Inference@Blik_2023_inference module, for now we only need to understand that our action functions needs to get bound to an element reference and an event type for the browser to find it. While the obvious "node.event=action" works indeed, browsers offer the "addEventListener" (and corresponding "removeEventListener") method to bind some further conditions with an optional third argument. Functions being only a declaration of a procedure, we need a second procedure to use this explicitly, for which the module scope ("this") exposes a window#b object containing the model of the entire document: 
+inference#script/highlight(
+' <script>
  this.document.querySelectorAll("span[role=link]").forEach(node=>
  node.addEventListener("click",action
 ,{capture:false,once:false,passive:false,signal:new AbortController().signal}));
+ function action(event){this.ownerDocument.defaultView.open(this.dataset.address,"_blank");};
 </script>'){max-width:100%;overflow:scroll}
 
-  Similar to how the "."#b notation for "methods" earlier implied an assignment of the function's scope, the arrow doodle "=>"#b here is an abbreviation javascript supports for free functors, where the "this" argument is inherited from the calling procedure's scope, as it would just be ignored otherwise. While you can preserve the accolades to include multiple statements, restricting its usage for single expressions corresponds to a type of free functors called "lambdas"#b that promote discipline to avoid liabilities of imperative programming. 
-  
-  When you have more actions to assign, it is practical to group them in one object so you can derive them all in the same lambda expression. This generalization reveals how the action namespace is actually independent#b from this procedure, which is where Javascript's own, natural ability to isolate (referentially transparent)#b modules with its export#b and import#b statements most obviously outshines HTML and CSS. 
+  Similar to how the "."#b notation for "methods" earlier implied an assignment of the function's scope, the arrow doodle "=>"#b here is an abbreviation javascript supports for free functors, where the "this" argument is inherited from the calling procedure's scope, as it would just be ignored otherwise. While you can preserve the accolades to include multiple statements, restricting its usage for single expressions corresponds to a type of functors called "lambdas"#b, which can promote discipline to avoid imperative programming. 
 
-  At once, we can note that while selector specificity helped prevent mismatched content references in the isolation of CSS's declarative rules, this procedural assignment of interactions may still leave past or future elements out of its scope at the moment of execution. Luckily, browser actions don't need to be bound to a specific element to receive events from it. When interactions happen, their event stores a reference to the ("target")#b element they originated in, and gets ("propagated")#b to each containing element in the document. To make sure you receive them, every event can therefore be captured#b on a higher level, be routed back to their target element from there. While you may choose the highest document level for this, it could imply a large set of independent actions to be stored on one object. A more modular approach is to reference actions in a data attribute on your elements, and capture only the ("load")#b event on the body tag (discussed momentarily), fired when all its elements are loaded, to perform these assignments. To capture events happening before your binding is ready, assign asynchronous actions that delegate them afterwards: 
+  When you have more actions to assign, it is practical to group them in one object so you can derive them all in one lambda expression. This generalization makes this procedure independent#b from the action "namespace", allowing to further isolate (referentially transparent)#b modules with Javascript's export#b and import#b statements, offering a simplicity never possible with HTML and CSS. While selector specificity has helped us prevent mismatched content references in the isolation of CSS's declarative rules, this may still leave past or future elements out of scope in the case of JavaScript's procedural assignment of interactions. Luckily, browser actions don't need to be bound to an element in specific to receive events from it: when interactions happen, their event stores a reference to the ("target")#b element they originate in, and get ("propagated")#b to each containing element in the document. To make sure you receive them, every event can therefore be captured#b on a higher level, and be routed back to their target element from there. While you may choose the highest document level for this, it could imply a large set of independent actions to be stored on one object, risking disregard for bloat. A more modular approach is to reference actions in a data field on your elements, and capture only the ("load")#b event on the body tag, fired when all its elements are loaded, to perform these assignments. To capture events happening before the bindings are ready, make their listeners asynchronous to "buffer" their delegation: 
+
+capture#script(
+' // /capture
+ capture.call(this.document,"/actions/document");
+
+ export function capture(module=this.dataset.actions)
+{// register events to be routed to actions scoped by selector (eg. {#form:{submit(){}}}). 
+ if(!globalThis.window)
+ // Re-invoke on client to capture events. 
+ return this.dataset.actions=module,this;
+ let actions=import(module);
+ let buffered=Object.keys(this).filter(([field])=>field.startsWith("on"));
+ buffered.forEach(event=>this.addEventListener(event.slice(2),buffer.bind(actions)));
+ actions.then(({default:actions})=>
+ new Set(Object.values(actions).flatMap(Object.keys)).forEach(event=>
+ this.addEventListener(event,delegate.bind(actions)))).then(ready=>
+ buffered.forEach(event=>this.removeEventListener(event.slice(2),buffer)));
+};
+
+ export function delegate(island,event)
+{Object.entries(this).map(([selector,actions])=>
+[event.target.closest(selector),actions[event.type]
+]).forEach(([scope,action])=>action?.call(scope,event));
+};
+
+ export function buffer(island,event)
+{this.then(actions=>delegate.call(actions,...arguments));
+ event.preventDefault();
+ console.warn({["captured "+event.type+" from"]:event.target});
+};',{"source":"/capture"}){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
 
 actions#script(
 ` // /actions
  export var document=
  {body:
  {load()
-{this.querySelectorAll("[data-actions]").forEach(node=>
- capture.call(node,node.dataset.actions));
+{this.querySelectorAll("[data-actions]").forEach(node=>capture.call(node));
 }}
  };
 
@@ -101,81 +186,81 @@ actions#script(
 }}
  };`,{"source":"/actions"}){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em;border:2px dashed #616161}
 
-capture#script(
-' // /capture
- capture.call(this.document,"/actions/document");
+  As with style#b tags, we can now also isolate this module into a file. Since javascript can block the browser's own procedure as its part, a simple link tag is not equipped to control it. The script tag itself was extended instead with attributes to make it execute simultaneously with the rest of the document (("async")#b), or after it is fully displayed (("defer")#b). For backwards compatibility with an older javascript syntax before its modularity ("commonjs"), a "type" field for it also needs to be set explicitly: 
+inference#script/highlight(` <script src="/capture" type="module" async="false" defer="true"/>`){max-width:100%;overflow:scroll} 
 
- export function capture(module)
-{// register events to be routed to actions scoped by selector (eg. {#form:{submit(){}}}). 
- if(!globalThis.window)
- // Re-invoke on client to capture events. 
- return this.setAttribute("actions",module),this;
- let lead=["/","./"].find(lead=>module.startsWith(lead));
- let route=actions.replace(lead,"").split("/").filter(Boolean);
- let actions=import(lead+route.shift()).then(module=>
- Object.assign(["default"],route).reduce((module,field)=>module[field],module));
- let buffered=Object.keys(this).filter(([field])=>field.startsWith("on"));
- buffered.forEach(event=>this.addEventListener(event.slice(2),buffer.bind(actions)));
- actions.then(actions=>
- new Set(Object.values(actions).flatMap(Object.keys)).forEach(event=>
- this.addEventListener(event,delegate.bind(actions)))).then(ready=>
- buffered.forEach(event=>this.removeEventListener(event.slice(2),buffer)));
-};
+(Metadata)#h3{margin-left:.6em}
 
- export function delegate(island,event)
-{Object.entries(this).map(([selector,actions])=>
-[event.target.closest(selector),actions[event.type]
-]).forEach(([scope,action])=>action?.call(scope,event));
-};
-
- export function buffer(island,event)
-{this.then(actions=>delegate.call(actions,...arguments));
- event.preventDefault();
- console.warn({["captured "+event.type+" from"]:event.target});
-};',{"source":"/capture"}){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
-
-  As with style#b tags, we can now also isolate this module into a file. Since javascript can interfere with the browser as part of the its own procedure, a simple link tag is not sufficient to control it. The script tag itself was extended with attributes to make it execute in parallel with the rest of the document (("async")#b), or after it is fully displayed (("defer")#b). For backwards compatibility with an older, deprecated javascript syntax ("commonjs"), a "type" field for modular javascript needs to be set explicitly: 
-inference#script/highlight(` <script src="./capture" type="module" async="false" defer="true"/>`){max-width:100%;overflow:scroll} 
-
-  (The goal)#b{font-size:1.1em}
-
-  We shouldn't forget to note that these last three tags (script, style and link) were new in the sense that they don't isolate content#b of their own that we'd like to display. These are called metadata#b tags, and they modify the display of other elements in the document, so ideally they are processed before them. While being careful to place them first could be sufficient, or it may even be fine to adjust the document retrospectively, some metadata tags contain semantic information about the entire document that may be critical for its display, or be interesting without its content, such as <meta>#b tags for description, encoding and intended screen dimensions. For this reason, the main <html>#b tag is divided by respective <head>#b and <body>#b tags, following a standard GML namespace declaration: 
+  We shouldn't forget to note that these last three tags (script, style and link) were new in the sense that they don't isolate content#b of their own that we'd like to display. These are called metadata#b tags, and they modify the display of other elements in the document - which means they are ideally processed before them. While being careful to place them first could be sufficient, or it may even be fine to adjust the document in retrospect, some metadata tags contain semantic information about the entire document that may be critical for its display, or be of interest before the content, such as <meta>#b tags for description#b, encoding#b and intended screen dimensions#b. For this reason, the main <html>#b tag is divided by respective <head>#b and <body>#b tags, following a namespace declaration as part of the GML standard: 
 
 inference#script/highlight(`<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Interface</title>
-<meta name="description" content="client interface">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/svg+xml" href="svg/node/document">
-<link rel="stylesheet" type="text/css" href="./style">
-<script src="./capture" type="module" async="false" defer="true"/>
+ <html lang="en">
+ <head>
+ <title>Interface</title>
+ <meta name="description" content="client interface">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="icon" type="image/svg+xml" href="svg/node/document">
+ <link rel="stylesheet" type="text/css" href="./style">
+ <script src="/capture" type="module" async="false" defer="true"/>
 </head>
-<body><span role="link">Title</span></body>
+ <body>
+ <span data-actions="/actions/link" role="link">Title</span>
+</body>
 </html>`){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
 
-  (Dark ages)#h3{"id":"Dark ages","style":{"margin-left":"1em","font-size":"1.1em"}}
+  (The Myth of Frameworks)#h3{margin-left:.6em"}
 
-  This triplet#b of an HTML document with style and action modules is as convenient as it gets if you only have a static file editor and server. We're still dealing with three languages tough, one more limited than the other, so (static site generation)#b (SSG) with a coherent fourth structure (shell, perl, C, python scripts) has always been preferred. Two yers into only HTML's existence, when dynamic content could only be generated by a server, static file servers ((httpd)#b, Apache#b, (Microsoft IIS)#b) adopted ("common gateway interface")#b (CGI) modules in 1993#b to execute such scripts for clients. While the flourishing complexity of HTML had to be preserved for backwards compatibility, Javascript#b and CSS#b were introduced in 1995 and 1996 to separate its concerns as we did above, which distributed dynamic capabilities to the client side. Document design was nonetheless still highly complicated, so common scripting practices matured into graphical interfaces like (Adobe Dreaweaver)#b (C++, 1997) and (Movable Type)#b (Perl, 2001), as the first commercially viable solutions. To keep scopes and procedures of CGI scripts available for dynamic#b (server-side rendering)#b, dedicated servers arrived with Apache's (mod_php)#b (C, 1997), Tomcat#b (Java, 1999), Webrick#b (Ruby, 2000), Microsoft's ASP#b (C#, 2001), and WSGI#b (Python, 2003), each with a respective framework to control it: (PHP)#b, (Java Server Pages)#b, (Ruby on Rails)#b, ASP.NET#b and Django#b. Behind all the these brand names, the big idea they were all capitalizing on was to merge CSS and/or JS into HTML with a fourth, heterogenous "template"#b format (something beautiful like inference#script/highlight(`<%for item in $list%><span><%=$item%></span><%end%>`){display:inline;white-space:normal;word-break:break-all}), or at least introduce some non-standard html syntax of "directives"#b (eg. "server-side includes": ssi#fragment/document({"span":{"#text":"<!--#include virtual=\"./text\"-->"}}){font-family:monospace;color:#616161;word-break:break-all}). Good as this idea seems for many to this day, it only lead to a new market of graphical interfaces called ("content management systems")#b ((Wordpress)#b 2003, OpenCms#b 2000, Shopify#b 2006, Sitecore#b 2001 and (django CMS)#b 2007) forming a lobby to benefit their maintainers more than its customers, but no real technological advances to talk about. 
+  This triplet#b of an HTML document with CSS and JS modules is as convenient as it gets if you only have a static file editor and server. We're still dealing with three different languages tough, one more limited than the other, so (static site generation)#b (SSG) from a coherent fourth structure (shell, perl, C, python scripts) has been preferred since their inception. Two years into only HTML's existence, when dynamic content could only be generated by a server, static file servers ((httpd)#b, Apache#b, (Microsoft IIS)#b) adopted ("common gateway interface")#b (CGI) modules in 1993#b to execute such scripts. While the growing HTML namespace always needed preservation for backwards compatibility, Javascript#b and CSS#b were introduced in 1995 and 1996 to separate its concerns as we did above, distributing dynamic capabilities to the client side. Document design was still highly complicated in their early stages, so scripting practices matured into graphical interfaces like (Adobe Dreaweaver)#b (C++, 1997) and (Movable Type)#b (Perl, 2001), as the first commercially viable platforms. To keep the memory of CGI scripts available, dedicated servers were introduced for (server-side rendering (SSR))#b with Apache's (mod_php)#b (C, 1997), Tomcat#b (Java, 1999), Webrick#b (Ruby, 2000), Microsoft's ASP#b (C#, 2001), and WSGI#b (Python, 2003), each with a respective framework to control it: (PHP)#b, (Java Server Pages)#b, (Ruby on Rails)#b, ASP.NET#b and Django#b. Behind all the these brand names, the big idea they were all capitalizing on was to further bloat HTML in a fourth, heterogenous "template"#b format embedding CSS and/or JS (beauties like inference#script/highlight(`<%for item in $list%><span><%=$item%></span><%end%>`){display:inline;white-space:normal;word-break:break-all}), or at least introduce new "directives"#b (namespaces or just comments, eg. "server-side includes": ssi#fragment/document({"span":{"#text":"<!--#include virtual=\"./text\"-->"}}){font-family:monospace;color:#616161;word-break:break-all}). Good as this idea seems for many to this day, the even more elaborate graphical interfaces they produced in the form of ("Content Management Systems")#b ((Wordpress)#b 2003, OpenCms#b 2000, Shopify#b 2006, Sitecore#b 2001 and (django CMS)#b 2007) created an industry benefitting their maintainers more than its customers by subverting standards with their frameworks. 
 
-  In the meantime, despite constant professional criticism for its volatility due to lack of traditional type annotation (which ruby and python also lack, just have less exposure as server-side languages), Javascript slowly evolved as the exclusive, ubiquitous programming language on web clients, where it proved unprecedentedly accessable#b and intuitive#b. A new generation of amateur programmers emerged, and with them a path of least resistence towards abandoning complex server architectures in favor of (complex) (client-side rendering)#b, filling the web with static ("single page applications")#b devoid of content before their javascript executes redundantly. By 2006 JQuery#b emerged as the first de facto (client-side framework)#b to challenge the dominance of PHP and Ruby, and this was only the inflexion point of javascript's acceleration. To fight this dangerous trend, (static site generation)#b saw a rennaissance after 15 years in Jekyll#b (2008), a spinoff of Rails leveraging the new markdown@https://daringfireball.net/2004/03/introducing_markdown format for simplified (and limited) templating. 
+  In the meantime, despite constant criticism for its volatility due to lack of traditional type annotations (which ruby and python also lack, just have less exposure as server-side languages), Javascript slowly evolved as the exclusive, ubiquitous programming language on web clients, where it proved uniquely accessable#b and intuitive#b. A new generation of amateur programmers emerged, and with them a path of least resistence towards abandoning complex server architectures in favor of (complex) (client-side rendering)#b, filling the web with static ("single page applications")#b devoid of content before their javascript re-executes for every client. By 2006 JQuery#b emerged as the first de facto (client-side framework)#b to challenge the dominance of PHP and Ruby, and this was only the inflexion point of javascript's popularity. To fight this dangerous trend, (static site generation)#b saw a rennaissance after 15 years in Jekyll#b (2008), a spinoff of Rails leveraging the new markdown@https://daringfireball.net/2004/03/introducing_markdown format for simplified (albeit limited) templating. 
 
-  The dominance of javascript was decided in 2009#b with the arrival of Node.js#b. Taking javascript's (V8 compiler)#b from the Chrome browser and augmenting it with operating system capabilities (file and network access) made javascript a language singularly capable of operating universally#b on both server and client side. Its unique asynchronous runtime procedure ("event loop") inherited from its optimization to listen for browser events made it equally more suitable for server operation than previous CGI and multi-threaded servers. With the new generation of professionals still enthralled by the ill-conceived prospects of client-side rendering though, this JS singularity came to be astonishingly wasted on atavistic static site generators. 
+  The dominance of javascript was decided in 2009#b with the arrival of Node.js#b: taking javascript's (V8 compiler)#b from the Chrome browser and augmenting it with operating system capabilities (file and network access) made javascript a language singularly capable of operating universally#b on both server and client sides. Its unique asynchronous runtime procedure inherited from its optimization to listen for browser events (the "event loop") made it more suitable for server operation than previous multi-threaded servers as well. With the new generation of professionals still enthralled by the ill-conceived prospects of client-side rendering, the opportunity of this JS singularity for dynamic dual-side rendering has come to be wasted on static site generation. 
 
-  Backbone#b, Knockout#b and AngularJS#b were all released the same year to inaugurate the upcoming decade of race for most overengineered UI architecture ever, with as little progress made during as possible. Their redundant browser APIs ( backbone#script/highlight(`Backbone.Model.extend({}).on("change:field",event)`){display:inline;white-space:normal;word-break:break-all} ), witty ( knockout#script/highlight(`<span data-bind="template:{name:'item',data:item}">`){display:inline;white-space:normal;word-break:break-all} ) or less witty ( angular#script/highlight(`<span ng-repeat="item in items">{{item}}</span>`){display:inline;white-space:normal;word-break:break-all} ) html templates and MVC/MVVM alchemy inspired Ember#b to combine the worst of all worlds into an object-oriented hellscape in 2011. To represent the quiet subcurrent of reason, Meteor#b extracted the single substantial idea of applying the (observer pattern)#b from Knockout, and extended it for "local-first" synchronization with server sockets, still bundled alas with the bloat of a monolithic framework. 2012 was the year critics of JS at Microsoft launched their offensive with the release of the Typescript#b compiler, adding type annotation to the syntax without exposing a modular parser and compiler, creating a critical bottleneck between the industry and the language standards (which luckily resisted the lobby to integrate it). To deal with the proliferation of non-standard dialects of javacript, general compilers such as Gulp, Eslint#b and Webpack#b (followed by Babel#b next year) became commonplace in 2013. The all-time champions of overengineering lined up in the following years: React#b, Vue#b in 2014 and Angular#b in 2015 took over the industry as the new standards of web development with their "component"#b architectures - a full detachment from the native document model using the ill-conceived object-oriented notion of nested composition. To React's credit, it started promoting the return to web standards, and was reasonably modular to be used as a simple javascript library on both server and client side, but the profession was too gaslit by the complexity lobby not depend on the Next.js#b framework promptly built around it in 2016. 
- 
-  To somewhat justify this technological dead end and ensuing russel#fragment/link("https://infrequently.org/2023/02/the-market-for-lemons/","market failure"), even the consortium of web standards (W3C) was complicit in promoting w3c#fragment/link("https://www.w3.org/TR/components-intro/","Web Components"), isolating styles and scripts internally in a "shadow dom" extension of the document model in 2014. Its ambitious showcase in Google's Polymer#b saw diminishing returns ever since as the concept isn't addressing any of the real problems with (concern separation)#b and (referential transparency)#b. To pave a way to redemption, the European Computer Manufacturers Association's Technical Committee 39 (ECMA TC39), responsible for the standard (Javascript language specification)@https://262.ecma-international.org/6.0/index.html (ECMA-262), introduced its module syntax in 2015. React took the opportunity to implement (server-side rendering)#b for its components, but it has barely been utilized outside of Next and Meteor's adoption internally, and "server components" took until 2020 to arrive. 
-  
- ([To be continued...])#h3{"id":"TBC","style":{"margin-left":"1em","font-size":"1.1em"}}
+  Backbone#b, Knockout#b and AngularJS#b were all released the same year to inaugurate the upcoming decade of race for most overengineered UI architecture ever, with as little progress made during as possible. Their redundant browser APIs ( backbone#script/highlight(`Backbone.Model.extend({}).on("change:field",event)`){display:inline;white-space:normal;word-break:break-all} ), witty ( knockout#script/highlight(`<span data-bind="template:{name:'item',data:item}">`){display:inline;white-space:normal;word-break:break-all} ) or less witty ( angular#script/highlight(`<span ng-repeat="item in items">{{item}}</span>`){display:inline;white-space:normal;word-break:break-all} ) html templates and Model-View-Controller/ViewModel (MVC/MVVM) alchemy inspired Ember#b to combine the worst of all worlds into an object-oriented hellscape in 2011. To represent the quiet subcurrent of reason, Meteor#b extracted the single substantial idea of applying the (observer pattern)#b from Knockout, and extended it for "local-first" synchronization with server sockets, still bundled alas with the bloat of a monolithic framework. 2012 was the year critics of JS at Microsoft launched their offensive with the release of the Typescript#b compiler, adding type annotation to the syntax without exposing a modular parser and compiler, creating a critical bottleneck between the industry and the language standards (which luckily resisted the lobby to integrate it). To deal with the proliferation of non-standard dialects of javacript, general compilers such as Gulp, Eslint#b and Webpack#b (followed by Babel#b next year) became commonplace in 2013. While Hugo came out as another static site generator written in Go, the all-time champions of overengineering began to line up on a yearly basis: React#b, then Vue#b in 2014 and Angular#b in 2015 together took over the industry as the new standards of web development with their "component"#b architectures - a full detachment from the native document model using the ill-conceived object-oriented notion of nested (as opposed to sequential) composition. To React's credit, it left from for web standards, being reasonably modular to be used as a simple javascript library in isolation, but the profession was too gaslit by the complexity lobby to not depend on the Next.js#b framework promptly built around it in 2016. 
 
-2017 Svelte#b, 2018 11ty#b, Hyperapp, 2019 Blitz, Quasar, 2020 Solid.js, Inertia.js 2021 SvelteKit, Astro#b, Remix, Qwik, Hono, Htmx, 2022 RedwoodJS, Wasp, 2023 Jito 
-Data-driven routing
-Capture fragments
-https://github.com/whatwg/html/issues/1605
+  To somewhat justify this dead end of technology and ensuing (market failure)@https://infrequently.org/2023/02/the-market-for-lemons/, even the consortium of web standards (W3C) was complicit in promoting (Web Components)@https://www.w3.org/TR/components-intro/, isolating styles and scripts internally in a "shadow dom" extension of the document model in 2014. Its ambitious showcase in Google's Polymer#b saw diminishing returns ever since as the concept isn't addressing any of the real problems with (concern separation)#b and (referential transparency)#b. To pave a way to redemption, the European Computer Manufacturers Association's Technical Committee 39 (ECMA TC39), responsible for the standard (Javascript language specification)@https://262.ecma-international.org/6.0/index.html (ECMA-262), introduced its module syntax in 2015. React took the opportunity to implement (server-side rendering)#b for its components, but it has barely been utilized outside of Next and Meteor's adoption internally, and "server components" to customize it took until 2020 to arrive. Anticipating modular JS, renown library author Rich Harris had them prioritized by his Rollup#b bundler in 2015, before returning to his static component framework Svelte#b in 2017, a html template to generate modular sites, with SvelteKit#b extending it for SSR in 2020. Combining both CSS and JS in HTML modules, its simplicity made it a strong contestant for static site generators like Gatsby from 2015 and 11ty from 2017, but React's JSX syntax imitating HTML has been a close second, with the former's explicit reliance on it, and several frameworks adopting what became known as the 'hyperscript' function signature ((fiber(name,attributes,children))#span{color:grey}) to allow it, from Mithril (since 2012) through HyperApp (2018) to Solid.js (2019). Given this popular atavism of HTML templates, Astro was able to merge Svelte, React and other frameworks in a unified html template in 2011, complete with SSR support from the start. 
 
+  While frameworks have finally begun supporting dynamic servers, 15 years with Node.js has been wasted on static site generators and client-side rendering, and HTML remains the primary syntax being extended with never intended capabilities. After this painful history, it is past due to call frameworks a failure, and reclaim our confidence to program directly with JavaScript. 
 
+(Rendering)#h3{margin-left:.6em"}
 
+  In my notes on the Interface@/Blik_2023_interface module, I described how to open a port to respond to requests received from the web in general. In summary, an "expose" procedure requires a module declaring paths to route passive http responses ((default)#b), active websocket actions#b, and potential syndication#b (API) keys to be borrowed from a second "protocol" module. The example there was a static file server, which will remain useful for fetching media, but since a HTML can take many shapes, we will extend it with dynamic routes to generate it, as well as its JavaScript and CSS modules. Given that HTML and CSS are fundamentally declarative, a JavaScript object is fully capable of describing them, with an actually less verbose syntax: 
+
+inference#script/highlight(
+` var interface=
+ {html:
+ {head:
+ {title:"Interface",meta:
+[{charset:"UTF-8"}
+,{name:"description",content:"client interface"}
+,{name:"viewport",content:"width=device-width, initial-scale=1"}
+],link:
+[{rel:"icon",type:"image/svg+xml",href:"/svg/node/document"}
+,{rel:"stylesheet",type:"text/css",href:"./style"}
+],script:{src:"/capture",type:"module",async:"false",defer:"true"}
+ }
+ ,body:
+ {style:{"span[role=link]":{display:"block".color:"blue"",font-weight":"bold","font-size":"2em"}}
+ ,span:{"data-actions":"/actions/link",role:"link","#text":"Title"}
+ }
+ }`){max-width:90%;overflow:scroll;width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
+
+  Once this is declared, we can operate on it freely with JavaScript to "render" the syntax that browsers understand. While traversing the object, it would be strightforward to build a string to represent the html, but since we may want to use this function to render on client side too, we could also rely on browser methods to build its "document object model" (DOM) directly, and perhaps trigger actions programmatically. These methods are not available in Node.js by default, and are also quite complicated, so we will borrow an implementation called JSDOM by (Domenic Denicola)@https://domenic.me/ from the Web Hypertext Application Technology Working Group (WHATWG, responsible for the HTML standard since 2004 as the W3C's approach with XHTML fell out of favor). As also described in Interface@/Blik_2023_interface, to use dependencies less as a black box as with NPM, we can define its sources and get it bundled as a standard module. This can be a bit time consuming as build processes are not always so explicit, but it's available for JSDOM in Interface's source definitions (complete with its build scripts, exclusion of prettier integration, and edits to get circular imports asynchronously re-assigned in its bundle): 
+
+sources#[["/Blik_2023_sources.json"],"interface/fetch",["json",["Domenic_2010_jsdom.js"]],"inference/collect",["reverse"],"inference/iterate","search/extract","meta/aphorize",[{"source":"Blik_2023_sources.json","fold":1}],"script"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
+
+  To emulate a browser, JSDOM needs to initialize its window#b scope with an origin#b url, which is taken care of by Interface's jsdom#b function, used by expose#i to set it according to the specified protocol#i, but the Fragment#b module of Form also calls it with "http://localhost:80/" as a default, given that it exposes the document#b function we are after to render our declaration: 
+
+sources#[["/Blik_2023_fragment.js"],"interface/resolve",[["document"]],"inference/collect",["reverse"],"inference/iterate","search/extract",["module"],"meta/serialize",[{"source":"Blik_2023_fragment.js","fold":0}],"script"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
+
+ Being a 'document format' means a HTML file is only coherent in its entirety, which fundamental character explains why proposals for ('HTML modules')@https://www.w3.org/TR/html-imports/ have been unsuccessful. On the other hand, the concept of ('document fragments')#b exists for such "parts" of a document that are constructed and referenced procedurally with Javascript. 
+
+ In summary, we can declare fragments with content, style and actions fully self-contained. The Fragment module contains several common fragments, including the link we have used as example content: 
+
+sources#[["/Blik_2023_fragment.js"],"interface/resolve",[["link","actions/link"]],"inference/collect",["reverse"],"inference/iterate","search/extract",["module"],"meta/serialize",[{"source":"Blik_2023_fragment.js","fold":0}],"script"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}
+
+chapters#["this",["chapters"],"inference/tether fragment/chapters",{"inference/drop":[]}]
 
 
 

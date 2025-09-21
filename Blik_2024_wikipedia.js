@@ -1,6 +1,6 @@
- import {note,each,drop,compose,either,infer,tether,is,record,remember,slip,numeric,collect,provide,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
+ import {note,each,drop,compose,either,infer,tether,is,slip,numeric,collect,provide,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
  import {fetch,path,query} from "./Blik_2023_interface.js";
- import {merge,search,extract,unfold,prune,sum,extreme} from "./Blik_2023_search.js";
+ import {merge,search,extract,unfold,prune,record,remember,sum,extreme} from "./Blik_2023_search.js";
  let parameters={query:{format:"json",origin:"*"}};
 
  export default 

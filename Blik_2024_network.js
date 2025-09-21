@@ -1,177 +1,46 @@
+ import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,debug,is} from "./Blik_2023_inference.js";
+ import {search,merge,extreme,sum,extract,unfold,prune,isolate,record,remember} from "./Blik_2023_search.js";
+ import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
+ import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
- import {search,merge,extreme,sum,extract,unfold,prune,isolate} from "./Blik_2023_search.js";
- import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate,canvas,image} from "./Blik_2023_fragment.js";
- import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,record,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,remember} from "./Blik_2023_inference.js";
- import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
  import {forceSimulation as force3d,forceX,forceY,forceZ,forceLink,forceCenter,forceCollide,forceManyBody} from './Vasturiano_2016_force3d.js';
  import extend from "./Blik_2023_d4.js";
- var {default:vectors}=await resolve("./Blik_2020_svg.json");
+ import * as vectors from "./Blik_2024_svg.js";
  var browser=Boolean(globalThis.window);
  let location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
 (drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),note,chart,simulate
-,pass(tether(capture,["",location,"actions"].join("/"))),pass(report)
+,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
 );
-
- export function sprawl(resource,options={})
-{// parse object as a nodes. 
- // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
- if(typeof resource==="string")
- return compose(fetch,digest,infer(sprawl,Object.assign(options,{source:resource})))(resource);
- if(resource.nodeName)
- return Graph(resource);
- let {relations,spread,title,monospace=10,still,source,gradual,depth,matrix}=options;
- if(resource.constructor.name==="Node")
- return resource;
- matrix=matrix?isolate.call(resource,[matrix].flat())
-:search.call(resource,([field,records])=>
- array(records)&&records.some(record=>
- array(record)&&record.every(numeric)));
- if(Object.values(matrix).length)
- return compose.call
-(resource,infer(({fields,records,direction},matrix)=>
- Object.values(Object.entries(matrix).reduce(infer(project,direction)
-,sprawl({fields,records}).map(({nodes})=>
- unfold.call({nodes},childfold).filter(({nodes})=>
- !nodes)).reduce((range,domain)=>({range,domain})))).flat(),matrix)
-,pass(nodes=>merge(options
-,{direction:Array.from(new Set(Array.from(nodes.reduce((direction,{source:[{name:source}],relations})=>
- Array.from(relations?.entries()||[]).reduce((direction,[{source:[{name:target}]}])=>
- direction.set(source,target),direction),new Map()).entries()).flat()))
- }))
-);
- if(source)
- resource=record(resource,[source==="/get"?window.location.origin:source]),options.linear=true;
- let {resource:{nodes}}=prune.call({resource},split,false,"value");
- prune.call(nodes,crosslink,false,["source","value"]);
- let cluster=unfold.call(note({nodes}),childfold).slice(1);
- if(!options.linear)
- cluster.forEach(deduplicate);
- return nodes;
-//  note(unfold.call(nodes[0],childfold));
-//  if(depth)nodes.forEach(node=>node.depth===depth&&delete node.children);
-//  nodes.forEach((node,index,{length})=>Object.assign(node
-// ,{title:title&&node.data[title]||(string(node.data)?node.data:Object.keys(node.data).slice(0,2).map((field,index)=>index?"":field).join("..."))
-//  }));
-//  let [min,max]=extreme(nodes.flatMap(period).filter(Boolean).sort(ascending));
-//  let time=d3.scaleLinear().domain([min-(max-min)/5,max+(max-min)/5]).range([0,(max-min)/14000000])
-//  Object.assign(node,{matrix,spread,monospace,still,cluster,gradual,time});
-//  return node;
-};
-
- function split([name,value],path=[])
-{// split entries into nodes. 
- let fields="value,name,nodes,depth".split(",");
- let node=compound(this)&&has.call(this||{},fields)&&Object.keys(this).length===fields.length;
- if(node)return value;
- let entry=path.at(-1)==="nodes";
- if(entry&&array(this))
- return provide((compound(value)?Object.entries(value):[[value]]).map(entry=>split.call(value,entry,path)));
- let nodes=compound(value)?[value].flat():undefined;
- // search.prune collects array indices in path, which doubles the depth. 
- // first entries only serve to expose resource entries, which increments depth. 
- let depth=path.length/2-1;
- return {name,value,nodes,depth};
-};
- function crosslink([field,value],path)
-{if(!path.length)return value;
- let {nodes,depth}={[field]:true};
- if(nodes&&array(value))
- value.forEach(entry=>merge(entry,{source:[this]},0));
- let terminal=depth&&!this.nodes?.length;
- if(terminal)
- unfold.call(this,"source").reverse().forEach((node,index)=>
- merge(node,{height:Math.max(node.height||0,value-index)}));
- return value;
-};
- function deduplicate(node,index,cluster)
-{cluster.slice(index+1).filter(({name})=>name===node.name).map(duplicate=>
- cluster.splice(cluster.indexOf(duplicate),1).flatMap(({source,nodes})=>
- [source,nodes].flatMap((list,index)=>list?.map(node=>node[index?"source":"nodes"]||[])||[])).reduce((node,list)=>
- list.splice(list.indexOf(duplicate),1,node)[0]
-,merge(node,duplicate,0))
-,node);
-};
-
- function spread(nodes,{spread="force",monospace=10,matrix}={})
-{let {force,radial,up,down,left,right}={[spread]:true};
- if(matrix)
- nodes=nodes.filter(({occurrence})=>occurrence);
- if(force)
- return nodes;
-//  nodes.reverse().reduce(({x,y},node)=>Object.assign(node,{x,y})
-// ,[breadth,length].map(size=>size*monospace/2).reduce((x,y)=>({x,y})));
- let horizontal=left||right;
- let vertical=down||up;
- let inverse=up||left;
- nodes=unfold.call({nodes},childfold).slice(1);
- let {breadth,length}=measure(nodes[0]);
- let [width,height]=[breadth,length].map(size=>size*monospace).sort(size=>horizontal?-1:1);
- if(radial)
- d3.tree().size([Math.PI*2,height/2]).separation(({depth,source},next)=>(source==next.source?1:2)/depth)(nodes[0]);
- else
- nodes.forEach(node=>Object.assign(node,
-[[-breadth/2,measure(node,0).breadth/2,unfold.call(node,"source").flatMap(offset)]
-,[-length/2,node.nodes?10:20,unfold.call(node,"source").slice(node.nodes?1:2).map(indent)]
-].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:1).reduce((x,y)=>({x,y}))));
- if(inverse)
- nodes.forEach(node=>Object.assign(node,horizontal?{x:-node.x}:{y:-node.y}));
- return nodes;
-};
-
- function offset(node)
-{return [node.source].flat().flatMap(node=>node?.nodes||[]).flatMap((child,index,nodes)=>
- child===node?nodes.splice(index)&&[]:child).map(node=>measure(node,0).breadth);
-};
-
- function indent(node)
-{return extreme([node.source?.nodes||node].flat().map(({name})=>name?.length||0))[1];
-};
-
- function chart(nodes,options,fragment)
-{merge(options,{spread:"force"},0);
- let {axis}=options;
- return compose.call
-(fragment?.nodeName?.toLowerCase()==="svg"?fragment
-:{svg:
- {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
- ,class:"d3"
- ,"data-source":options.source
- ,style:{"#text":css({".d3":layout.media})}
- ,defs:{filter:[vectors.shadow.defs.filter,vectors.shadow_white.defs.filter]}
- }
- },document
-,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve):undefined
-,{datum:Object.assign(nodes,options),...svg},tether(extend)
-);
-};
 
  var svg=
  {fold:false,call(fragment)
 {if(!browser||fragment.datum().still)return;
- observe.call(d3.zoom().scaleExtent([0.1,100]),{zoom({transform}){extend.call(this,{fold:false,g:{fold:false,class:"graph",transform}});}})(fragment);
+ observe.call(d3.zoom().scaleExtent([0.1,100000]),{zoom({transform})
+{extend.call(this,{fold:false,g:{fold:false,class:"graph",transform}});
+}})(fragment);
 },id:({source})=>deselect(source||"get"),class:"d3"
  ,"data-options":(nodes)=>JSON.stringify(prune.call(nodes,([field,value])=>isNaN(field)?value:undefined,1,0))
  ,title(node){return unfold.call(node,({source})=>source).at(-1).name;}
- ,viewBox({monospace=10,spread="force"})
+ ,viewBox({monospace=10,spread="force",gap=0.2})
 {let {up,down,force,radial}={[spread]:true},vertical=Boolean(up||down);
- let {breadth,length}=measure(arguments[0],0);
+ let {breadth,length}=measure(arguments[0][0]);
  let [nodes,links]=forage(this);
  let density=links.size()/(nodes.size()*(nodes.size()-1)/2);
  let [width,height]=force
-?Array(2).fill(scale(nodes.size()/density||0))
-:[breadth,length||breadth].map(size=>size*monospace).sort(size=>vertical?1:-1);
- let space=radial?[-width,-height,width*2,height*2]:[-width/2,-height/2,width,height];
+?Array(2).fill(scale(nodes.size()/Math.sqrt(density)||0))
+:[breadth*(1+gap),(length||breadth)+5].map(size=>size*monospace).sort(size=>vertical?1:-1);
+ let space=radial?[-width,-width,width*2,width*2]:[-width/2,-height/2,width,height];
  merge(arguments[0],{space});
  return space.join(" ");
 },g:
  {update:true,class:"graph",transform({monospace,spread})
 {let [width,height]=box(ascend.call(this)[0]);
- let translate={radial:[width/2,height/2],right:[10,0],left:[-10,0],down:[0,10],up:[0,-10]}[spread]||[0,0];
+ let translate={nonradial:[width/2,height/2]}[spread]||[0,0];
  return "translate("+translate+")";
 },g:
 [{update:true,class:"network",fill:"none",stroke:"#555","stroke-width":1.5,g:
@@ -184,7 +53,7 @@
  }
 ,{update:true,class:"cluster","stroke-linejoin":"round","stroke-width":1,g:
  {class:"node"
- ,fold(node){return unfold.call({nodes:node},childfold).slice(1);}
+ ,fold(nodes){return unfold.call({nodes},childfold).slice(1);}
  ,match:nodeindex
  ,update(nodes){if(select(ascend.call(nodes)[0]).datum().spread==="force")nodes.each(locate).call(drag);}
  ,call(nodes){nodes.remove();}
@@ -208,11 +77,13 @@
  });
 },call(nodes){if(browser)drag(nodes);}
  ,fill:node=>paint(node)
- ,transform({x,y,source})
+ ,transform({x=0,y=0,source})
 {let svg=ascend.call(this)[0];
  let {spread}=select(svg).datum();
  let {up,down,right,left,radial,force}={[spread]:true};
- return force?"translate("+[x,y]+")"
+ if(!defined(x))
+ note(transform(this));
+ return force?"translate("+[x,y].map(x=>x.toPrecision(5).replace(/e\+\d+/,""))+")"
 :radial?"rotate("+(x*180/Math.PI-90)+") translate("+y+",0)"
 :"translate("+[x,y]+") rotate("+(right?0:down?90:up?-90:0)+")";
 },title:{text:({name})=>name}
@@ -221,13 +92,13 @@
  ,r(node)
 {let {size:field,spread}=select(ascend.call(this)[0]).datum();
  return spread==="force"?scale(size(node,field)):5;
-},fill:node=>paint(node)
- ,title:{text({value,name}){return value?.progress?.concat("%")||this.remove();}}
+},fill:node=>paint(node)||"var(--text)"
+ // ,title:{text({value,name}){return value?.progress?.concat("%")||this.remove();}}
  }
 ,{fold(node)
 {return ["image","wiki"].includes(select(ascend.call(this)[0]).datum().labels)?[node]:[];
 },class:"label"
- ,r(node){return this.previousSibling.getAttribute("r")*0.9;}
+ ,r(node){return this.previousSibling?.getAttribute("r")*0.9;}
  ,fill(node){pattern.call(this,node);return "url(#"+node.name?.replace(/ /g,"_")+")"}
  }
 ],text:
@@ -235,7 +106,9 @@
  ,fill()
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
  return force?"black":undefined;
-},stroke:"black",opacity:0.5
+},stroke(){return {force:"black"}[select(ascend.call(this)[0]).datum().spread];}
+ ,opacity(){return {force:0.5}[select(ascend.call(this)[0]).datum().spread];}
+ ,style(){return select(ascend.call(this)[0]).datum().spread==="force"?undefined:"filter:url(#contour)";}
  ,"text-anchor":function()
 {let {spread}=select(ascend.call(this)[0]).datum();
  let {force,left,up}={[spread]:true};
@@ -243,23 +116,24 @@
  return force?"middle":["start","end"][sum([Boolean(nodes?.length),left])%2];
 },"stroke-width":function()
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
- return this.parentNode.querySelector("circle").getAttribute("r")*0.02+"px";
+ let size=this.parentNode.querySelector("circle").getAttribute("r");
+ return size*(force?0.02:0.2)+"px";
 },"font-size":function(text,index,{length})
-{let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
+{let {force,monospace}={[select(ascend.call(this)[0]).datum().spread]:true};
  let node=select(ascend.call(this,1)[0]).datum();
  let size=this.parentNode.querySelector("circle").getAttribute("r");
- return force?size/4:size/2+"px";
+ return force?size/4:size*2;
 },dx()
 {let {spread}=select(ascend.call(this)[0]).datum();
  let {force,left,up}={[spread]:true};
  let {nodes}=select(ascend.call(this,1)[0]).datum();
- return !force?[7,-7][sum([Boolean(nodes?.length),left])%2]:null;
+ return !force?[6,-6][sum([Boolean(nodes?.length),left])%2]:null;
 },dy(text,index,{length})
 {let force=select(ascend.call(this)[0]).datum().spread==="force";
  return force?scale(index+1-(length)/2)+"em":".25em";
 },transform()
 {let radial=select(ascend.call(this)[0]).datum().spread==="radial";
- return radial?left(this)?"rotate(180)":null:null;
+ return radial?"rotate(180)":null;
 },text(text){return text;}
  }
  };
@@ -268,8 +142,8 @@
  {fold:false,match:linkindex
  ,update(links)
 {let force=select(ascend.call(links)[0]).datum().spread==="force";
- let fields=force?["path"]:["transform","path"];
- extend.call(links,{fold:false,...extract.call(link,fields)});
+ let fields=force?[]:["transform"];
+ extend.call(links,{fold:false,...extract.call(link,["path","line",fields].flat())});
 },drop(links)
 {extend.call(links,{fold:false,each(link)
 {let detached=degree(link,-1).filter(node=>!node.degree);
@@ -301,8 +175,28 @@
 }).data();
  let twinindex=twins.indexOf(link);
  return "translate(0,"+(scale(!link.value||isNaN(link.value)?1:link.value)/7/twins.length)*Math.ceil(twinindex/2)*(twinindex%2||-1)+")";
-},path:
-[{update(path){extend.call(path,{fold:false,...extract.call(link.path[0],["d"])});}
+},line:
+ {fold(link)
+{let fragment=ascend.call(this)[0];
+ let {spread,layered,direction,space}=select(fragment).datum();
+ let {up,down,right,left,radial,force}={[spread]:true};
+ let [vertical,horizontal]=[up||down,left||right];
+ return !horizontal&&!vertical&&!radial&&!layered?[link]:[];
+},update(line)
+{extend.call(line,{fold:false,...extract.call(link.line,["x1","y1","x2","y2"])});
+},stroke({value,source}){return paint(value&&isNaN(value)?value:source);}
+ ,"stroke-width":({value})=>scale(!value||isNaN(value)?1:(value*(value<0?10:1)))/2
+ ,x1:({source:{x}})=>x,y1:({source:{y}})=>y
+ ,x2:({target:{x}})=>x,y2:({target:{y}})=>y
+ }
+ ,path:
+[{fold(link)
+{let fragment=ascend.call(this)[0];
+ let {spread,layered,direction,space}=select(fragment).datum();
+ let {up,down,right,left,radial,force}={[spread]:true};
+ let [vertical,horizontal]=[up||down,left||right];
+ return !horizontal&&!vertical&&!radial&&!layered?[]:[link];
+},update(path){extend.call(path,{fold:false,...extract.call(link.path[0],["d"])});}
  ,stroke({value,source}){return paint(value&&isNaN(value)?value:source);}
  ,"stroke-width":({value})=>scale(!value||isNaN(value)?1:(value*(value<0?10:1)))/2
  ,d:line
@@ -330,6 +224,220 @@
 //  return "url(#"+marker+")";
 // }}
 ]};
+
+ export var actions={imports:
+ {["/"+location]:["","forage"]
+ ,"/Blik_2023_inference.js":["","infer","compose","combine","buffer","each","when","array","has","differ","slip","collect","drop"]
+ ,"/Blik_2023_search.js":["","unfold"]
+ ,"/Bostock_2011_d3_select.js":["","select"]
+ ,"/Blik_2023_d4.js":["extend"]
+ }
+ ,exports:{default:
+ {"svg.d3":
+ {async contextrestored()
+{let options=JSON.parse(this.dataset.options);
+ let module=await import(import.meta.url.replace(/\.js.*/,".js"));
+ return compose(options.source,options,this,"default")(module);
+}}
+ ,"g.link":
+ {...observe({touch({target})
+{target=target.closest(".link");
+ target.style.removeProperty("filter");
+ target.setAttribute("opacity",target.getAttribute("opacity")<1?1:0.5);
+}//,mouseout({target}){target.dispatchEvent(new Event("mouseover",{bubbles:true}));}
+ })
+ }
+ ,"g.node":
+ {...observe({touch({target})
+{compose
+(combine(compose("svg","closest",forage),compose(select,"datum"))
+,when(array,has(["x","y"]))
+,combine("0",compose
+(each(["1",compose
+(combine
+(infer()
+,buffer(differ("source"),drop())
+,buffer(differ("nodes"),drop())
+,buffer(compose(differ("relations"),"keys",Array.from),drop())
+),collect,"flat",collect,slip(Set),Reflect.construct
+)
+])
+,(links,nodes)=>links.each(dim).filter(({source,target})=>[source,target].every(node=>nodes.has(node)))
+,infer("each",infer("dispatchEvent",new Event("pointerover",{bubbles:true})))
+,links=>new Set(links.data().flatMap(({source,target})=>[source,target]))
+))
+,(nodes,cluster)=>nodes.each(dim).filter(node=>cluster.has(node)).each(highlight)
+)(target.closest(".node"));
+}//,pointerout({target}){target.dispatchEvent(new Event("pointerover",{bubbles:true}));}
+ ,click:interact
+ })
+ }
+ }
+ ,dim,highlight
+ }};
+
+ export function sprawl(resource,options={})
+{// parse object as a nodes. 
+ // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
+ if(typeof resource==="string")
+ return compose(fetch,digest,infer(sprawl,Object.assign(options,{source:resource})))(resource);
+ if(resource.nodeName)
+ return Graph(resource);
+ let {relations,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix}=options;
+ if(resource.constructor.name==="Node")
+ return resource;
+ matrix=matrix?isolate.call(resource,[matrix].flat())
+:search.call(resource,([field,records])=>
+ array(records)&&records.some(record=>
+ array(record)&&record.every(numeric)));
+ if(Object.values(matrix).length)
+ return compose.call
+(resource,infer(({fields,records,direction},matrix)=>
+ Object.values(Object.entries(matrix).reduce(infer(project,direction)
+,sprawl({fields,records}).map(({nodes})=>
+ unfold.call(note({nodes}),childfold).filter(({nodes})=>
+ !nodes)).reduce((range,domain)=>({range,domain})))).flat(),matrix)
+,pass(nodes=>merge(options
+,{direction:Array.from(new Set(Array.from(nodes.reduce((direction,{source:[{name:source}],relations})=>
+ Array.from(relations?.entries()||[]).reduce((direction,[{source:[{name:target}]}])=>
+ direction.set(source,target),direction),new Map()).entries()).flat()))
+ ,monospace
+ }))
+);
+ let direct=false&&!Object.keys(search.call(resource,({1:value})=>
+ !simple(value)&&!numeric(value))).length;
+ if(direct)
+ return Object.entries(Object.entries(search.call(resource,({1:value})=>
+ numeric(value))).map(([path,weight])=>
+ path.split("/").reverse().reduce((name,parent,index,path)=>(
+ {[name]:{[path.splice(1).join("/")]:weight}}))).reduce((past,next)=>
+ merge(past,next,0))).map(([name,relations])=>(
+ {name,relations})).map((node,index,nodes)=>Object.assign(node
+,{relations:new Map(Object.entries(node.relations).map(([field,weight])=>
+ [nodes.find(({name})=>name===field),weight/10]).filter(([node])=>node))
+ }));
+ if(source&&linear&&Object.keys(resource).length>1)
+ resource=record(resource,[source==="/get"?window.location.origin:source]);
+ let {resource:{nodes}}=prune.call({resource},split,false,"value");
+ prune.call(nodes,crosslink,false,["source","value"]);
+ let cluster=unfold.call({nodes},childfold).slice(1);
+ if(!options.linear)
+ cluster.forEach(deduplicate);
+ return nodes;
+//  note(unfold.call(nodes[0],childfold));
+//  if(depth)nodes.forEach(node=>node.depth===depth&&delete node.children);
+//  nodes.forEach((node,index,{length})=>Object.assign(node
+// ,{title:title&&node.data[title]||(string(node.data)?node.data:Object.keys(node.data).slice(0,2).map((field,index)=>index?"":field).join("..."))
+//  }));
+//  let [min,max]=extreme(nodes.flatMap(period).filter(Boolean).sort(ascending));
+//  let time=d3.scaleLinear().domain([min-(max-min)/5,max+(max-min)/5]).range([0,(max-min)/14000000])
+//  Object.assign(node,{matrix,spread,monospace,still,cluster,gradual,time});
+//  return node;
+};
+
+ function split([name,value],path=[])
+{// split entries into nodes. 
+ let fields="value,name,nodes,depth".split(",");
+ let node=compound(this)&&has.call(this||{},fields)&&Object.keys(this).length===fields.length;
+ if(node)return value;
+ let entry=path.at(-1)==="nodes";
+ if(entry&&array(this))
+ return provide((compound(value)?Object.entries(value):[[value]]).map(entry=>split.call(value,entry,path)));
+ let nodes=compound(value)?[value].flat().filter(node=>
+ !compound(node)||Object.keys(node).length):undefined;
+ // search.prune collects array indices in path, which doubles the depth. 
+ // first entries only serve to expose resource entries, which increments depth. 
+ let depth=path.length/2-1;
+ return {name:String(name),value,nodes,depth};
+};
+
+ function crosslink([field,value],path)
+{if(!path.length)return value;
+ let {nodes,depth}={[field]:true};
+ if(nodes&&array(value))
+ value.forEach(entry=>merge(entry,{source:[this]},0));
+ let terminal=depth&&!this.nodes?.length;
+ if(terminal)
+ unfold.call(this,"source").reverse().forEach((node,index)=>
+ merge(node,{height:Math.max(node.height||0,value-index)}));
+ return value;
+};
+
+ function deduplicate(node,index,cluster)
+{cluster.slice(index+1).filter(({name})=>name===node.name).map(duplicate=>
+ cluster.splice(cluster.indexOf(duplicate),1).flatMap(({source,nodes})=>
+ [source,nodes].flatMap((list,index)=>list?.map(node=>node[index?"source":"nodes"]||[])||[])).reduce((node,list)=>
+ list.splice(list.indexOf(duplicate),1,node)[0]
+,merge(node,duplicate,0))
+,node);
+};
+
+ function spread(nodes,{spread="force",monospace=10,matrix,gap=0.2}={})
+{let {force,radial,up,down,left,right,collapse}={[spread]:true};
+ if(matrix)
+ nodes=nodes.filter(({occurrence})=>occurrence);
+ if(force)
+ return nodes;
+//  nodes.reverse().reduce(({x,y},node)=>Object.assign(node,{x,y})
+// ,[breadth,length].map(size=>size*monospace/2).reduce((x,y)=>({x,y})));
+ let horizontal=left||right;
+ let vertical=down||up;
+ let inverse=up||left||radial;
+ nodes=unfold.call({nodes},collapse?whether(({name})=>collapse.includes(name),swap([]),childfold):childfold).slice(1);
+ let {breadth,length}=measure(nodes[0]);
+ let terminal=5;
+ nodes.forEach(node=>Object.assign(node,
+[[-breadth*(1+gap)/2,measure(node,0).breadth*(1+gap)/2,unfold.call(node,"source").flatMap(offset).map(offset=>offset*(1+gap))],
+[radial?-indent(nodes[0]):-(length+terminal)/2
+,unfold.call(node,"source").map(indent)
+]
+].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:0).reduce((x,y)=>({x,y}))));
+ if(inverse)
+ nodes.forEach(node=>Object.assign(node,horizontal?{x:-node.x}:{y:-node.y}));
+ return nodes;
+};
+
+ function offset(node)
+{return [node.source].flat().flatMap(node=>node?.nodes||[]).flatMap((child,index,nodes)=>
+ child===node?nodes.splice(index)&&[]:child).map(node=>measure(node,0).breadth);
+};
+
+ function indent(node)
+{let [source]=[node.source].flat();
+ return extreme([source?.nodes||node].flat().flatMap(({name})=>name?.length||0))[1];
+};
+
+ function measure(node,length=true)
+{let terms=unfold.call({nodes:[node]},childfold).filter(node=>!node?.nodes?.length);
+ let breadth=terms.length;
+ let depth=numeric(length)?length:(node.name?.length||0)+
+ extreme(terms.map(node=>sum(unfold.call(node,"source").map(({nodes,name},index)=>
+ extreme((nodes?.length?nodes:[{name}]).map(({name})=>name?.length))[1]))))[1];
+ return {breadth,length:depth};
+};
+
+ function chart(nodes,options={},fragment)
+{merge(options,{spread:"force"},0);
+ let {axis}=options;
+ return compose.call
+(is(window.SVGSVGElement)(fragment)?fragment:document(
+ {svg:
+ {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
+ ,class:"d3"
+ ,"data-source":options.source
+ ,style:{"#text":css({".d3":layout.media})}
+ ,defs:{filter:
+[vectors.effect.shadow.defs.filter
+,vectors.effect.shadow_white.defs.filter
+,prune.call(vectors.effect.contour,([field,value])=>(
+ {"flood-color":"black"}[field]||value))
+]}
+ }
+ })
+,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve):undefined
+,{datum:Object.assign(nodes,options),...svg},tether(extend)
+);
+};
 
  function line(link,index,paths)
 {let fragment=ascend.call(this)[0];
@@ -366,7 +474,7 @@
 ].join("")
 );
  let end=radial?Math.cos(x-Math.PI/2)*y+","+Math.sin(x-Math.PI/2)*y:[x,y];
- return "M"+source.x+","+source.y+curve+" "+end;
+ return "M"+[source.x,source.y]+curve+" "+end;
 };
 
  function pattern(node)
@@ -459,7 +567,7 @@
  //simulation.restart();
 }});
 
- function nodeindex(node){return node?[node.source?.[0].name||[],node.name].join("/"):this.getAttribute("id");};
+ function nodeindex(node){return node?[node.source?.[0].name||[],node.name].join("/"):this?.getAttribute("id");};
  function linkindex(link){return link?[link.source,link.target].map(nodeindex).join("_"+link.value+"_"):this.getAttribute("id");};
  function patternindex({name}){return name.replace(/[^\d\w]/g,"");};
  function size(node,field){return node[field]||Math.cbrt(node.value?.weight)||node.centrality||1;};
@@ -490,6 +598,7 @@
  function wrap(node,radius,{name})
 {if(select(ascend.call(node)[0]).datum().labels==="image")
  return [];
+ if(! name. slice ) debugger 
  let {force}={[select(ascend.call(node)[0]).datum().spread]:true};
  return force?!name||Array(8).fill(0).map((max,index,{length})=>
  Math.floor(Math.acos(Math.abs(index-length/2)/(length/2))*2/Math.PI*radius)).sort((past,next)=>
@@ -497,7 +606,8 @@
  !index||sum(slots.slice(0,index))<name.length).reduce((axis,slot,index)=>
  merge(axis,{[index%2]:[slot]},0)
 ,[[],[]]).map((axis,index)=>!index?axis.sort((past,next)=>past-next):axis).flat().map((slot,index,slots)=>
- name.slice(...Array(2).fill(sum(slots.slice(0,index))).map((field,index)=>field+index*slot)))
+ name.slice(...Array(2).fill(sum(slots.slice(0,index))).map((field,index)=>
+ field+index*slot)))
 //   (String(name).match(/.+?(_|\/|$)/g)||[]).flatMap(split=>
 //  split.match(new RegExp(".{1,"+radius+"}","g"))).reduce((wrap,split,index,{length})=>
 // [wrap
@@ -506,18 +616,15 @@
 :[name];
 };
 
- function locate(node)
-{return compose.call
-(this.transform?.baseVal[0]?.matrix||{}
-,combine(swap(node),compose(["e","x"],record),compose(["f","y"],record)),collect,infer("reduce",merge)
-);
-};
+ function transform({transform}){let [x,y]=search.call(transform,{baseVal:{0:{matrix:["e","f"]}}});return {x,y};};
+
+ function locate(node){return merge(node,transform(this));};
 
  function left(node)
 {let {width,spread}=select(ascend.call(node)[0]).datum();
- let {x,parent}=select(ascend.call(node,1)[0]).datum();
+ let {x,source}=select(ascend.call(node,1)[0]).datum();
  let {radial}={[spread]:true};
- return radial?x<Math.PI||!parent:(x<width/2?parent:!parent);
+ return radial?x>0||!source:(x<width/2?source:!source);
 };
 
  export function forage(node)
@@ -529,9 +636,8 @@
 
  function connect(node,sources=new Set())
 {return [node].flat().filter(source=>source&&!sources.has(source)&&sources.add(source)).flatMap(source=>
-[[source.nodes?.map(node=>[node])||[],Array.from(source.relations||[])].flat().flatMap(([target,value])=>
- [{source,target,value},connect(target,sources)].flat())
-].flat());
+ [source.nodes||[],Array.from(source.relations||[])].flat().flatMap(relation=>
+ relation?[{source,target:relation[0]||relation,value:relation[1]},connect(relation[0]||relation,sources)].flat():[]));
 };
 
  function neighbors({target})
@@ -540,15 +646,6 @@
  let {1:links}=forage(target.closest("svg"));
  let cluster=[node,source,nodes].flat().filter(Boolean).map();
  return links.filter(({source,target})=>[source,target].every(node=>cluster.includes(node)));
-};
-
- function measure(node,length=true)
-{return [unfold.call({nodes:node},childfold).slice(1).filter(node=>!node?.nodes).length
-,numeric(length)?length:(node.name?.length||0)+
- extreme(unfold.call({nodes:node},childfold).filter(node=>!node.nodes).map(node=>
- sum(unfold.call(node,"source").map((node,index)=>
- extreme(node.nodes?.map(node=>node.name?.length))[1]))))[1]
-].reduce((breadth,length)=>({breadth,length}));
 };
 
  function degree(link,rate=1)
@@ -648,19 +745,20 @@
  let hierarchy=nodes.reduce((hierarchy,node,index,{length})=>
  hierarchy+(((node.imposure-imposure)/length)**2),0);
  let dominance=(12/(population**3-population))*hierarchy;
- //let charge=-population/complexity||1;
+ let charge=-population/complexity||1;
  let tension=complexity;
  let spacing=scale(population/complexity||1);
  let {size:field}=select(simulation.fragment).datum();
  combine
 (infer(),infer("alpha",1)//,infer("alphaDecay",0.3)
 ,infer("nodes",nodes,nodeindex)
-,compose("charge","force",infer("strength",node=>scale(node.centrality)*-4))
+,compose("charge","force",infer("strength",node=>scale(size(node,field))**2*-2))
 ,compose("collision","force",infer("radius",node=>scale(size(node,field))))
 ,compose("link","force"
 ,infer("links",links,linkindex)
-,infer("strength",({value})=>(value||tension)+density)
-,infer("distance",({source,target})=>scale(size(source,field)*3+size(target,field)*3)||spacing)
+,infer("strength",({value})=>(value*2||tension))
+,infer("distance",({source,target})=>scale(size(source,field)*2+size(target,field)*2)||spacing)
+//,infer("distance",({source:{centrality:source},target:{centrality:target}})=>scale(source+target)||spacing)
 ))(simulation);
  return simulation;
 };
@@ -819,48 +917,6 @@
 //  return node;
 // };
 
- export var actions=
- {"svg.d3":
- {async contextrestored()
-{let options=JSON.parse(this.dataset.options);
- let {default:network}=await import(import.meta.url);
- return compose(options,this,network.bind(this))(options.source);
-}}
- ,"g.link":
- {...observe({touch({target})
-{target=target.closest(".link");
- target.style.removeProperty("filter");
- target.setAttribute("opacity",target.getAttribute("opacity")<1?1:0.5);
-}//,mouseout({target}){target.dispatchEvent(new Event("mouseover",{bubbles:true}));}
- })
- }
- ,"g.node":
- {...observe({touch({target})
-{compose
-(combine(compose("svg","closest",forage),compose(select,"datum"))
-,when(array,has(["x","y"]))
-,combine("0",compose
-(each(["1",compose
-(combine
-(infer()
-,buffer(differ("source"),drop())
-,buffer(differ("nodes"),drop())
-,buffer(compose(differ("relations"),"keys",Array.from),drop())
-),collect,"flat",collect,slip(Set),Reflect.construct
-)
-])
-,(links,nodes)=>links.each(dim).filter(({source,target})=>[source,target].every(node=>nodes.has(node)))
-,infer("each",infer("dispatchEvent",new Event("pointerover",{bubbles:true})))
-,links=>new Set(links.data().flatMap(({source,target})=>[source,target]))
-))
-,(nodes,cluster)=>nodes.each(dim).filter(node=>cluster.has(node)).each(highlight)
-)(target.closest(".node"));
-}//,pointerout({target}){target.dispatchEvent(new Event("pointerover",{bubbles:true}));}
- ,click:interact
- })
- }
- };
-
  function dim()
 {let mode=this.style.filter?"remove":"set";
  this.style[mode+"Property"]("filter","brightness(0.2)");
@@ -926,9 +982,12 @@
 
  export var tests=
  {sprawl:compose.call
-({a:{b:"c"}},{name:"a",height:2,depth:0,nodes:[{name:"b",depth:1,height:1,nodes:[{name:"c",depth:2,height:0}]}]},(context,term)=>(
+({a:{b:"c"}}
+,{name:"a",height:1,depth:0,nodes:
+[{name:"b",depth:1,height:0}
+]},(context,term)=>(
  {context:[context]
- ,terms:[[merge(term,{value:context.a,nodes:[{source:[term],value:context.a.b,nodes:[{source:[term.nodes[0]]}]}]})]]
+ ,terms:[[merge(term,{value:context.a,nodes:Object.assign({},[{source:[term],value:context.a.b}])})]]
  ,condition:"deepEqual"
  })
 )};

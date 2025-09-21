@@ -1,6 +1,6 @@
- import {color} from "./Blik_2023_layout.js";
+ import {color,spectrum} from "./Blik_2023_layout.js";
  import {extreme,extract,cluster,prune,sum,rgb} from "./Blik_2023_search.js";
- import {note,infer,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip} from "./Blik_2023_inference.js";
+ import {note,infer,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip,each} from "./Blik_2023_inference.js";
  import extend from './Blik_2023_d4.js';
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
@@ -27,7 +27,6 @@
  export function plot(record,{domain,range,power=1}={})
 {if(string(record))
  return compose(fetch,digest,infer(plot,arguments[1]))(record);
- note(record)
  record=cluster(record);
  if(string(domain))domain=JSON.parse(domain);
  if(string(range))range=JSON.parse(range);
@@ -45,8 +44,8 @@
  let [x,y]=[[min,max],[peak,-10]].map((domain,index)=>
  d3['scale'+(index?'Linear':'Linear')](domain,[0,[width,height][index]]));
  return compose.call({svg:
- {defs:{filter:prune.call(vectors.effect.contour,([field,value])=>
-  field==="flood-color"?"#ffb300":value)}
+ {defs:{filter:prune.call(vectors.effect.contour,([field,value],{length:depth})=>(
+  {"flood-color":"#ffb300",id:depth?value:"contour_yellow"}[field]||value))}
  }},document
 ,{update:true,datum:{record,x,y}
  ,viewBox({record}){return [-50,-30,width+90,height+50];}
@@ -68,7 +67,7 @@
  }
  ,text:
  {fill:"black",x:({x})=>x,y:({y})=>y,text:({value})=>value
- ,"text-anchor":"middle","text-size":5,dy:6,filter:"url(#contour)","font-weight":"bold"
+ ,"text-anchor":"middle","text-size":5,dy:6,filter:"url(#contour_yellow)","font-weight":"bold"
  }
  }
 ,{class:"x axis",transform:"translate(0,"+height+")",call:axis=>axisBottom(axis.datum().x)(axis),each(){this.firstChild.remove();this.querySelectorAll("text").forEach(n=>n.textContent=n.textContent.replace(",",""));this.querySelectorAll("line").forEach(n=>n.remove())}}
@@ -266,29 +265,30 @@
  };
 
  function set(matrix,[name,term],depth)
-{note(...arguments)
- return prune.call(matrix,([field,value],path)=>
+{return prune.call(matrix,([field,value],path)=>
  path.length===depth&&field==name?term:value
 ,0,depth);
 };
 
- export function table(source,depth=0,palette=["rgba(247,194,35,0)","rgba(27,154,89,0)","rgba(66,133,244,0)"])
+ export function table(source,depth=0,palette=spectrum(color.vibrant))
 {let span=Object.entries(source).map(function([field,value],index,{length})
-{let shade=depth&&array(palette)
-?d3.scaleLinear().range([palette[index]
-,(palette[index]||palette[0]||spectrum(index/length).replace(")","0)")).replace("0)","1)")])
-:palette;
+{let shade=depth
+?depth<2
+?d3.scaleLinear().range(Array(2).fill(rgb(palette(index/(length-1)))).map((rgb,index)=>
+ rgb.replace("1)",index+")")))
+:palette
+:null;
  let pill=string(value)?value.match(/\d+/)
 ?color.rainbow((15-new Number(value.match(/\d+/)[0])+1)/20)+";color:#212121"
-:"#ffb300;color:black":"transparent"
+:"shade(1);color:black":"transparent"
  return {span:
 [{span:{"#text":field}}
 ,...[value].flat().map(value=>string(value)
 ?{span:{"#text":value
  ,style:"background-color:"+pill+";border-radius:1em 1em 1em 1em;height:1em;padding:0 5px 0 5px;white-space:nowrap"
  }}
-:table(value,depth+1,shade))
-],style:depth?"background-color:"+(functor(shade)?shade(0.25):shade):""};
+:table(value,depth+1,shade||palette))
+],style:depth?"background-color:"+(shade?.(0.25)):""};
 });
  return document({span:
  {class:["table","depth-"+depth],span
