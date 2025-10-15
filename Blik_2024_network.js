@@ -1,7 +1,7 @@
  import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,debug,is} from "./Blik_2023_inference.js";
  import {search,merge,extreme,sum,extract,unfold,prune,isolate,record,remember} from "./Blik_2023_search.js";
  import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
- import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
+ import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
  import * as d3 from './Bostock_2011_d3.js';
@@ -13,7 +13,7 @@
  let location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
-(drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),note,chart,simulate
+(drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),chart,simulate
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
 );
 
@@ -102,7 +102,7 @@
  ,fill(node){pattern.call(this,node);return "url(#"+node.name?.replace(/ /g,"_")+")"}
  }
 ],text:
- {fold:infer(wrap,17),update:false,class:"label"
+ {fold:infer(wrap,15),update:false,class:"label"
  ,fill()
 {let {force}={[select(ascend.call(this)[0]).datum().spread]:true};
  return force?"black":undefined;
@@ -237,7 +237,7 @@
  {async contextrestored()
 {let options=JSON.parse(this.dataset.options);
  let module=await import(import.meta.url.replace(/\.js.*/,".js"));
- return compose(options.source,options,this,"default")(module);
+ return infer("default",options.source,options,this)(module);
 }}
  ,"g.link":
  {...observe({touch({target})
@@ -319,11 +319,10 @@
  if(source&&linear&&Object.keys(resource).length>1)
  resource=record(resource,[source==="/get"?window.location.origin:source]);
  let {resource:{nodes}}=prune.call({resource},split,false,"value");
- prune.call(nodes,crosslink,false,["source","value"]);
- let cluster=unfold.call({nodes},childfold).slice(1);
- if(!options.linear)
- cluster.forEach(deduplicate);
- return nodes;
+ prune.call(nodes,backlink,false,["source","value"]);
+ if(!linear)
+ nodes=unfold.call({nodes},childfold).slice(1).map(deduplicate);
+ return note(nodes);
 //  note(unfold.call(nodes[0],childfold));
 //  if(depth)nodes.forEach(node=>node.depth===depth&&delete node.children);
 //  nodes.forEach((node,index,{length})=>Object.assign(node
@@ -351,7 +350,7 @@
  return {name:String(name),value,nodes,depth};
 };
 
- function crosslink([field,value],path)
+ function backlink([field,value],path)
 {if(!path.length)return value;
  let {nodes,depth}={[field]:true};
  if(nodes&&array(value))
@@ -364,11 +363,14 @@
 };
 
  function deduplicate(node,index,cluster)
-{cluster.slice(index+1).filter(({name})=>name===node.name).map(duplicate=>
- cluster.splice(cluster.indexOf(duplicate),1).flatMap(({source,nodes})=>
- [source,nodes].flatMap((list,index)=>list?.map(node=>node[index?"source":"nodes"]||[])||[])).reduce((node,list)=>
- list.splice(list.indexOf(duplicate),1,node)[0]
-,merge(node,duplicate,0))
+{return cluster.slice(index+1).filter(({name})=>name===node.name).flatMap(duplicate=>
+ cluster.splice(cluster.indexOf(duplicate),1)).reduce((node,duplicate)=>
+ merge(node,prune.call(duplicate,([field,value])=>["source","nodes"].includes(field)
+?[value,["source","nodes"].find(name=>name!==field)].reduce((contingent,reverse)=>
+ contingent.filter(contingent=>
+ contingent[reverse].splice(contingent[reverse].indexOf(duplicate),1,node)&&
+ !node[field]?.includes(contingent)))
+:value,0,0),0)
 ,node);
 };
 
@@ -434,7 +436,7 @@
 ]}
  }
  })
-,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve):undefined
+,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve.bind(import.meta.url)):undefined
 ,{datum:Object.assign(nodes,options),...svg},tether(extend)
 );
 };
@@ -616,8 +618,6 @@
 :[name];
 };
 
- function transform({transform}){let [x,y]=search.call(transform,{baseVal:{0:{matrix:["e","f"]}}});return {x,y};};
-
  function locate(node){return merge(node,transform(this));};
 
  function left(node)
@@ -746,7 +746,7 @@
  hierarchy+(((node.imposure-imposure)/length)**2),0);
  let dominance=(12/(population**3-population))*hierarchy;
  let charge=-population/complexity||1;
- let tension=complexity;
+ let tension=complexity**2*2;
  let spacing=scale(population/complexity||1);
  let {size:field}=select(simulation.fragment).datum();
  combine

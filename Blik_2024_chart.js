@@ -8,7 +8,7 @@
  import {resolve,window,fetch,digest} from "./Blik_2023_interface.js";
  import {document,css,capture,ascend,keyboard} from "./Blik_2023_fragment.js";
  import * as vectors from "./Blik_2024_svg.js";
- var {default:awesome}=await resolve("./blessochampion_2019_awesomesvgs.json");
+ var {default:awesome}=await resolve.call(import.meta.url,"./blessochampion_2019_awesomesvgs.json");
  var location=new URL(import.meta.url).pathname;
 
  export function bar(source,negative)

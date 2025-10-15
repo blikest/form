@@ -4,7 +4,7 @@
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
  import {merge,search,prune,extract,encrypt,route,record} from "./Blik_2023_search.js";
- import {access,resolve,locate,window,sourcemap,fetch,digest,cookie,cookies,script,query,path,stage} from "./Blik_2023_interface.js";
+ import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
  import editor from "./Blik_2024_script.js";
@@ -16,7 +16,7 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  await publish("./Blik_2024_comments.json",new RegExp(".*\\/author.*[^\\/]$"));
- var {default:fonts}=await resolve("./Blik_2025_fonts.json");
+ var {default:fonts}=await resolve.call(import.meta.url,"./Blik_2025_fonts.json");
  export var syndication=
  {rss2json:{key:undefined}
  ,google:{api:undefined,search}
@@ -118,7 +118,6 @@
  Object.assign(updates[index],{changes})))).then(updates=>
  this.room.content.update([updates]));
 }}
- ,transform
  }
  };
  return compose.call(relay,serialize,["body"],record,{type:mime("js")},Object.assign);
@@ -151,7 +150,7 @@
  }))
  ,wordpress(request)
 {return compose
-(resolve,request.url.split("/").slice(2).join("/"),"site"
+(resolve.bind(import.meta.url),request.url.split("/").slice(2).join("/"),"site"
 ,{number:15},"postsList",request.url.split("/").slice(2),record,note
 )("./wordpress_2019_wpcom.js","WPCOM");
 },google:
@@ -186,7 +185,7 @@
  ,http:({url})=>compose(fetch,"json")("http:/"+url)
  ,medium:request=>compose(fetch,"text",note,slip(new DOMParser()),"text/xml","parseFromString","item","querySelectorAll")("https://medium.com/feed/"+new URL(request.url).pathname.split("/").slice(2).join("/"))
  ,wikipedia
- ,mapbox(request){return infer("mapbox",request,syndication.mapbox)(resolve("./Blik_2024_map.js","proxy"));}
+ ,mapbox(request){return infer("mapbox",request,syndication.mapbox)(resolve.bind(import.meta.url)("./Blik_2024_map.js","proxy"));}
  ,overpass()
 {return fetch('https://www.overpass-api.de/api/interpreter?'+new URLSearchParams({data:'[out:json];rel[admin_level=2]'/*'convert item ::=::,::geom=geom(),_osm_type=type();'*/+';out geom;'}));
 },elsevier(request)
@@ -245,7 +244,7 @@
  return {imports:
  {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
  ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined;functor".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;cursor;capture;css".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;cursor;capture;css".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
  ,"/Blik_2023_search.js":["","merge","unfold","route","record","search","prune","extract"]
@@ -262,16 +261,28 @@
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
  return submission[method].call(form,fields);
-},...observe({draw({isTrusted:click}){this.drag=click;}})
- ,mousemove(event)
-{if(this.drag)
- console.log(this.margin);
+},...observe({draw({x,y,isTrusted:click})
+{if(!event.target.closest("ul"))
+ merge(this
+,{drag:click&&{x,y}
+ ,style:click?{transition:"transform",transform:"translate(0px,0px)"}:{transition:"",transform:""}
+ });
+}})
+ ,touchmove(event){if(event.cancelable)event.preventDefault();}
+ ,pointermove(event)
+{if(!this.drag)
+ return;
+ let {clientX:x,clientY:y}=event;
+ let [dx,dy]=[this.drag,this.drag={x,y}].reduce(({x:x0,y:y0},{x,y})=>[x-x0,y-y0]);
+ [x,y]=[transform(this.style),/\d+/].reduce(({x,y},digits)=>[x,y].map((side,index)=>
+ Math[index?"min":"max"](0,side+[dx,dy][index]).toFixed(1)+"px"));
+ merge(this.style,{transform:"translate("+[x,y]+")"});
 }}
  ,"span[name]":
  {focusin({isTrusted:focus,target})
 {if(target.nodeName==="#text")
  target=target.parentNode;
- if(target.role!=="input")
+ if(target.role!=="textbox")
  return;
  let [form,label]=["[role=form]","[title]"].map(tag=>target.closest(tag));
  form.classList.toggle("focused");
@@ -366,11 +377,15 @@
  toggle.call(form,{get:"send",send:"get"}[method]);
 }}
  ,"#extend":
- {keydown(event)
+//  {keydown(event)
+// {event.stopPropagation();
+//  let {target,keyCode,ctrlKey}=event;
+//  let {enter}=keyboard(keyCode);
+//  if(!enter||!ctrlKey)return;
+ {input(event)
 {event.stopPropagation();
- let {target,keyCode,ctrlKey}=event;
- let {enter}=keyboard(keyCode);
- if(!enter||!ctrlKey)return;
+ let {target,inputType:type,ctrlKey}=event;
+ if(type!=="insertParagaph"||!ctrlKey)return;
  event.preventDefault();
  let value=target.textContent;
  if(/^\.+$/.test(value))
@@ -380,15 +395,15 @@
  document.call(form,fragment.form({[method]:{[value]:""}}));
  form.appendChild(this);
  form.querySelector("[name="+value+"]").focus();
- target.textContent="";
+ target.textContent=""; 
 }}
  }
- ,toggle,submission,profile,transform
+ ,toggle,submission,profile
  }
  };
  let composer=
  {span:merge(form({get:fields})
-,{id:"composer",style:[{"#composer":
+,{id:"composer",style:[{"@scope":{":scope":
  {...layout.material,...layout.pill
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em"
  ,"padding-right":"1.5em",overflow:"scroll","box-sizing":"border-box","max-width":"calc(100% - 20px)"
@@ -416,7 +431,7 @@
  ,...Object.fromEntries(["erase","get","put","send"].map((method,index)=>
  ["&[method="+method+"]>span[title]:not(."+(index?method:"get")+")",{display:"none"}]))
  ,"&>span[role=textbox]#extend":{...layout.input,"&:empty:after":{content:'"..."'}}
- }}]
+ }}}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
  },0)
  };
@@ -438,7 +453,12 @@
  await compose(profile,["get"],record,form,pass(clear),document.bind(this))(resource);
  let frame=this?.ownerDocument.defaultView.frame||insert(document({div:{id:"frame"}}),"before",this);
  frame.dataset.source=route;
- let fragment=infer(transform)(resource,{source:route,...fields});
+ let [module,feature]=await locate.call(import.meta.url,fields.fragment);
+ let fail=compose(crop(1),note.bind(1),"message",document);
+ let fragment=buffer(resolve.bind(import.meta.url),fail)
+(module,feature,resource,{source:route,...fields}
+,fields.incumbent||this.ownerDocument.defaultView
+);
  return compose.call(each.call(fragment
 ,async fragment=>insert(fragment,"after",frame.lastChild)
 ,insert(document(progress),"under",frame))
@@ -466,10 +486,10 @@
 {let {method}=demarkup(this,"method");
  let active=this.ownerDocument.activeElement;
  let input=[this.contains(active)?active
-:Array.from(this.querySelectorAll("span[role=textbox]:not([id=source])")).filter(({textContent:text})=>!text)].flat();
- input.forEach(input=>demarkup(input,"role").role!=="input"||input.textContent
+:Array.from(this.querySelectorAll("span[role=textbox]:not([name=source])")).filter(({textContent:text})=>!text)].flat();
+ input.forEach(input=>demarkup(input,"role").role!=="textbox"||input.textContent
 ?console.error("erasure called on non-empty field:",input)
-:input.closest("label").remove());
+:input.parentNode.remove());
  toggle.call(this,"get");
 },send({message})
 {if(!message)return;
@@ -491,12 +511,6 @@
 )),(name,fragments)=>({[name]:fragments})
 )),collect,infer("reduce",merge))(fragment);
  return {source,fragment};
-};
-
- export async function transform(resource,{fragment,incumbent,...fields})
-{let [module,feature]=await locate(fragment);
- let fail=compose(crop(1),note.bind(1),"message",document);
- return buffer(resolve,fail)(module,feature,resource,fields,incumbent||window);
 };
 
  async function toggle(method)
