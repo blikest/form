@@ -4,7 +4,7 @@
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
  import {merge,search,prune,extract,encrypt,route,record} from "./Blik_2023_search.js";
- import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage} from "./Blik_2023_interface.js";
+ import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage,worker} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
  import editor from "./Blik_2024_script.js";
@@ -12,6 +12,7 @@
  import wikipedia from "./Blik_2024_wikipedia.js";
  import * as svg from "./Blik_2024_svg.js";
  import local,{persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
+ import inspect from "./Blik_2025_inspector.js";
  export {encryption,classify,classified,published,permit};
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
@@ -26,6 +27,7 @@
 
  export default
  {...local
+ ,inspect
  ,svg(){return svg;}
  // ,fonts:compose.call
 // (fonts.truetype,Object.entries,infer("map",([name,variants])=>
@@ -74,12 +76,11 @@
 },network:compose
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
 ),relay()
-{let relay=
- {imports:
- {"./Blik_2023_inference.js":["","note","each","infer","buffer","provide","collect","compose","wait","has","clock"]
- ,"./Blik_2023_interface.js":["","path","query","locate","resolve"]
- ,"./Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
- ,"./Blik_2023_search.js":["","record"]
+{return {imports:
+ {"/Blik_2023_inference.js":["","note","each","infer","buffer","provide","collect","compose","wait","has","clock"]
+ ,"/Blik_2023_interface.js":["","path","query","locate","resolve"]
+ ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
+ ,"/Blik_2023_search.js":["","record"]
  }
  ,exports:
  {default: 
@@ -87,8 +88,8 @@
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
  let fields=Array.from(form.querySelectorAll("span[role=textbox]"));
- let input=fields.find(input=>demarkup(input,"id").id==="message");
- let label=input.closest("label");
+ let input=fields.find(input=>demarkup(input,"name").name==="message");
+ let label=input.parentNode;
  let list=label.querySelector("ul")||label.appendChild(document({ul:{}}));
  let node=list.querySelector("span#signal");
  let entry=document({span:{id:"signal","#text":author.name+" is typing..."}});
@@ -107,7 +108,7 @@
 },history({messages},window)
 {collect(each.call(provide(messages),async event=>entry(event,window)));
 },save({author,room,updates})
-{if(author==window.room.labels.message)
+{if(author===window.room.labels.message)
  return window.Tone.Transport.start();
  let {state}=this.room.content.viewState;
  import("./haverbeke_2020_codemirror.js").then(({ChangeSet,receiveUpdates})=>
@@ -119,12 +120,6 @@
  this.room.content.update([updates]));
 }}
  }
- };
- return compose.call(relay,serialize,["body"],record,{type:mime("js")},Object.assign);
-},manifest()
-{return {name:"JS Interface",short_name:"interface",theme_color:"#ffcbe4",background_color:"#fa99ca"
- ,display:"standalone",scope:"/",start_url:"https://jsinterface.org/",description:"public js interface"
- ,orientation:"any",icons:[{src:"/svg/object/node/document",sizes:"1024x1024"}]
  };
 },async rss(request)
 {when(has(["pub","put"]))(this);
@@ -204,7 +199,6 @@
 },".well-known":{appspecific:{"com.chrome.devtools.json":function()
 {return {"workspace":{"root":process.env.PWD,"uuid":"53b029bb-c989-4dca-969b-835fecec3717"}};
 }}}
- ,worker(){return {};}
  ,calendar()
 {return compose("toString",JSON.parse,calendar,["body"],record,{type:"text/calendar"},merge)(this);
 },actions()
@@ -237,6 +231,30 @@
 }}
  }
 }};
+},worker(){return worker;}
+ ,serviceworker()
+{let module=
+ {imports:{"/Blik_2023_inference.js":["","note","observe","infer"]}
+ ,procedures:[function()
+{var address=new URL(import.meta.url).pathname;
+ observe.call(self
+,{install(){this.postMessage(address+" installed.");}
+ ,activate(){this.postMessage(address+" activated.");}
+ }).postMessage("Worker ready: "+address)
+ let modules=fetch("/sources").then(infer("json")).then(files=>
+ Object.keys(files).filter(file=>/\.js$/.test(file)));
+ Promise.all([caches.open(import.meta.url),modules]).then(([cache,modules])=>
+ cache.addAll(modules)).catch(console.error);
+}]
+ };
+ return module;
+},manifest()
+{let module=
+ {name:"JS Interface",short_name:"interface",theme_color:"#ffcbe4",background_color:"#fa99ca"
+ ,display:"standalone",scope:"/",start_url:"https://jsinterface.org/",description:"public js interface"
+ ,orientation:"any",icons:[{src:"/svg/object/node/document",sizes:"1024x1024"}]
+ };
+ return module;
 }};
 
  export function composer(fields)
@@ -244,7 +262,7 @@
  return {imports:
  {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
  ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined;functor".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;cursor;capture;css".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;cursor;capture;css;focus".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
  ,"/Blik_2023_search.js":["","merge","unfold","route","record","search","prune","extract"]
@@ -261,23 +279,26 @@
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
  return submission[method].call(form,fields);
-},...observe({draw({x,y,isTrusted:click})
-{if(!event.target.closest("ul"))
+},...observe({point({x,y,isTrusted:click})
+{if(event.target.closest("ul"))
+ return;
  merge(this
 ,{drag:click&&{x,y}
  ,style:click?{transition:"transform",transform:"translate(0px,0px)"}:{transition:"",transform:""}
+ ,control:click?new AbortController():this.control.abort()
  });
-}})
- ,touchmove(event){if(event.cancelable)event.preventDefault();}
+ if(click)
+ observe.call(this
+,{touchmove(event){if(event.cancelable)event.preventDefault();}
  ,pointermove(event)
-{if(!this.drag)
- return;
- let {clientX:x,clientY:y}=event;
+{let {clientX:x,clientY:y}=event;
  let [dx,dy]=[this.drag,this.drag={x,y}].reduce(({x:x0,y:y0},{x,y})=>[x-x0,y-y0]);
  [x,y]=[transform(this.style),/\d+/].reduce(({x,y},digits)=>[x,y].map((side,index)=>
  Math[index?"min":"max"](0,side+[dx,dy][index]).toFixed(1)+"px"));
  merge(this.style,{transform:"translate("+[x,y]+")"});
-}}
+}},{signal:this.control.signal});
+}})
+ }
  ,"span[name]":
  {focusin({isTrusted:focus,target})
 {if(target.nodeName==="#text")
@@ -293,13 +314,12 @@
  toggle.call(form,"get");
  if(method==="get"&&name!=="source"&&!value)
  toggle.call(form,"erase");
- let singular=Array.from(form.querySelectorAll("span[role=textbox]")).filter(input=>input.type=="text");
+ let singular=Array.from(form.querySelectorAll("span[role=textbox]"));
  if(singular.length>1)
  form.style.setProperty("--scroll","-"+form.scrollLeft);
  if(type=="text")
  cursor(target);
- if(label)
- label.setAttribute("focused",label.getAttribute("focused")!=="true");
+ label?.setAttribute("focused",label.getAttribute("focused")!=="true");
 },focusout({target}){return target.dispatchEvent(new Event("focusin",{bubbles:true}));}
  ,keydown(event)
 {let {target,keyCode,ctrlKey}=event;
@@ -308,7 +328,7 @@
  let selection=Array.from(list?.querySelectorAll("li.hover")||[]);
  let message=target.id==="message";
  if(enter&&(!message||ctrlKey))
- return event.preventDefault(),selection.pop()?.click()||this.dispatchEvent(new Event("submit",{bubbles:true}));
+ return event.preventDefault(),selection.pop()?.click();
  if(escape)
  return target.dispatchEvent(new Event("blur",{bubbles:true}));
  if(!list||message)return;
@@ -321,14 +341,16 @@
 {let form=target.closest("[role=form]");
  let value=target.textContent;
  let {name}=demarkup(target,"name");
+ if(name==="source"&&(value==="../"||form.getAttribute("sidestep")))
+ return document.call(form,{sidestep:form.getAttribute("sidestep")?undefined:true}),compose
+(fetch,digest,whether(compound,infer(),swap(value)),collect,source=>fragment.form({[form.getAttribute("method")]:{source}}),document.bind(form)
+)(value==="../"
+?form.ownerDocument.defaultView.location.href.replace(form.ownerDocument.defaultView.location.pathname.replace(/.*\/([^$])/,"$1")
+,form.ownerDocument.defaultView.location.pathname.split("/").length<4?"files":"get")
+:form.ownerDocument.defaultView.frame.dataset.source);
  if(name==="message"&&value)
  form.dispatchEvent(new MessageEvent("message",{data:{action:"signal"},bubbles:true}));
  let list=target.parentNode.querySelectorAll("li");
- if(name!=="message")
- Array.from(list).map(li=>
-[li,value&&!unfold.call(li,li=>li.parentNode.closest("li")).map(li=>
- li.firstChild?.nodeValue||"").join("/").includes(value)?"setProperty":"removeProperty"
-]).forEach(([li,term])=>li.style[term]("display","none"));
  let {message,code}=fill.call(form);
  let method=
  {put:!code&&"send"
@@ -338,32 +360,36 @@
  }[form.getAttribute("method")];
  if(method)
  toggle.call(form,method);
+ if(name==="message")return;
+ return Array.from(list).map(li=>
+[li,value&&!unfold.call(li,li=>li.parentNode.closest("li")).map(li=>
+ li.firstChild?.nodeValue||"").join("/").includes(value)?"setProperty":"removeProperty"
+]).forEach(([li,term])=>li.style[term]("display","none"));
 },change({target})
 {let {method}=demarkup(this.closest("[role=form]"),"method");
  if(target.type!=="text"&&method==="get")
- return target.form.dispatchEvent(new target.ownerDocument.defaultView.Event("submit",{bubbles:true}));
+ return this.dispatchEvent(new target.ownerDocument.defaultView.Event("submit",{bubbles:true}));
 }}
  ,"[role=checkbox]":
  {click({target})
-{document.call(target,{"aria-checked":target.getAttribute("aria-checked")==="false"});
+{document.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"});
+ this.dispatchEvent(new Event("submit",{bubbles:true}));
 },keydown({keyCode,target})
 {let {space}=keyboard(keyCode);
  if(!space)return;
- document.call(target,{"aria-checked":target.getAttribute("aria-checked")==="false"});
+ this.dispatchEvent(new Event("click",{bubbles:true}));
 }}
  ,li:
  {click({target})
-{if(target.nodeName.toLowerCase()!=="li")
+{if(target.nodeName.toLowerCase()!=="span")
  return;
  let label=this.closest("[title]");
- if(!label.getAttribute("for")==="message")
+ if(label.getAttribute("for")==="message")
  return;
  let input=label.querySelector("span[role=menu]");
- input.textContent=[target.closest("li")].reduce(function prepend(path,item)
-{let parent=item.parentNode.closest("li");
- path.unshift(item.childNodes[0].nodeValue);
- return parent?prepend(path,parent):path;
-},[]).join("/");
+ input.textContent=unfold.call(target.closest("li")
+,li=>li.parentNode.closest("li")).map(li=>
+ li.childNodes[0].textContent).reverse().join("/");
  input.dispatchEvent(new Event("blur",{bubbles:true})); 
  input.closest("[role=form]").dispatchEvent(new Event("submit",{bubbles:true}));
 }}
@@ -414,8 +440,14 @@
  "&[method="+method+"]>span:not([title="+primary+"])"),"&>span#extend"]]:{width:0,display:"none"}
  }
  ,"&>span[title]":
-[{"&>span[role=textbox]":{"&#code":{"-webkit-text-security":"disc"}}
- ,"&>ul":{"padding-top":"6em",bottom:"6em"}
+[{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
+ ,"&>ul"://{"padding-top":"6em",bottom:"6em"}
+ {"margin-top":"calc(-100% - 11em)"
+ ,"padding-top":"max(0px, calc(100% - 100vh - 17em))"
+ ,"max-height":"calc(100vh - 9em)"
+ ,"box-sizing":"content-box"
+ ,"overflow":"scroll"
+ }
  }
 ,Object.entries({message:"",source:"",fragment:"as",title:"of",category:"on",spread:"by",matrix:"from",relations:"with"}).map(([field,value])=>(
  {["&[title="+field+"]"]:{"&>span:first-child":{display:"none"},"&:before":{content:"'"+value+"'"}}}))
@@ -436,81 +468,6 @@
  },0)
  };
  return capture.call(composer,["",file,"module","composer","module"].join("/"));
-};
-
- var submission=
- {async get({source,resource,...fields})
-{let {origin,pathname:path}=this.ownerDocument.defaultView.location;
- let [back,remote]=[source==="..",/^https*:\/\//.test(source)];
- let query=new URLSearchParams(prune.call(fields
-,({1:value})=>value??undefined,0,1)).toString().replace(/^(.)/,"?$1");
- path=back?path.replace(/[^\/]*\/$/,""):remote?source:path+source;
- if(globalThis.window)
- this.ownerDocument.defaultView.history.pushState({},null,[origin,remote?encodeURI(source):path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
- let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
- resource=resource||compose(fetch,digest)(route+query);
- let clear=compose(swap(form({get:{source:""}})),document.bind(this));
- await compose(profile,["get"],record,form,pass(clear),document.bind(this))(resource);
- let frame=this?.ownerDocument.defaultView.frame||insert(document({div:{id:"frame"}}),"before",this);
- frame.dataset.source=route;
- let [module,feature]=await locate.call(import.meta.url,fields.fragment);
- let fail=compose(crop(1),note.bind(1),"message",document);
- let fragment=buffer(resolve.bind(import.meta.url),fail)
-(module,feature,resource,{source:route,...fields}
-,fields.incumbent||this.ownerDocument.defaultView
-);
- return compose.call(each.call(fragment
-,async fragment=>insert(fragment,"after",frame.lastChild)
-,insert(document(progress),"under",frame))
-,pass(compose(swap(frame),"firstChild","remove")));
-},async put(fields)
-{let {method}=demarkup(this,"method");
- let {name}=fields;
- let action="/author/"+name;
- let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
- let [status,author]=await compose(fetch,combine("status","text"))(action,request);
- if(status!==200)
- return toggle.call(this,"send")
-,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
-,{data:JSON.stringify({action:"message",message:author})}));
- let expires=new Date(Date.now()+1000*60*60).toUTCString();
- this.ownerDocument.cookie=cookie({author:name,path:"/",expires});
- if(author.rank)
- this.ownerDocument.cookie=cookie({rank:author.rank,path:"/",expires});
- let address=this.ownerDocument.defaultView.location.href;
- let room=["",path(address),query(address).source].join("/");
- this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
- fill.call(this,{name:"",code:""});
- toggle.call(this,"send");
-},erase()
-{let {method}=demarkup(this,"method");
- let active=this.ownerDocument.activeElement;
- let input=[this.contains(active)?active
-:Array.from(this.querySelectorAll("span[role=textbox]:not([name=source])")).filter(({textContent:text})=>!text)].flat();
- input.forEach(input=>demarkup(input,"role").role!=="textbox"||input.textContent
-?console.error("erasure called on non-empty field:",input)
-:input.parentNode.remove());
- toggle.call(this,"get");
-},send({message})
-{if(!message)return;
- let address=this.ownerDocument.defaultView.location.href;
- let room=["",path(address),query(address).source].join("/");
- this.dispatchEvent(new MessageEvent("message",{data:{action:"message",room,message,put:Date.now()},bubbles:true}));
- fill.call(this,{message:""});
- toggle.call(this,"send");
-}};
-
- export async function profile(resource)
-{let source=basic(resource)?resource:"";
- let fragment={"fragment":"","script":"","chart":"","network":"","extrude":"","map":""};
- return {source,fragment};
- fragment=await compose(Object.keys,provide,each(compose(crop(1),stash(compose
-(locate,provide,crop(1),slip("/"),"concat",infer("concat","/module/namespace"),fetch,digest
-,({default:fragment,...exports})=>prune.call(exports,({1:value})=>
- string(value)&&value.startsWith("data:text/javascript;")?value:undefined,0,0),Object.keys
-)),(name,fragments)=>({[name]:fragments})
-)),collect,infer("reduce",merge))(fragment);
- return {source,fragment};
 };
 
  async function toggle(method)
@@ -548,9 +505,9 @@
  }
  ,"&>span.status":{position:"absolute",left:"-0.5em",top:"-1.5em",color:"black"}
  }}}}):value)});
- this.appendChild(this.querySelector("#extend"));
+ this.append(...[this.querySelector("#code"),this.querySelector("#extend")].filter(Boolean));
  if(active)
- focus(this.querySelector(qualify(active)));
+ focus(active);
  let control=this.querySelector("#toggle");
  insert(style,control?"over":"after",control?this.querySelector("style.icon"):this.lastChild);
  insert(document({svg:
@@ -559,6 +516,80 @@
  let room=["",path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
  if(method==="send"&&!defined(message))
  this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
+};
+
+ var submission=
+ {async get({source,resource,...fields})
+{let {origin,pathname:path}=this.ownerDocument.defaultView.location;
+ let [back,remote]=[source==="..",/^https*:\/\//.test(source)];
+ let query=new URLSearchParams(prune.call(fields
+,({1:value})=>value??undefined,0,1)).toString().replace(/^(.)/,"?$1");
+ path=back?path.replace(/[^\/]*\/$/,""):remote?source:path+source;
+ if(globalThis.window)
+ this.ownerDocument.defaultView.history.pushState({},null,[origin,remote?encodeURI(source):path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
+ let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
+ let frame=this?.ownerDocument.defaultView.frame||insert(document({div:{id:"frame"}}),"before",this);
+ frame.dataset.source=route;
+ insert(document(progress),"under",frame);
+ resource=resource||compose(fetch,digest)(route+query);
+ let clear=compose(swap(form({get:{source:""}})),document.bind(this));
+ await compose(profile,["get"],record,form,pass(clear),document.bind(this))(resource);
+ let [module,feature]=await locate.call(import.meta.url,fields.fragment);
+ let fail=compose(crop(1),note.bind(1),"message",document);
+ return compose
+(buffer(resolve.bind(import.meta.url),fail)
+,each(async fragment=>insert(fragment,"after",frame.lastChild))
+,pass(compose(swap(frame),"firstChild","remove"))
+)(module,feature,resource,{source:route,...fields}
+,fields.incumbent||this.ownerDocument.defaultView);
+},async put(fields)
+{let {method}=demarkup(this,"method");
+ let {name}=fields;
+ let action="/author/"+name;
+ let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
+ let [status,author]=await compose(fetch,combine("status","text"))(action,request);
+ if(status!==200)
+ return toggle.call(this,"send")
+,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
+,{data:JSON.stringify({action:"message",message:author})}));
+ let expires=new Date(Date.now()+1000*60*60).toUTCString();
+ this.ownerDocument.cookie=cookie({author:name,path:"/",expires});
+ if(author.rank)
+ this.ownerDocument.cookie=cookie({rank:author.rank,path:"/",expires});
+ let address=this.ownerDocument.defaultView.location.href;
+ let room=["",path(address),query(address).source].join("/");
+ this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
+ fill.call(this,{name:"",code:"",message:""});
+ toggle.call(this,"send");
+},erase()
+{let {method}=demarkup(this,"method");
+ let active=this.ownerDocument.activeElement;
+ let input=[this.contains(active)?active
+:Array.from(this.querySelectorAll("span[role=textbox]:not([name=source])")).filter(({textContent:text})=>!text)].flat();
+ input.forEach(input=>demarkup(input,"role").role!=="textbox"||input.textContent
+?console.error("erasure called on non-empty field:",input)
+:input.parentNode.remove());
+ toggle.call(this,"get");
+},send({message})
+{if(!message)return;
+ let address=this.ownerDocument.defaultView.location.href;
+ let room=["",path(address),query(address).source].join("/");
+ this.dispatchEvent(new MessageEvent("message",{data:{action:"message",room,message,put:Date.now()},bubbles:true}));
+ fill.call(this,{message:""});
+ toggle.call(this,"send");
+}};
+
+ export async function profile(resource)
+{let source=basic(resource)?resource:"";
+ let fragment={"fragment":"","script":"","chart":"","network":"","extrude":"","map":""};
+ return {source,fragment};
+ fragment=await compose(Object.keys,provide,each(compose(crop(1),stash(compose
+(locate,provide,crop(1),slip("/"),"concat",infer("concat","/module/namespace"),fetch,digest
+,({default:fragment,...exports})=>prune.call(exports,({1:value})=>
+ string(value)&&value.startsWith("data:text/javascript;")?value:undefined,0,0),Object.keys
+)),(name,fragments)=>({[name]:fragments})
+)),collect,infer("reduce",merge))(fragment);
+ return {source,fragment};
 };
 
  function edit(target)
@@ -624,7 +655,7 @@
  client.readyState===1&&client!==peer&&client.room===event.room&&
  client.send(message));
 },save:async function({room,content,updates,version},peer)
-{peer.room=this.rooms[room]||message.join.call(...arguments);
+{peer.room=this.rooms[room]||relay.join.call(this,...arguments);
  let {EditorState,collab,receiveUpdates,getSyncedVersion,ChangeSet}=await import("./haverbeke_2020_codemirror.js");
  if(!peer.room.track)
  peer.room.track=await fetch(room).then(doc=>
@@ -636,7 +667,7 @@
  let message=await fetch(room+"?force=overwrite",{method:"put",body,headers});
  if(message instanceof Error)
  return this.emit("message",{message});
- else message=this.author+" edited "+room;
+ message=this.author+" edited "+room;
 [["save",{author:this.author,room,updates}]
 ,["message",{message}]
 ].map(event=>

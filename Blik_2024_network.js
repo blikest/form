@@ -240,7 +240,7 @@
  return infer("default",options.source,options,this)(module);
 }}
  ,"g.link":
- {...observe({touch({target})
+ {...observe({hover({target})
 {target=target.closest(".link");
  target.style.removeProperty("filter");
  target.setAttribute("opacity",target.getAttribute("opacity")<1?1:0.5);
@@ -248,7 +248,7 @@
  })
  }
  ,"g.node":
- {...observe({touch({target})
+ {...observe({hover({target})
 {compose
 (combine(compose("svg","closest",forage),compose(select,"datum"))
 ,when(array,has(["x","y"]))
