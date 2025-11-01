@@ -1,5 +1,5 @@
- import {note,crop,swap,is,are,either,functor,buffer,provide,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,ascend,heritage,observe} from "./Blik_2023_inference.js";
- import {document,hypertext,dispose,throttle,capture,defer,delegate,form,progress,insert,namespaces,css,fill,deselect,expand,spell,syndicate,article,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
+ import {note,debug,crop,swap,is,are,either,functor,buffer,provide,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,ascend,heritage,observe} from "./Blik_2023_inference.js";
+ import {document,hypertext,dispose,throttle,capture,defer,delegate,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
  import {serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
@@ -44,7 +44,7 @@
  ,media:compose(crop(1),"toString",media,collect,document)
  ,interface:async function(request)
 {let queries=query(request.url);
- let fragment=numeric(this.put)?"fragment/feed":basic(this)?"network":"fragment/media";
+ let fragment=match(["author"])(arguments[2])?"fragment/feed":basic(this)?"network":"fragment/media";
  let {controls,...fields}={source:"",fragment,...queries};
  let form=compose(composer,document)(fields);
  toggle.call(form,"get");
@@ -261,8 +261,8 @@
 {if(this)
  return {imports:
  {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
- ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined;functor".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;cursor;capture;css;focus".split(";")
+ ,"/Blik_2023_inference.js":";note;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined;functor".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
  ,"/Blik_2023_search.js":["","merge","unfold","route","record","search","prune","extract"]
@@ -271,14 +271,16 @@
  ,exports:
  {default:
  {"[role=form]":
- {submit(event)
+ {async submit(event)
 {event?.preventDefault();
+ this.style.pointerEvents="none";
  let form=this;
  let {method}=demarkup(form,"method");
  let fields=fill.call(form,method);
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
- return submission[method].call(form,fields);
+ await buffer(submission[method].bind(form))(fields);
+ this.style.pointerEvents="";
 },...observe({point({x,y,isTrusted:click})
 {if(event.target.closest("ul"))
  return;
@@ -328,7 +330,8 @@
  let selection=Array.from(list?.querySelectorAll("li.hover")||[]);
  let message=target.id==="message";
  if(enter&&(!message||ctrlKey))
- return event.preventDefault(),selection.pop()?.click();
+ return event.preventDefault()
+,selection.length?selection.pop().click():target.dispatchEvent(new Event("submit",{bubbles:true}));
  if(escape)
  return target.dispatchEvent(new Event("blur",{bubbles:true}));
  if(!list||message)return;
@@ -442,10 +445,10 @@
  ,"&>span[title]":
 [{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
  ,"&>ul"://{"padding-top":"6em",bottom:"6em"}
- {"margin-top":"calc(-100% - 11em)"
- ,"padding-top":"max(0px, calc(100% - 100vh - 17em))"
- ,"max-height":"calc(100vh - 9em)"
- ,"box-sizing":"content-box"
+ {"margin-top":"calc(-100vh)"
+ ,"max-height":"calc(100vh - 3em)"
+ ,"padding-top":"calc(100vh - 7em)"
+ //,"box-sizing":"content-box"
  ,"overflow":"scroll"
  }
  }
@@ -535,13 +538,13 @@
  let clear=compose(swap(form({get:{source:""}})),document.bind(this));
  await compose(profile,["get"],record,form,pass(clear),document.bind(this))(resource);
  let [module,feature]=await locate.call(import.meta.url,fields.fragment);
- let fail=compose(crop(1),note.bind(1),"message",document);
+ let fail=compose(crop(1),note.bind(1),"message",document,note);
+ let fragment=await buffer(resolve.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
  return compose
-(buffer(resolve.bind(import.meta.url),fail)
-,each(async fragment=>insert(fragment,"after",frame.lastChild))
+(buffer(document.bind(frame,fragment),compose(fail,document.bind(frame)))
 ,pass(compose(swap(frame),"firstChild","remove"))
-)(module,feature,resource,{source:route,...fields}
-,fields.incumbent||this.ownerDocument.defaultView);
+,"firstChild"
+)();
 },async put(fields)
 {let {method}=demarkup(this,"method");
  let {name}=fields;
