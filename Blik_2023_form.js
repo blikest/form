@@ -44,7 +44,7 @@
  ,media:compose(crop(1),"toString",media,collect,document)
  ,interface:async function(request)
 {let queries=query(request.url);
- let fragment=match(["author"])(arguments[2])?"fragment/feed":basic(this)?"network":"fragment/media";
+ let fragment=match(["author"])(arguments[3])?"author":basic(this)?"network":"fragment/media";
  let {controls,...fields}={source:"",fragment,...queries};
  let form=compose(composer,document)(fields);
  toggle.call(form,"get");
