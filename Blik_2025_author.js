@@ -1,6 +1,6 @@
  import {resolve,locate,fetch,digest,cookie,cookies,query,path,socket} from "./Blik_2023_interface.js";
  import {merge,unfold,search,prune,extract,route,record} from "./Blik_2023_search.js";
- import {note,debug,expect,compose,combine,either,pass,trace,drop,crop,slip,infer,tether,whether,modular,wait,observe,buffer,swap,when,array,has,each,differ,provide,collect,is,match,basic,defined} from "./Blik_2023_inference.js";
+ import {note,debug,expect,compose,combine,either,pass,trace,drop,crop,slip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,provide,collect,is,match,basic,defined} from "./Blik_2023_inference.js";
  import * as fragment from "./Blik_2023_fragment.js";
  import {document,form,image,canvas,message,demarkup,insert,navigate,metamarkup,detransform,stretch,vectorspace,error,drillresize,deselect,namespaces,keyboard,spell,expand,parse,semiotics,destroy,reference,fill,annotate,qualify,cursor,capture} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
@@ -10,11 +10,11 @@
  export async function syndicate([source,common])
 {return compose
 (buffer(compose(fetch,"json"),fail=>({fail})),{common,source},merge
-,stash(either("items","posts","data",swap([]))),note
+,stash(either("items","posts","data",swap([])))
 ,({common,source,feed,...author},pub)=>(
  {common,source,...pub
 ?{name:common?.author?.name||feed?.author||feed?.title
- ,icon:feed?.image||common?.icon
+ ,icon:common?.icon||feed?.image
  ,pub:Object.fromEntries(pub.map((pub)=>
  [pub.id||pub.site_ID||pub.source,Object.assign(pub
 ,{author:pub.author||common?.author||{name:source.substring(0,source.search(/_\d\d/)).replace("_"," & ")}
@@ -46,22 +46,8 @@
  ,[file]:["author","syndicate"]
  }
  ,exports:{default:
- {"[data-source]":
- {async click()
-{let [title]=descend.call(this,".title",0);
- let description=title.firstChild.nextSibling;
- if(title.nextSibling)
- return [title,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);})
-,merge(description,{style:"display:none"});
- let source=this.dataset.source;
- let {textContent:name}=title;
- let authors=compose(collect,syndicate,infer(author,1))(source,{author:{name}});
- await document.call(this.parentNode,authors);
- if(description)
- spell(description);
-}}
- ,".article":
- {async click(event)
+ {".article":
+ {click(event)
 {event.stopPropagation();
  let feed=this.closest(".author");
  let multiple=Array.from(feed.querySelectorAll(".article")).filter(node=>
@@ -73,18 +59,19 @@
  let source=feed.getAttribute("source");
  let title=this.getAttribute("source");
  let index=this.getAttribute("index");
- let article=await compose(syndicate,syndicate,index)([source]);
+ return;
+ let article=compose(syndicate,syndicate,index)([source]);
  let media=article?.media&&document(link(article?.media,""));
  let progress=insert(document({span:{style:"display:inline-block;white-space:nowrap;overflow:hidden;font-family:monospace;animation:dotdot 3s infinite normal;","#text":"..."}}),"after",this);
  let content=defined(article?.content)
 ?[this.ownerDocument.createRange().createContextualFragment(article.content),/#.*$/].reduce((fragment,hash)=>
  Array.from(fragment.querySelectorAll("a")).map(link=>[link,link.getAttribute("href")]).forEach(([link,href])=>
  hash.test(href)&&link.setAttribute("href",href.replace(/[^#]*/,"")))||fragment)
-:await compose(fetch,whether(compose("headers","Content-Type","get",is("text/html"))
+:compose(fetch,whether(compose("headers","Content-Type","get",is("text/html"))
 ,compose("text",text=>this.ownerDocument.createRange().createContextualFragment(text))
 ,compose("text",semiotics,parse)))([source,title,this.dataset?.fragment].filter(Boolean).join("/"));
  let entry=insert(document({span:{media}}),"after",this);
- await collect(each.call(content,async function add(fragment,index,entry)
+ collect(each.call(content,async function add(fragment,index,entry)
 {if(!index)
  progress.remove();
  return compose.call(fragment
@@ -95,12 +82,19 @@
 (document(link(article?.link,this.querySelector("span").textContent))
 ,entry.lastChild?"after":"under",entry.lastChild||entry
 );
- let section=document({span:
+ let icon=compose(image,canvas)("/svg/object/paperplane/tilt/document");
+ let comments=compose
+(fetch,either("json",swap([])),provide,each(message)
+,collect,["span","span"],record
+,{span:{class:"history"}},merge
+)("/Blik_2024_comments.json/module/namespace/default/"+title);
+ return infer((canvas,comments)=>
+ document.call(entry.parentNode,{span:
  {class:"comments"
- ,span:merge
+ ,span:[merge
 (form({name:cookie("author")||"",comment:""})
 ,{class:"comment"
- ,span:[{role:"button",canvas:await compose(image,canvas)("/svg/object/paperplane/tilt/document")}]
+ ,span:[{role:"button",canvas}]
  ,style:
 [{"@scope":{":scope":
  {"&>span[title]":
@@ -120,6 +114,7 @@
  }}
  }
 ]},0)
+,comments]
  ,style:
  {"@scope":{":scope":
  {display:"inline-block"
@@ -129,14 +124,21 @@
  }
  ,"@keyframes warn":{from:{"box-shadow":"#880e4f 0px 0px 5px inset"},to:{"box-shadow":"revert"}}
  }}}
- }});
- insert(section,"after",entry);
- let comments=await compose
-(fetch,either("json",swap([])),provide,each(message)
-,collect,["span","span"],record
-,{span:{class:"history"}},merge,document
-,infer(insert,"after",section.firstChild)
-)("/Blik_2024_comments.json/module/namespace/default/"+title);
+ }}))(icon,comments);
+}}
+ ,"[data-source]":
+ {async click()
+{let [title]=descend.call(this,".title",0);
+ let description=title.firstChild.nextSibling;
+ if(title.nextSibling)
+ return [title,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);})
+,merge(description,{style:"display:none"});
+ let source=this.dataset.source;
+ let {textContent:name}=title;
+ let authors=compose(collect,syndicate,infer(author,1))(source,{author:{name}});
+ await document.call(this.parentNode.parentNode,authors);
+ if(description)
+ spell(description);
 }}
  ,".comment":
  {keydown({target,keyCode:code,ctrlKey})
@@ -255,7 +257,7 @@
  yield capture.call(feed,[file,"module","default","module"].join("/"));
  if(expand)
  yield* compose
-(Object.entries,note,infer("map",compose
+(Object.entries,infer("map",compose
 (([title,post])=>({author:arguments[0],source,title,...post})
 ,article,["span","span","span"],record
 ,{span:{class:"feed"}},merge
@@ -263,13 +265,13 @@
 // [articles,Promise.resolve(note(articles).at(-1)).then(past=>Promise.race(queue))].flat(),[])
 )(pub);
  yield* compose
-(Object.entries,provide,each(compose
+(Object.entries,infer("map",compose
 (syndicate,infer(author,0),author=>({span:
  {class:"syndication"
  ,style:{"@scope":{":scope":{display:"block"}}}
  ,...author
  }})
-))
+)),trickle
 )(sub);
 };
 
