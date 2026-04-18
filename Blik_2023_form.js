@@ -1,9 +1,9 @@
- import {note,debug,crop,swap,is,are,either,functor,buffer,provide,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,ascend,heritage,observe} from "./Blik_2023_inference.js";
+ import {note,debug,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
  import {document,hypertext,dispose,throttle,capture,defer,delegate,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
  import {serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
- import {merge,search,prune,extract,encrypt,route,record} from "./Blik_2023_search.js";
+ import {extract,encrypt} from "./Blik_2023_search.js";
  import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage,worker} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
@@ -40,34 +40,39 @@
 // ]),Object.fromEntries)(variants.length?{"":variants}:variants)
 // ]),Object.fromEntries,["truetype"],record,fonts,merge
  ,author:persistence("Blik_2024_author.json")
- ,document:compose(crop(1),infer(record,["svg"]),document)
- ,media:compose(crop(1),"toString",media,collect,document)
+ ,document:compose(crop(1),infer(record,["svg"]),document,crop(1))
+ ,media:compose(crop(1),"toString",media,collect,document,crop(1))
  ,interface:async function(request)
 {let queries=query(request.url);
- let fragment=match(["author"])(arguments[3])?"author":basic(this)?"network":"fragment/media";
+ let fragment=match(["author",string])(arguments[3])?"author":basic(this)?"network":"fragment/media";
  let {controls,...fields}={source:"",fragment,...queries};
- let form=compose(composer,document)(fields);
- toggle.call(form,"get");
+ let [form]=compose(composer,document,spill,lift)(fields);
+ await toggle.call(form,"get");
  let body=
- {span:form,style:compose
-({"#frame":layout.frame},layout.theme,layout.goo,layout.link
-,collect,infer("reduce",merge)
-)(extract.call(layout,["body","a","blockquote","table"]))
+ {style:
+[extract.call(layout,["body","a","blockquote","table"])
+,{"#frame":layout.frame},layout.theme,layout.goo,layout.link
+].reduce(merge)
+ ,span:form
  };
  let {averia,oswald,ranger}=fontface;
  let style=css(
  {"@font-face":[averia,oswald,ranger]
- ,"@keyframes wave":{"0%":{height:0,transform:"translate(0,-100%)",opacity:0},"50%":{opacity:0.25},"100%":{transform:"translate(0,100%)",opacity:0}}
+ ,"@keyframes wave":
+ {"0%":{height:0,transform:"translate(0,-100%)",opacity:0}
+ ,"50%":{opacity:0.25}
+ ,"100%":{transform:"translate(0,100%)",opacity:0}
+ }
  ,...animation.dotdot
  });
  let url=request.url.replace(/\/($|\?.*)/g,"");
  let title=url.split("/").reverse().find(Boolean)||"JSInterface";
- fragment=compose.call(body,title,"/svg/object/node/document",[],style,hypertext,document);
+ [fragment]=compose.call(body,title,"/svg/object/node/document",[],style,hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
 ,{source:path(window.origin+(this===routes?"/get":request.url))
- ,resource:this!==routes&&compose(stage,digest)(this.get?.(...arguments)||this
-,{url,headers:request.headers})
+ ,resource:this!==routes&&
+ await compose(stage,digest,cede())(this.get?.(...arguments)||this,{url,headers:request.headers})
  },1);
  await buffer(compose(tether(submission.get),throttle))(form,fields);
  if(String(controls)==="false")
@@ -77,10 +82,9 @@
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
 ),relay()
 {return {imports:
- {"/Blik_2023_inference.js":["","note","each","infer","buffer","provide","collect","compose","wait","has","clock"]
+ {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock"]
  ,"/Blik_2023_interface.js":["","path","query","locate","resolve"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
- ,"/Blik_2023_search.js":["","record"]
  }
  ,exports:
  {default: 
@@ -90,23 +94,23 @@
  let fields=Array.from(form.querySelectorAll("span[role=textbox]"));
  let input=fields.find(input=>demarkup(input,"name").name==="message");
  let label=input.parentNode;
- let list=label.querySelector("ul")||label.appendChild(document({ul:{}}));
+ let list=label.querySelector("ul")||label.appendChild(...document({ul:{}}));
  let node=list.querySelector("span#signal");
- let entry=document({span:{id:"signal","#text":author.name+" is typing..."}});
+ let entry=compose(document,"firstChild")({span:{id:"signal","#text":author.name+" is typing..."}});
  list[node?"replaceChild":"appendChild"](entry,node);
  compose(wait(3000),node=>node.parentNode&&node.remove())(entry);
 },async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/document"}},window)
 {let form=window.document.querySelector("#composer");
- let span=document({span:await entry({icon:icon||"/svg/animal/deer/document",name:name||"anonymous",put,message})});
+ let span=compose(document,"firstChild")({span:await entry({icon:icon||"/svg/animal/deer/document",name:name||"anonymous",put,message})});
  if(form.querySelector("#message"))
- document.call(form,{span:{id:"message",span:{class:"messages",role:"list",span}}});
+ collect(document.call(form,{span:{id:"message",span:{class:"messages",role:"list",span}}}));
  if(name==="system")
  compose(wait(10000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")(li);
 },broadcast({message,room,author})
 {let {href}=window.location;
  compose({source:room,...query(href)},transform,infer(insert,"under",window.document.querySelector("[actions='"+room+"']")))(message);
 },history({messages},window)
-{collect(each.call(provide(messages),async event=>entry(event,window)));
+{collect(each.call(rank(messages),async event=>entry(event,window)));
 },save({author,room,updates})
 {if(author===window.room.labels.message)
  return window.Tone.Transport.start();
@@ -135,7 +139,7 @@
  //let xml=await import("./dylang_2017_xml.js").then(module=>module.default);
  let channel=prune.call({title:"",description:""}//link:request.url}
 ,([field,value])=>({"#text":value}),0,1);
- let {outerHTML:body}=document({rss:{version:"2.0",channel:{...channel,item}}});
+ let {outerHTML:body}=compose(document,"firstChild")({rss:{version:"2.0",channel:{...channel,item}}});
 //,{declaration:true,indent:" "})
  return {status:200,type:"rss+xml",body:'<?xml version="1.0" encoding="UTF-8" ?>'+body};
 },"robots.txt":function(){return "User-agent: *\nDisallow: "}
@@ -197,7 +201,12 @@
  ,Accept:"application/json"
  }})
 },".well-known":{appspecific:{"com.chrome.devtools.json":function()
-{return {"workspace":{"root":process.env.PWD,"uuid":"53b029bb-c989-4dca-969b-835fecec3717"}};
+{return {"workspace":
+ {root:process.env.PWD.replace
+("/mnt/chromeos/GoogleDrive/MyDrive"
+,"/media/fuse/drivefs-062c2a5118ec2abb3fe013c8e3b3cbeb/root"
+),uuid:"53b029bb-c989-4dca-969b-835fecec3717"
+ }};
 }}}
  ,calendar()
 {return compose("toString",JSON.parse,calendar,["body"],record,{type:"text/calendar"},merge)(this);
@@ -234,15 +243,14 @@
 },worker(){return worker;}
  ,serviceworker()
 {let module=
- {imports:{"/Blik_2023_inference.js":["","note","observe","infer"]}
+ {imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
  ,procedures:[function()
 {var address=new URL(import.meta.url).pathname;
  observe.call(self
 ,{install(){this.postMessage(address+" installed.");}
  ,activate(){this.postMessage(address+" activated.");}
  }).postMessage("Worker ready: "+address)
- let modules=fetch("/sources").then(infer("json")).then(files=>
- Object.keys(files).filter(file=>/\.js$/.test(file)));
+ let modules=cede(compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file))))("/sources");
  Promise.all([caches.open(import.meta.url),modules]).then(([cache,modules])=>
  cache.addAll(modules)).catch(console.error);
 }]
@@ -261,11 +269,11 @@
 {if(this)
  return {imports:
  {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
- ,"/Blik_2023_inference.js":";note;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined;functor".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus".split(";")
+ ,"/Blik_2023_inference.js":";note;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
- ,"/Blik_2023_search.js":["","merge","unfold","route","record","search","prune","extract"]
+ ,"/Blik_2023_search.js":["","unfold","extract"]
  ,"/Blik_2024_svg.js":"* as svg"
  }
  ,exports:
@@ -281,24 +289,10 @@
  fill.call(form,{[method]:{source:""}});
  await buffer(submission[method].bind(form))(fields);
  this.style.pointerEvents="";
-},...observe({point({x,y,isTrusted:click})
-{if(event.target.closest("ul"))
+},...observe({point({x,y,target,isTrusted:click})
+{if(target.closest("ul"))
  return;
- merge(this
-,{drag:click&&{x,y}
- ,style:click?{transition:"transform",transform:"translate(0px,0px)"}:{transition:"",transform:""}
- ,control:click?new AbortController():this.control.abort()
- });
- if(click)
- observe.call(this
-,{touchmove(event){if(event.cancelable)event.preventDefault();}
- ,pointermove(event)
-{let {clientX:x,clientY:y}=event;
- let [dx,dy]=[this.drag,this.drag={x,y}].reduce(({x:x0,y:y0},{x,y})=>[x-x0,y-y0]);
- [x,y]=[transform(this.style),/\d+/].reduce(({x,y},digits)=>[x,y].map((side,index)=>
- Math[index?"min":"max"](0,side+[dx,dy][index]).toFixed(1)+"px"));
- merge(this.style,{transform:"translate("+[x,y]+")"});
-}},{signal:this.control.signal});
+ drag.pointerdown.call(this,...arguments);
 }})
  }
  ,"span[name]":
@@ -375,7 +369,7 @@
 }}
  ,"[role=checkbox]":
  {click({target})
-{document.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"});
+{collect(document.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"}));
  this.dispatchEvent(new Event("submit",{bubbles:true}));
 },keydown({keyCode,target})
 {let {space}=keyboard(keyCode);
@@ -406,11 +400,6 @@
  toggle.call(form,{get:"send",send:"get"}[method]);
 }}
  ,"#extend":
-//  {keydown(event)
-// {event.stopPropagation();
-//  let {target,keyCode,ctrlKey}=event;
-//  let {enter}=keyboard(keyCode);
-//  if(!enter||!ctrlKey)return;
  {input(event)
 {event.stopPropagation();
  let {target,inputType:type,ctrlKey}=event;
@@ -421,7 +410,7 @@
  return this.dispatchEvent(new Event("submit",{bubbles:true}));
  let form=this.closest("[role=form]");
  let method=form.getAttribute("method");
- document.call(form,fragment.form({[method]:{[value]:""}}));
+ collect(document.call(form,fragment.form({[method]:{[value]:""}})));
  form.appendChild(this);
  form.querySelector("[name="+value+"]").focus();
  target.textContent=""; 
@@ -481,21 +470,25 @@
  {get:"node",put:code?"fingerprint":"plus"
  ,erase:"plus",send:message?"paperplane/up":"chat"
  }[method];
- let style=document({style:{class:"icon","#text":css(
+ let style=
+[{class:"icon","#text":css(
  {"#toggle":
  {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
  ,"clip-path":"circle(50%)",padding:"1em",transform:"scale(0.8)",position:"sticky",left:0
  ,...["node","fingerprint"].includes(icon)&&{padding:0,width:"5em",height:"5em"}
  ,"&>path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
  }
- })}});
+ })}
+];
  let fields=
  {send:{message:[],code:message||cookie("author")?undefined:""}
  ,put:{name:message,code:code}
  ,code:method==="put"||{[code?"name":"message"]:code?message:name}
  }[method]||{};
- document.call(this,{method:method,...prune.call(form({[method]:fields}),([field,value])=>
- value?.title==="message"?merge(value,{style:{"@scope":{":scope":
+ compose(tether(document),spill,lift)(this
+,merge(prune.call(form({[method]:fields}),([field,value])=>
+ value?.title==="message"?merge(value
+,{style:{"@scope":{":scope":
  {"&>ul":
  {display:"block","margin-left":"-5em","max-height":"50vh","min-width":"150px"
  ,"&>span":{position:"fixed",bottom:"1.5em",left:"5.5em",color:"black"}
@@ -507,15 +500,15 @@
  ,"&:hover>li":{opacity:1,animation:"fadein 1s"}
  }
  ,"&>span.status":{position:"absolute",left:"-0.5em",top:"-1.5em",color:"black"}
- }}}}):value)});
+ }}}
+ }):value,0,2),{style}));
  this.append(...[this.querySelector("#code"),this.querySelector("#extend")].filter(Boolean));
  if(active)
  focus(active);
  let control=this.querySelector("#toggle");
- insert(style,control?"over":"after",control?this.querySelector("style.icon"):this.lastChild);
- insert(document({svg:
+ compose(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild))({svg:
  {...search.call(svg.object,icon.split("/")),title:method,id:"toggle"
- }}),control?"over":"before",control||this.firstChild);
+ }});
  let room=["",path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
  if(method==="send"&&!defined(message))
  this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
@@ -531,20 +524,22 @@
  if(globalThis.window)
  this.ownerDocument.defaultView.history.pushState({},null,[origin,remote?encodeURI(source):path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
  let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
- let frame=this?.ownerDocument.defaultView.frame||insert(document({div:{id:"frame"}}),"before",this);
+ let frame=this?.ownerDocument.defaultView.frame||
+ compose(document,spill,lift,infer(insert,"before",this),cede())({div:{id:"frame"}});
  frame.dataset.source=route;
- insert(document(progress),"under",frame);
+ compose(document,spill,lift,infer(insert,"under",frame))(progress);
  resource=resource||compose(fetch,digest)(route+query);
- let clear=compose(swap(form({get:{source:""}})),document.bind(this));
- await compose(profile,["get"],record,form,pass(clear),document.bind(this))(resource);
+ let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
+ await compose(profile,["get"],record,form,pass(clear),document.bind(this),spill)(resource);
  let [module,feature]=await locate.call(import.meta.url,fields.fragment);
- let fail=compose(crop(1),note.bind(1),"message",document,note);
+ let fail=compose(crop(1),note.bind(1),"message",document,spill);
  let fragment=await buffer(resolve.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
  return compose
-(buffer(document.bind(frame,fragment),compose(fail,document.bind(frame)))
-,pass(compose(swap(frame),"firstChild","remove"))
+(document.bind(frame),spill
+,buffer(lift,compose(fail,document.bind(frame),spill,lift))
+,pass(compose("firstChild","remove"))
 ,"firstChild"
-)();
+)(fragment);
 },async put(fields)
 {let {method}=demarkup(this,"method");
  let {name}=fields;
@@ -586,8 +581,8 @@
 {let source=basic(resource)?resource:"";
  let fragment={"fragment":"","script":"","chart":"","network":"","extrude":"","map":""};
  return {source,fragment};
- fragment=await compose(Object.keys,provide,each(compose(crop(1),stash(compose
-(locate,provide,crop(1),slip("/"),"concat",infer("concat","/module/namespace"),fetch,digest
+ fragment=await compose(Object.keys,rank,each(compose(crop(1),stash(compose
+(locate,rank,crop(1),slip("/"),"concat",infer("concat","/module/namespace"),fetch,digest
 ,({default:fragment,...exports})=>prune.call(exports,({1:value})=>
  string(value)&&value.startsWith("data:text/javascript;")?value:undefined,0,0),Object.keys
 )),(name,fragments)=>({[name]:fragments})
@@ -603,7 +598,7 @@
  if(form)return delete node.selected&&form.remove();
  node.selected=true;
  let {x,width,y,height}=target.querySelector("circle").getBoundingClientRect();
- form=target.appendChild(document(
+ form=target.appendChild(...document(
  {foreignObject:
  {requiredExtensions:"http://example.com/SVGExtensions/EmbeddedXHTML"
  ,height,width:"400px"
@@ -614,13 +609,13 @@
  ,"data-inputs":JSON.stringify({source:"string",start:"date",end:"date"})
  }     }
  }
- },namespaces.svg).next().value).querySelector("form");
+ },namespaces.svg)).querySelector("form");
  let record=Object.entries(node.data[node.title]);
  record=record.filter(([key,value])=>typeof value=="string"||form.dataset.inputs[key]);
  record.unshift(["source",node.title]);
  note(form)
  form.call(form,{[node.title]:Object.fromEntries(record)});
- form.appendChild(document({span:{class:"field","#text":"+",style:"cursor:pointer"}}).next().value);
+ form.appendChild(...document({span:{class:"field","#text":"+",style:"cursor:pointer"}}));
  form.source.focus()
  window.room.on("put",function({body,room})
 {window.Tone.Transport.start();
@@ -695,8 +690,8 @@
  // under isolation to event capture islands. 
  {imports:
  {"./Blik_2023_interface.js":["","resolve","locate","digest","cookie","cookies","query","path"]
- ,"./Blik_2023_search.js":["","merge","unfold","search","prune","extract"]
- ,"./Blik_2023_inference.js":";note;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined".split(";")
+ ,"./Blik_2023_search.js":["","unfold","extract"]
+ ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined".split(";")
  ,"./Blik_2023_fragment.js":";* as fragment;document;form;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
  ,"./Blik_2023_layout.js":["* as layout"]
  }

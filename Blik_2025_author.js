@@ -1,146 +1,220 @@
  import {resolve,locate,fetch,digest,cookie,cookies,query,path,socket} from "./Blik_2023_interface.js";
- import {merge,unfold,search,prune,extract,route,record} from "./Blik_2023_search.js";
- import {note,debug,expect,compose,combine,either,pass,trace,drop,crop,slip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,provide,collect,is,match,basic,defined} from "./Blik_2023_inference.js";
+ import {unfold,extract} from "./Blik_2023_search.js";
+ import {note,debug,search,merge,prune,route,record,stagger,spill,model,lift,expect,compose,combine,compound,string,either,pass,trace,drop,crop,slip,flip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,rank,collect,is,match,basic,defined,stash} from "./Blik_2023_inference.js";
  import * as fragment from "./Blik_2023_fragment.js";
  import {document,form,image,canvas,message,demarkup,insert,navigate,metamarkup,detransform,stretch,vectorspace,error,drillresize,deselect,namespaces,keyboard,spell,expand,parse,semiotics,destroy,reference,fill,annotate,qualify,cursor,capture} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  var address=new URL(import.meta.url).pathname;
  var file=address.replace(/.*\//,"/");
 
- export async function syndicate([source,common])
-{return compose
-(buffer(compose(fetch,"json"),fail=>({fail})),{common,source},merge
-,stash(either("items","posts","data",swap([])))
-,({common,source,feed,...author},pub)=>(
- {common,source,...pub
-?{name:common?.author?.name||feed?.author||feed?.title
- ,icon:common?.icon||feed?.image
- ,pub:Object.fromEntries(pub.map((pub)=>
- [pub.id||pub.site_ID||pub.source,Object.assign(pub
-,{author:pub.author||common?.author||{name:source.substring(0,source.search(/_\d\d/)).replace("_"," & ")}
- ,avatar:common?.icon||pub.avatar||pub.author?.avatar_URL||feed.feed?.image
- ,bio:feed?.description
- ,post:either("createdTime","pubDate","created_time","date",swap(0))(pub)||pub.common?.put||
- pub.source?.substring(pub.source.search(/_\d\d/)+1,pub.source?.search(/\d\d_/)+2).split("").map((digit,index,date)=>
-{if([3,6].includes(index))date.splice(index+1,0,"-");return digit;
-}).join("")
- ,title:pub.title||pub.message||pub.source?.substring(pub.source?.search(/\d\d_/)+3).replace(/\.txt/g,"").replace(/_/g," ")
- ,content:pub.content
- ,media:pub.enclosure&&pub.enclosure.link
- })]).sort(({1:{post:past}},{1:{post:next}})=>[next,past].map(time=>
- new Date(clock(time,"datetime")).getTime()).reduce((next,past)=>next-past)).reverse())
- }
-:{pub:author.pub}
- })
-)(source);
-};
-
- export default async function* author({source,name,icon,bio,pub={},sub=[]},expand)
+ export default async function* author({source,name,icon,info,address},expand)
 {if(this&&!modular(this)||arguments[0].constructor?.name==="IncomingMessage")
  return yield {imports:
- {"/Blik_2023_interface.js":["","resolve","locate","digest","cookie","cookies","query","path","socket"]
- ,"/Blik_2023_search.js":["","merge","unfold","search","prune","extract","route","record"]
- ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;provide;collect;is;match;basic;defined".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;descend;form;image;canvas;message;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
+ {"/Blik_2023_interface.js":["","agent","resolve","locate","digest","cookie","cookies","query","path","socket"]
+ ,"/Blik_2023_search.js":["","unfold","extract"]
+ ,"/Blik_2023_inference.js":";control;note;stagger;expect;spill;generator;asyncgenerator;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;merge;prune;route;record;search".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
- ,[file]:["author","syndicate"]
+ ,[file]:["author","syndicate","pub","comments"]
  }
  ,exports:{default:
- {".article":
- {click(event)
-{event.stopPropagation();
- let feed=this.closest(".author");
- let multiple=Array.from(feed.querySelectorAll(".article")).filter(node=>
+ {"[data-source]":
+ {async click(event)
+{if(event.target.closest(".article"))return;
+ let [title]=descend.call(this,".author",0);
+ let description=title.firstChild.nextSibling;
+ if(title.nextSibling)
+ return destroy(title.nextSibling),merge(description,{style:"display:none"});
+ buffer(spell)(description);
+ let source=this.dataset.source;
+ await compose
+(buffer(compose(fetch,"json"),fail=>({fail})),{name:title.textContent}
+,merge,source,pub,rank,each(document.bind(this)),spill,lift
+)(source);
+}}
+ ,".title":
+ {async click(event)
+{let author=this.closest(".feed");
+ let [{textContent:name}]=descend.call(author,".author",0);
+ let expanded=this.nextSibling;
+ let multiple=Array.from(author.querySelectorAll(".title")).filter(node=>
  node!==this).some(node=>node.nextSibling);
- let expanded=this.firstChild.nextSibling;
- feed.style.setProperty("max-width",!expanded||multiple?"calc(100% - 2em)":"revert");
+ author.style.setProperty("max-width",!expanded||multiple?"calc(100% - 2em)":"revert");
  if(expanded)
- return [this.firstChild,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);});
- let source=feed.getAttribute("source");
- let title=this.getAttribute("source");
- let index=this.getAttribute("index");
- return;
- let article=compose(syndicate,syndicate,index)([source]);
- let media=article?.media&&document(link(article?.media,""));
- let progress=insert(document({span:{style:"display:inline-block;white-space:nowrap;overflow:hidden;font-family:monospace;animation:dotdot 3s infinite normal;","#text":"..."}}),"after",this);
+ return this.controller?.abort("Rendering cancelled"),[this,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);});
+ let {source}=author.dataset;
+ let article=await compose(buffer(compose(fetch,"json"),fail=>({fail})),source,syndicate,"pub",this.dataset.source)(source);
+ compose(tether(document),spill)(this.parentNode,{span:
+ {class:"content",span:
+ {class:"progress"
+ ,style:"display:inline-block;white-space:nowrap;overflow:hidden;font-family:monospace;animation:dotdot 3s infinite normal;"
+ ,"#text":"..."
+ }
+ }});
  let content=defined(article?.content)
 ?[this.ownerDocument.createRange().createContextualFragment(article.content),/#.*$/].reduce((fragment,hash)=>
  Array.from(fragment.querySelectorAll("a")).map(link=>[link,link.getAttribute("href")]).forEach(([link,href])=>
  hash.test(href)&&link.setAttribute("href",href.replace(/[^#]*/,"")))||fragment)
-:compose(fetch,whether(compose("headers","Content-Type","get",is("text/html"))
+:await compose(fetch,whether
+(compose("headers","Content-Type","get",is("text/html"))
 ,compose("text",text=>this.ownerDocument.createRange().createContextualFragment(text))
-,compose("text",semiotics,parse)))([source,title,this.dataset?.fragment].filter(Boolean).join("/"));
- let entry=insert(document({span:{media}}),"after",this);
- collect(each.call(content,async function add(fragment,index,entry)
-{if(!index)
- progress.remove();
- return compose.call(fragment
-,infer(insert,...entry.lastChild?["after",entry.lastChild]:["under",entry]));
-},entry));
- if(article?.link)
- insert
-(document(link(article?.link,this.querySelector("span").textContent))
-,entry.lastChild?"after":"under",entry.lastChild||entry
-);
- let icon=compose(image,canvas)("/svg/object/paperplane/tilt/document");
- let comments=compose
-(fetch,either("json",swap([])),provide,each(message)
-,collect,["span","span"],record
-,{span:{class:"history"}},merge
-)("/Blik_2024_comments.json/module/namespace/default/"+title);
- return infer((canvas,comments)=>
- document.call(entry.parentNode,{span:
- {class:"comments"
- ,span:[merge
-(form({name:cookie("author")||"",comment:""})
-,{class:"comment"
- ,span:[{role:"button",canvas}]
+,compose("text",semiotics,parse)
+))(["",this.parentNode.dataset.source].join("/"));
+ this.controller=new AbortController();
+ await compose(tether(document),spill.bind(this.controller),lift)(this.parentNode.querySelector(".content"),content);
+ spill(document.call(this.parentNode.querySelector(".content"),{span:{class:"progress",drop:true}}));
+ spill(document.call(this.parentNode,{span:await comments(this.parentNode.dataset.source)}));
+ //article.media&&link(article?.media,"");
+ //,article.link&&link(article.link,this.parentNode.querySelector("span").textContent);
+}}
+ }}};
+ source=source||["","author",name].join("/");
+ let span=
+ {span:
+ {class:"feed",id:source.replace(/\W/g,'_')
+ ,dataset:{source}
  ,style:
-[{"@scope":{":scope":
- {"&>span[title]":
- {display:"table-cell","align-content":"center","min-height":"2.5em"
- ,"&[id=name]":{"margin-right":0,"border-radius":"2.1em 0 0 2.1em","padding":"0 .5em"}
- ,"&[id=comment]":
- {"max-width":"100%","word-break":"break-all"
- ,"&>span:first-of-type":{display:"none"}
- ,"&>span[role=textbox]":{"min-width":0,"text-align":"left","white-space":"pre"}
+ {"@keyframes flash":
+ {"0%":{"box-shadow":"black 0 0 10px"}
+ ,"33%":{"box-shadow":"var(--text) 0 0 10px"}
+ ,"66%":{"box-shadow":"black 0 0 20px"}
+ ,"100%":{"box-shadow":"revert-layer"}
  }
+ ,"@scope":{":scope":
+ {...prune.call(layout.material,([field,value])=>
+ field==="&:hover"?{...value,animation:"flash .5s ease-in"}:value)
+ ,display:"inline-block",overflow:"hidden","vertical-align":"middle"
+ ,"max-width":"20em",transition:".3s",background:"var(--platform)","border-radius":"1.5em"
+ ,position:"relative"
+ ,"&>.author":
+ {display:"block",cursor:"pointer",padding:"0.5em","text-align":"center"
+ ,"&>span":
+ {"white-space":"pre-wrap",color:"var(--note)"
+ ,"&:first-of-type":{color:"var(--text)","&:hover":layout.text.glow,"&+span":{display:"block","text-align":"left"}}
  }
- ,"&>span[role=button]":
- {"border-radius":"0 2.1em 2.1em 0","margin-left":0,padding:".5em","vertical-align":"middle",overflow:"hidden",cursor:"pointer"
- ,"&>canvas":{width:"1.2em",height:"1.2em","vertical-align":"middle"}
+ ,"& canvas":{width:"2em",height:"2em","border-radius":"1em","vertical-align":"middle","&+span:before":{content:"' '"}}
+ ,"& span[role=link]":{display:"block","text-align":"right",color:"var(--note)","font-style":"italic","&:hover":layout.text.glow,"&:before":{content:"' - '"}}
  }
- ,"&:hover>span[id=comment]>span[role=textbox]":{"min-width":"5em"}
  }}
  }
-]},0)
-,comments]
- ,style:
- {"@scope":{":scope":
- {display:"inline-block"
- ,"&>span.history":{display:"table-cell","border-spacing":"0 1em","text-align":"left"}
- ,"&>span.comment":
- {...layout.material,display:"inline-block","border-radius":"2.1em"
+ ,span:
+ {class:"author"
+ ,span:
+[{canvas:icon&&await buffer(compose(image,canvas),undefine)(icon)
+ ,span:{"#text":name?.replace(/&amp;/g,match=>({"&amp;":"&"}[match]))}
  }
- ,"@keyframes warn":{from:{"box-shadow":"#880e4f 0px 0px 5px inset"},to:{"box-shadow":"revert"}}
+,info&&
+ {class:"spell"
+ ,style:"display:none"
+ ,"#text":info
+ ,link:address&&fragment.link.call(null,address)
+ }
+]}
+ }
+ };
+ yield capture.call(span,[file,"module","default","module"].join("/"));
+ let align=infer("map",compose(lift,infer(record,["span"]),{span:{class:"feed"}},merge));
+ let articles=expand?compose(pub,align)(arguments[0],source):undefined;
+ let authors=Object.entries(arguments[0].sub||[]).map(compose
+(rank,combine
+(compose(combine(buffer(compose(crop(1),fetch,"json"),fail=>({fail})),drop(1)),lift,0,merge)
+,crop(1)
+),lift,syndicate,infer(author,0)
+,{"@scope":{":scope":{display:"block"}}}
+,(author,style)=>({span:{class:"sub",style,...author}})
+,cede()
+));
+ yield* await compose(articles,authors,collect,"flat",trickle)();
+};
+
+ export var syndicate=compose
+(when(compound,string),stash(either("items","posts","data",drop()))
+,({feed,...author},source,pub)=>(
+ {source,...pub
+?{name:author?.name||feed?.author||feed?.title
+ ,icon:author?.icon||feed?.image
+ ,info:author.info||feed?.description
+ ,address:feed?.link
+ ,pub:Object.fromEntries(pub.map(pub=>
+[pub.title||pub.message
+,{name:pub.author
+ ,avatar:author?.icon||pub.avatar||pub.author?.avatar_URL||feed.feed?.image
+ ,put:either("createdTime","pubDate","created_time","date",swap(0))(pub)||pub.common?.put
+ ,id:pub.id||pub.site_ID||pub.source
+ ,content:pub.content
+ ,media:pub.enclosure&&pub.enclosure.link
+ }
+]))
+ }
+:{icon:author.icon
+ ,pub:Object.fromEntries(Object.entries(author.pub||[]).map(([title,pub])=>
+[title
+,{...pub
+ ,name:title.substring(0,title.search(/_\d\d/)).replace("_"," & ")
+ ,put:pub.put||title?.substring(title.search(/_\d\d/)+1,title?.search(/\d\d_/)+2).split("").map((digit,index,date)=>
+{if([3,6].includes(index))date.splice(index+1,0,"-");
+ return digit;
+}).join("")
+ ,title:title.substring(title.search(/\d\d_/)+3).replace(/\.txt/g,"").replace(/_/g," ")
+ }
+]))
+ }
+ })
+);
+
+ export var pub=compose
+(syndicate,compose
+(combine
+(compose("pub",Object.entries,infer("sort",({1:{put:past}},{1:{put:next}})=>
+ [next,past].map(time=>new Date(clock(time,"datetime")).getTime()).reduce((next,past)=>
+ next-past)))
+,compose(slip(compose
+(([source,article],author)=>({author,source,...article}) 
+,buffer(article,fail=>({"#text":fail.message}))
+)),infer)
+),lift,"map"
+),infer("map",compose(lift,infer(record,["span"]),{span:{class:"pub"}},merge))
+);
+
+ async function article({source,title=source,put,author})
+{let span=
+ {class:"article",id:title.replace(/\W/g,"_")
+ ,dataset:{source}
+ ,style:{"@scope":
+ {":scope":
+ {display:"block","white-space":"pre-wrap"
+ ,padding:"0.5em",position:"relative","z-index":2
+ }
+ }}
+ ,span:
+ {class:"title"
+ ,style:{"@scope":{":scope":
+ {color:"#b71c1c",cursor:"pointer"
+ ,"&>canvas":{"border-radius":"50%",height:"1em",width:"1em","vertical-align":"bottom"}
+ ,"&>span":{color:"var(--text)",display:"block"}
+ ,"&:hover>span":layout.text.glow
+ ,"&+span":{"text-align":"left","&>img":{"max-width":"100%",height:"auto"},"&>audio":layout.audio}
  }}}
- }}))(icon,comments);
-}}
- ,"[data-source]":
- {async click()
-{let [title]=descend.call(this,".title",0);
- let description=title.firstChild.nextSibling;
- if(title.nextSibling)
- return [title,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);})
-,merge(description,{style:"display:none"});
- let source=this.dataset.source;
- let {textContent:name}=title;
- let authors=compose(collect,syndicate,infer(author,1))(source,{author:{name}});
- await document.call(this.parentNode.parentNode,authors);
- if(description)
- spell(description);
-}}
- ,".comment":
+ ,canvas:await buffer(compose(image,canvas),undefine)(author.icon)
+ ,"#text":" "+(put?clock(put,"date"):title)
+ ,span:{"#text":title+"\n"}
+ }
+ };
+ return {span};
+};
+
+ async function comment({put,name,comment},index,comments)
+{if(this&&!modular(this)||arguments[0].constructor?.name==="IncomingMessage")
+ return {imports:
+ {"/Blik_2023_interface.js":["","resolve","locate","digest","cookie","cookies","query","path","socket"]
+ ,"/Blik_2023_search.js":["","merge","unfold","search","prune","extract","route","record"]
+ ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
+ ,"/Blik_2023_layout.js":["* as layout"]
+ ,[file]:["author","syndicate","pub"]
+ }
+ ,exports:
+ {".comment":
  {keydown({target,keyCode:code,ctrlKey})
 {let {enter}=keyboard(code);
  if(!enter)
@@ -206,101 +280,57 @@
  [message.previousSibling].forEach(function decrement(node){if(!node)return;decrement(node.previousSibling);node.dataset.index-=1;});
  message.remove();
 }}
- }}};
- let material=prune.call(layout.material,([field,value],{length})=>
- field==="&:hover"?{...value,animation:"flash .5s ease-in"}:value);
- source=source||["","author",name,"pub"].join("/");
- let feed=
- {span:
- {class:"feed",id:encodeURI(source)
- ,span:
- {dataset:{source}
- ,style:
- {"@keyframes flash":
- {"0%":{"box-shadow":"black 0 0 10px"}
- ,"33%":{"box-shadow":"var(--text) 0 0 10px"}
- ,"66%":{"box-shadow":"black 0 0 20px"}
- ,"100%":{"box-shadow":"revert-layer"}
- }
- ,"@scope":{":scope":
- {...material
- ,display:"inline-block",overflow:"hidden","vertical-align":"middle"
- ,"max-width":"20em",transition:".3s",background:"var(--platform)","border-radius":"1.5em"
- ,position:"relative"
- ,"&>.title":
- {display:"block",cursor:"pointer",padding:"0.5em","text-align":"center"
- ,"&>span":
- {"white-space":"pre-wrap",color:"var(--note)"
- ,"&:first-of-type":{color:"var(--text)","&:hover":layout.text.glow,"&+span":{display:"block","text-align":"left"}}
- }
- ,"& canvas":{width:"2em",height:"2em","border-radius":"1em","vertical-align":"middle","&+span:before":{content:"' '"}}
- ,"& span[role=link]":{display:"block","text-align":"right",color:"var(--note)","font-style":"italic","&:hover":layout.text.glow,"&:before":{content:"' - '"}}
- }
- }}
- }
- ,span:
- {class:"title"
- ,span:
-[{canvas:icon&&await buffer(compose(image,canvas),undefine)(icon)
- ,span:{"#text":name?.replace(/&amp;/g,match=>({"&amp;":"&"}[match]))}
- }
-,bio&&
- {class:"spell"
- ,style:"display:none"
- ,"#text":bio
- ,link:await compose(address=>link&&link(address))(feed?.feed?.link)
- }
-]}
- }
- }
- };
- yield capture.call(feed,[file,"module","default","module"].join("/"));
- if(expand)
- yield* compose
-(Object.entries,infer("map",compose
-(([title,post])=>({author:arguments[0],source,title,...post})
-,article,["span","span","span"],record
-,{span:{class:"feed"}},merge
-))//,infer("reduce",(articles,next,index,queue)=>
-// [articles,Promise.resolve(note(articles).at(-1)).then(past=>Promise.race(queue))].flat(),[])
-)(pub);
- yield* compose
-(Object.entries,infer("map",compose
-(syndicate,infer(author,0),author=>({span:
- {class:"syndication"
- ,style:{"@scope":{":scope":{display:"block"}}}
- ,...author
- }})
-)),trickle
-)(sub);
-};
-
- async function article({title,name,source,common,platform,author,put},index)
-{let article=
- {style:{"@scope":
- {":scope":
- {color:"#b71c1c",display:"block","white-space":"pre-wrap"
- ,cursor:"pointer",padding:"0.5em",position:"relative","z-index":2
- ,"&>canvas":{"border-radius":"50%",height:"1em",width:"1em","vertical-align":"bottom"}
- ,"&>span":{color:"var(--text)",display:"block"}
- ,"&:hover>span":layout.text.glow
- ,"&+span":{"text-align":"left","&>img":{"max-width":"100%",height:"auto"},"&>audio":layout.audio}
- }
- }}
- ,class:"article",id:title
- ,...metamarkup(common)
- ,canvas:await buffer(compose(image,canvas),undefine)(author.icon)
- ,"#text":" "+(put?clock(put,"date"):title.substring(5,13))
- ,span:{"#text":title?.substring(title?.search(/\d\d_/)+3).replace(/\.txt/g,"").replace(/_/g," ")+"\n"}
- };
- return article;
-};
-
- async function comment({put,name,comment},index,comments)
-{return compose
+ }};
+ return compose
 (fetch,buffer("json",swap({name})),{comment},merge
 ,async({name,icon,comment,put})=>insert(document({span:
  {class:"comment",...await message({icon,name,put,message:comment},index)
  }}),comments.firstChild?"before":"under",comments.firstChild||comments)
 )("/author/"+name);
+};
+
+ export function comments(source)
+{let icon=compose(image,canvas)("/svg/object/paperplane/tilt/document");
+ let messages=compose
+(fetch,either("json",swap([])),rank,each(message)
+,collect,["span","span"],record
+,{span:{class:"history"}},merge
+)("/Blik_2024_comments.json/module/namespace/default/"+source);
+ let span=
+ {class:"comments"
+ ,span:[merge
+(form({name:cookie("author")||"",comment:""})
+,{class:"comment"
+ ,style:
+[{"@scope":{":scope":
+ {"&>span[title]":
+ {display:"table-cell","align-content":"center","min-height":"2.5em"
+ ,"&[id=name]":{"margin-right":0,"border-radius":"2.1em 0 0 2.1em","padding":"0 .5em"}
+ ,"&[id=comment]":
+ {"max-width":"100%","word-break":"break-all"
+ ,"&>span:first-of-type":{display:"none"}
+ ,"&>span[role=textbox]":{"min-width":0,"text-align":"left","white-space":"pre"}
+ }
+ }
+ ,"&>span[role=button]":
+ {"border-radius":"0 2.1em 2.1em 0","margin-left":0,padding:".5em","vertical-align":"middle",overflow:"hidden",cursor:"pointer"
+ ,"&>canvas":{width:"1.2em",height:"1.2em","vertical-align":"middle"}
+ }
+ ,"&:hover>span[id=comment]>span[role=textbox]":{"min-width":"5em"}
+ }}
+ }
+],span:[{role:"button",icon}]
+ },0)
+,messages]
+ ,style:
+ {"@scope":{":scope":
+ {display:"inline-block"
+ ,"&>span.history":{display:"table-cell","border-spacing":"0 1em","text-align":"left"}
+ ,"&>span.comment":
+ {...layout.material,display:"inline-block","border-radius":"2.1em"
+ }
+ ,"@keyframes warn":{from:{"box-shadow":"#880e4f 0px 0px 5px inset"},to:{"box-shadow":"revert"}}
+ }}}
+ };
+ return capture.call(span,[file,"module",comments.name,"module"].join("/"));
 };

@@ -1,6 +1,6 @@
  import {color,spectrum} from "./Blik_2023_layout.js";
- import {extreme,extract,cluster,prune,sum,rgb} from "./Blik_2023_search.js";
- import {note,infer,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip,each} from "./Blik_2023_inference.js";
+ import {extract,cluster,prune,rgb} from "./Blik_2023_search.js";
+ import {note,sum,extreme,infer,spill,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip,each} from "./Blik_2023_inference.js";
  import extend from './Blik_2023_d4.js';
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
@@ -14,7 +14,7 @@
  export function bar(source,negative)
 {let x=d3.scaleLinear().domain([0,1]).range([0,1]);
  let y=d3.scaleLinear().domain([negative?-1:0,1]).range([negative?-1:0,source]);
- return extend.call(document({svg:
+ return extend.call(compose(document,"firstChild")({svg:
  {viewBox:negative?"0 0 2 2":"0 0 1 1"
  ,style:"overflow:visible;"
  }})
@@ -46,7 +46,7 @@
  return compose.call({svg:
  {defs:{filter:prune.call(vectors.effect.contour,([field,value],{length:depth})=>(
   {"flood-color":"#ffb300",id:depth?value:"contour_yellow"}[field]||value))}
- }},document
+ }},document,spill,lift,crop(1)
 ,{update:true,datum:{record,x,y}
  ,viewBox({record}){return [-50,-30,width+90,height+50];}
  ,g:
@@ -90,7 +90,7 @@
  let categories=Array.from(new Set(source.map(({source:[{name}]})=>name)));
  let x=d3.scaleLinear().domain([0,subjects.length-1]).range([0,500]);
  let y=d3.scaleLinear().domain([0,sum(subjects.map(({new:{length}})=>length))]).range([300,0]);
- return extend.call(document({svg:{viewBox:"0,0,530,330"}})
+ return extend.call(compose(document,"firstChild",note)({svg:{viewBox:"0,0,530,330"}})
 ,{fold:false
  ,g:
  {fold:false,transform:"translate(20,10)"
@@ -162,7 +162,7 @@
  }
  }});
  let actions=!globalThis.window?"/"+(await resolve("path","relative",".",location)):location;
- return capture.call(document({span:{class:"matrix",id:domain,style:{"#text":style},span,dataset:{source:string(arguments[0])?arguments[0]:""}}}),actions+"/actions");
+ return capture.call(compose(document,"firstChild")({span:{class:"matrix",id:domain,style:{"#text":style},span,dataset:{source:string(arguments[0])?arguments[0]:""}}}),actions+"/actions");
 };
 
  function record(record,index,records)
@@ -290,12 +290,13 @@
 :table(value,depth+1,shade||palette))
 ],style:depth?"background-color:"+(shade?.(0.25)):""};
 });
- return document({span:
+ return {span:
  {class:["table","depth-"+depth],span
  ,...!depth&&
  {style:{"#text":css({".table":
  {"display":"inline-block","max-width":"100%",overflow:"scroll"
  ,"text-align":"left","vertical-align":"middle"
+ ,"print-color-adjust":"exact"
  ,"&>span":
  {display:"flex","justify-content":"space-between","border-radius":"1em",margin:".5em",padding:".25em"
  ,"&>span":
@@ -311,7 +312,7 @@
  }
  }})}
  }
- }});
+ }};
 };
 
  export async function adjacency(source)

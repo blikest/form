@@ -1,8 +1,7 @@
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
- import {merge,prune} from './Blik_2023_search.js';
  import {window} from "./Blik_2023_interface.js";
- import {numeric,note,defined,simple,exit} from "./Blik_2023_inference.js";
+ import {merge,prune,numeric,note,defined,simple,exit} from "./Blik_2023_inference.js";
  import {qualify,document} from "./Blik_2023_fragment.js";
 
 // Data-Driven Document Declarations (D4).
@@ -21,7 +20,7 @@
  const [cast]=[[select,window.Node],[selectAll,window.NodeList]].find(({1:selectable})=>this instanceof selectable)||[];
  let selection=cast?.(this)||this;
  if(name)
- selection=[selection,selection.selectChildren(name+qualify(fragment))].reduce((selection,children)=>
+ selection=[selection,selection.selectChildren(qualify({[name]:fragment}))].reduce((selection,children)=>
  children.size()||fold?children:selection.append(name));
  const nodes=selection.nodes();
  const values=selection.data();

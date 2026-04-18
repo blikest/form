@@ -1,5 +1,5 @@
- import {infer,tether,simple,swap,wait,numeric,drop,pass,note,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,provide,plural,when,debug,is} from "./Blik_2023_inference.js";
- import {search,merge,extreme,sum,extract,unfold,prune,isolate,record,remember} from "./Blik_2023_search.js";
+ import {infer,tether,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is} from "./Blik_2023_inference.js";
+ import {extract,unfold,isolate} from "./Blik_2023_search.js";
  import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
  import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
@@ -13,7 +13,7 @@
  let location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
-(drop(1),combine(sprawl,drop(1)),combine(spread,drop(1)),chart,simulate
+(drop(1),combine(sprawl,drop(1)),lift,combine(spread,drop(1)),lift,chart,simulate
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
 );
 
@@ -23,9 +23,9 @@
  observe.call(d3.zoom().scaleExtent([0.1,100000]),{zoom({transform})
 {extend.call(this,{fold:false,g:{fold:false,class:"graph",transform}});
 }})(fragment);
-},id:({source})=>deselect(source||"get"),class:"d3"
+},id:(node)=>deselect([node].flat()[0].name||"get"),class:"d3"
  ,"data-options":(nodes)=>JSON.stringify(prune.call(nodes,([field,value])=>isNaN(field)?value:undefined,1,0))
- ,title(node){return unfold.call(node,({source})=>source).at(-1).name;}
+ ,title(node){return [node].flat()[0].name;}
  ,viewBox({monospace=10,spread="force",gap=0.2})
 {let {up,down,force,radial}={[spread]:true},vertical=Boolean(up||down);
  let {breadth,length}=measure(arguments[0][0]);
@@ -341,7 +341,7 @@
  if(node)return value;
  let entry=path.at(-1)==="nodes";
  if(entry&&array(this))
- return provide((compound(value)?Object.entries(value):[[value]]).map(entry=>split.call(value,entry,path)));
+ return rank((compound(value)?Object.entries(value):[[value]]).map(entry=>split.call(value,entry,path)));
  let nodes=compound(value)?[value].flat().filter(node=>
  !compound(node)||Object.keys(node).length):undefined;
  // search.prune collects array indices in path, which doubles the depth. 
@@ -374,7 +374,7 @@
 ,node);
 };
 
- function spread(nodes,{spread="force",monospace=10,matrix,gap=0.2}={})
+ function spread(nodes,{spread="force",monospace=10,matrix,linear,gap=0.2}={})
 {let {force,radial,up,down,left,right,collapse}={[spread]:true};
  if(matrix)
  nodes=nodes.filter(({occurrence})=>occurrence);
@@ -388,12 +388,17 @@
  nodes=unfold.call({nodes},collapse?whether(({name})=>collapse.includes(name),swap([]),childfold):childfold).slice(1);
  let {breadth,length}=measure(nodes[0]);
  let terminal=5;
- nodes.forEach(node=>Object.assign(node,
-[[-breadth*(1+gap)/2,measure(node,0).breadth*(1+gap)/2,unfold.call(node,"source").flatMap(offset).map(offset=>offset*(1+gap))],
+ nodes.map(node=>
+[node
+,unfold.call(node,node=>[node.source].flat().slice(0,1))
+]).forEach(([node,sources])=>Object.assign(node,[
+[-breadth*(1+gap)/2
+,measure(node,0).breadth*(1+gap)/2
+,sources.flatMap(offset).map(offset=>offset*(1+gap))
+],
 [radial?-indent(nodes[0]):-(length+terminal)/2
-,unfold.call(node,"source").map(indent)
-]
-].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:0).reduce((x,y)=>({x,y}))));
+,sources.map(indent)
+]].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:0).reduce((x,y)=>({x,y}))));
  if(inverse)
  nodes.forEach(node=>Object.assign(node,horizontal?{x:-node.x}:{y:-node.y}));
  return nodes;
@@ -422,7 +427,7 @@
 {merge(options,{spread:"force"},0);
  let {axis}=options;
  return compose.call
-(is(window.SVGSVGElement)(fragment)?fragment:document(
+(is(window.SVGSVGElement)(fragment)?fragment:compose(document,spill,lift,crop(1))(
  {svg:
  {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
  ,class:"d3"
@@ -502,14 +507,14 @@
 ,[[1,1],[1,ceil(y/2)],[ceil(x/2),1],[x,y]].every(([x,y])=>
  !context?.getImageData(x-1,y-1,x,y).data[3])?diameter*0.15:0
 ])
-,([canvas,ratio,inset])=>this.appendChild(document(
+,([canvas,ratio,inset])=>(
  {image:
  {[ratio<1?"width":"height"]:diameter*(!inset||0.7)
  ,[ratio<1?"y":"x"]:diameter*(ratio<1?ratio-1:1-ratio)/2+inset
  ,[ratio<1?"x":"y"]:inset
+ ,href:canvas.toDataURL("image/"+canvas.dataset?.source.slice(-3))
  }
- },"svg")).setAttributeNS("http://www.w3.org/1999/xlink","href"
-,canvas.toDataURL("image/"+canvas.dataset?.source.slice(-3))))(src);
+ }),document.bind(this),spill())(src);
 }}}
  });
 };
@@ -600,7 +605,8 @@
  function wrap(node,radius,{name})
 {if(select(ascend.call(node)[0]).datum().labels==="image")
  return [];
- if(! name. slice ) debugger 
+ if(!name?.slice)
+ return [];
  let {force}={[select(ascend.call(node)[0]).datum().spread]:true};
  return force?!name||Array(8).fill(0).map((max,index,{length})=>
  Math.floor(Math.acos(Math.abs(index-length/2)/(length/2))*2/Math.PI*radius)).sort((past,next)=>
@@ -934,7 +940,7 @@
  return;
  let composer=target.closest("body").querySelector("#composer");
  let node=select(target).datum();
- let source=compose(tether(unfold,"source"),provide,each("name"),collect,"reverse")(node);
+ let source=compose(tether(unfold,"source"),rank,each("name"),collect,"reverse")(node);
  return form.call(composer
 ,{get:annotate({source:"",gradual:true},{source:""})})
 ,fill.call(composer,{source:source.length>1?source.slice(1).join("/"):"..",gradual:true})
