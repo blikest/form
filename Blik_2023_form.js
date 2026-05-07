@@ -1,9 +1,9 @@
- import {note,debug,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
+ import {note,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
  import {document,hypertext,dispose,throttle,capture,defer,delegate,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
  import {serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
- import {extract,encrypt} from "./Blik_2023_search.js";
+ import {encrypt} from "./Blik_2023_search.js";
  import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage,worker} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
@@ -269,11 +269,11 @@
 {if(this)
  return {imports:
  {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
- ,"/Blik_2023_inference.js":";note;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor".split(";")
+ ,"/Blik_2023_inference.js":";note;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
  ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
- ,"/Blik_2023_search.js":["","unfold","extract"]
+ ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2024_svg.js":"* as svg"
  }
  ,exports:
@@ -690,8 +690,8 @@
  // under isolation to event capture islands. 
  {imports:
  {"./Blik_2023_interface.js":["","resolve","locate","digest","cookie","cookies","query","path"]
- ,"./Blik_2023_search.js":["","unfold","extract"]
- ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined".split(";")
+ ,"./Blik_2023_search.js":["","unfold"]
+ ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
  ,"./Blik_2023_fragment.js":";* as fragment;document;form;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
  ,"./Blik_2023_layout.js":["* as layout"]
  }
