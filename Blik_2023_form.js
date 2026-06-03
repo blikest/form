@@ -1,10 +1,10 @@
  import {note,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
- import {document,hypertext,dispose,throttle,capture,defer,delegate,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
- import {serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
+ import {window,document,hypertext,dispose,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules,cookie,cookies} from "./Blik_2023_fragment.js";
+ import {url,serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
  import {encrypt} from "./Blik_2023_search.js";
- import {access,resolve,locate,window,fetch,digest,cookie,cookies,script,query,path,stage,worker} from "./Blik_2023_interface.js";
+ import {access,command,locate,fetch,digest,script,query,path,stage,worker} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
  import editor from "./Blik_2024_script.js";
@@ -17,7 +17,7 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  await publish("./Blik_2024_comments.json",new RegExp(".*\\/author.*[^\\/]$"));
- var {default:fonts}=await resolve.call(import.meta.url,"./Blik_2025_fonts.json");
+ var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
  export var syndication=
  {rss2json:{key:undefined}
  ,google:{api:undefined,search}
@@ -43,7 +43,7 @@
  ,document:compose(crop(1),infer(record,["svg"]),document,crop(1))
  ,media:compose(crop(1),"toString",media,collect,document,crop(1))
  ,interface:async function(request)
-{let queries=query(request.url);
+{let queries=query(url(request));
  let fragment=match(["author",string])(arguments[3])?"author":basic(this)?"network":"fragment/media";
  let {controls,...fields}={source:"",fragment,...queries};
  let [form]=compose(composer,document,spill,lift)(fields);
@@ -65,14 +65,14 @@
  }
  ,...animation.dotdot
  });
- let url=request.url.replace(/\/($|\?.*)/g,"");
- let title=url.split("/").reverse().find(Boolean)||"JSInterface";
+ let address=request.url.replace(/\/($|\?.*)/g,"");
+ let title=address.split("/").reverse().find(Boolean)||"JSInterface";
  [fragment]=compose.call(body,title,"/svg/object/node/document",[],style,hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
 ,{source:path(window.origin+(this===routes?"/get":request.url))
  ,resource:this!==routes&&
- await compose(stage,digest,cede())(this.get?.(...arguments)||this,{url,headers:request.headers})
+ await compose(stage,digest,cede)(this.get?.(...arguments)||this,{url:address,headers:request.headers})
  },1);
  await buffer(compose(tether(submission.get),throttle))(form,fields);
  if(String(controls)==="false")
@@ -83,7 +83,7 @@
 ),relay()
 {return {imports:
  {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock"]
- ,"/Blik_2023_interface.js":["","path","query","locate","resolve"]
+ ,"/Blik_2023_interface.js":["","path","query","locate","command"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
  }
  ,exports:
@@ -127,7 +127,7 @@
  };
 },async rss(request)
 {when(has(["pub","put"]))(this);
- let queries=query(request.url);
+ let queries=query(url(request));
  let item=await Object.keys(this.pub).reduce(record(async item=>
 {let description=item;
  let pubDate=await compose(access,"birthtime","toString")(item);
@@ -144,19 +144,19 @@
  return {status:200,type:"rss+xml",body:'<?xml version="1.0" encoding="UTF-8" ?>'+body};
 },"robots.txt":function(){return "User-agent: *\nDisallow: "}
  ,rss2json:request=>compose(fetch,"json",["body"],record)("https://api.rss2json.com/v1/api.json?"+new URLSearchParams(
- {rss_url:string(request)?request:query(request.url).url
+ {rss_url:string(request)?request:query(url(request)).url
  ,api_key:syndication.rss2json.key
  }))
  ,wordpress(request)
 {return compose
-(resolve.bind(import.meta.url),request.url.split("/").slice(2).join("/"),"site"
+(command.bind(import.meta.url),request.url.split("/").slice(2).join("/"),"site"
 ,{number:15},"postsList",request.url.split("/").slice(2),record,note
 )("./wordpress_2019_wpcom.js","WPCOM");
 },google:
  {files(request)
 {return compose(fetch,"json",["body"],record)("https://www.googleapis.com/drive/v3/files/"+"?alt=media&key="+syndication.google.api);
 },search(request)
-{let {q,type="image"}=query(request.url);
+{let {q,type="image"}=query(url(request));
  return compose(fetch,"json",["body"],record)(
 ["https://www.googleapis.com/customsearch/v1?"+new URLSearchParams(
  {q,searchType:type,key:syndication.google.api
@@ -164,7 +164,7 @@
  })
 ].join(""));
 },map(request)
-{let options=query(request.url);
+{let options=query(url(request));
  merge(options,{zoom:1,size:"600x500",maptype:"satellite",key:syndication.google.api},0);
  return compose(fetch)("https://maps.googleapis.com/maps/api/staticmap?"+new URLSearchParams(options));
 }}
@@ -177,14 +177,14 @@
 ,responseobject=>responseobject.embed_html+" \n"+message
 )(id,'id,title,format,source,embed_html')
 :[response.message,name&&link?name.replace(/ /g,"_")+"@"+link:""].join())
-(query(request.url)
+(query(url(request))
 ,'id,name,from,created_time,message,type,timeline_visibility,link,object_id'
 );
 },https:({url})=>compose(fetch,"json")("https:/"+url)
  ,http:({url})=>compose(fetch,"json")("http:/"+url)
  ,medium:request=>compose(fetch,"text",note,slip(new DOMParser()),"text/xml","parseFromString","item","querySelectorAll")("https://medium.com/feed/"+new URL(request.url).pathname.split("/").slice(2).join("/"))
  ,wikipedia
- ,mapbox(request){return infer("mapbox",request,syndication.mapbox)(resolve.bind(import.meta.url)("./Blik_2024_map.js","proxy"));}
+ ,mapbox(request){return infer("mapbox",request,syndication.mapbox)(command.bind(import.meta.url)("./Blik_2024_map.js","proxy"));}
  ,overpass()
 {return fetch('https://www.overpass-api.de/api/interpreter?'+new URLSearchParams({data:'[out:json];rel[admin_level=2]'/*'convert item ::=::,::geom=geom(),_osm_type=type();'*/+';out geom;'}));
 },elsevier(request)
@@ -193,7 +193,7 @@
  {"X-ELS-APIKey":syndication.elsevier.api
  }})
  let address="https://api.elsevier.com/content/search/scidir";
- let options=query(request.url);
+ let options=query(url(request));
  let field="dc:title,dc:creator,prism:publicationName,prism:coverDate,dc:description,prism:doi";
  merge(options,{field,count:25,view:"COMPLETE"},0);
  return compose(fetch,note,"text",note)(note(address+"?"+new URLSearchParams(options)),{headers:
@@ -250,7 +250,7 @@
 ,{install(){this.postMessage(address+" installed.");}
  ,activate(){this.postMessage(address+" activated.");}
  }).postMessage("Worker ready: "+address)
- let modules=cede(compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file))))("/sources");
+ let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
  Promise.all([caches.open(import.meta.url),modules]).then(([cache,modules])=>
  cache.addAll(modules)).catch(console.error);
 }]
@@ -268,9 +268,9 @@
  export function composer(fields)
 {if(this)
  return {imports:
- {"/Blik_2023_interface.js":["","path","resolve","locate","digest","cookie","cookies","query"]
- ,"/Blik_2023_inference.js":";note;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
+ {"/Blik_2023_interface.js":["","path","command","locate","digest","query"]
+ ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
  ,"/Blik_2023_search.js":["","unfold"]
@@ -338,12 +338,19 @@
 {let form=target.closest("[role=form]");
  let value=target.textContent;
  let {name}=demarkup(target,"name");
- if(name==="source"&&(value==="../"||form.getAttribute("sidestep")))
- return document.call(form,{sidestep:form.getAttribute("sidestep")?undefined:true}),compose
-(fetch,digest,whether(compound,infer(),swap(value)),collect,source=>fragment.form({[form.getAttribute("method")]:{source}}),document.bind(form)
-)(value==="../"
-?form.ownerDocument.defaultView.location.href.replace(form.ownerDocument.defaultView.location.pathname.replace(/.*\/([^$])/,"$1")
-,form.ownerDocument.defaultView.location.pathname.split("/").length<4?"files":"get")
+ let sidestep=value.startsWith("../");
+ let sidestepped=form.getAttribute("sidestep");
+ if(name==="source"&&(sidestep||sidestepped))
+ return compose.call(form,{sidestep:form.getAttribute("sidestep")?undefined:true},tether(document),spill,lift)
+,sidestep&&sidestepped||compose
+(fetch,digest,whether(compound,unit,swap(value)),collect
+,source=>fragment.form({[form.getAttribute("method")]:{source}})
+,document.bind(form),spill,lift
+)(sidestep
+?form.ownerDocument.defaultView.location.href.replace
+(form.ownerDocument.defaultView.location.pathname.replace(/.*\/([^$])/,"$1")
+,form.ownerDocument.defaultView.location.pathname.split("/").length<4?"files":"get"
+)
 :form.ownerDocument.defaultView.frame.dataset.source);
  if(name==="message"&&value)
  form.dispatchEvent(new MessageEvent("message",{data:{action:"signal"},bubbles:true}));
@@ -369,7 +376,7 @@
 }}
  ,"[role=checkbox]":
  {click({target})
-{collect(document.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"}));
+{compose.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"},tether(document),spill,lift);
  this.dispatchEvent(new Event("submit",{bubbles:true}));
 },keydown({keyCode,target})
 {let {space}=keyboard(keyCode);
@@ -395,7 +402,7 @@
 {let form=this.closest("[role=form]");
  let method=form.getAttribute("method");
  let {message}=fill.call(form,method);
- if({erase:true,send:message,put:true}[method])
+ if({send:message,put:true}[method])
  return form.dispatchEvent(new Event("submit",{bubbles:true}));
  toggle.call(form,{get:"send",send:"get"}[method]);
 }}
@@ -403,14 +410,14 @@
  {input(event)
 {event.stopPropagation();
  let {target,inputType:type,ctrlKey}=event;
- if(type!=="insertParagaph"||!ctrlKey)return;
+ if(type!=="insertParagraph")return;
  event.preventDefault();
  let value=target.textContent;
- if(/^\.+$/.test(value))
+ if(!value)
  return this.dispatchEvent(new Event("submit",{bubbles:true}));
  let form=this.closest("[role=form]");
  let method=form.getAttribute("method");
- collect(document.call(form,fragment.form({[method]:{[value]:""}})));
+ compose.call(form,fragment.form({[method]:{[value]:""}}),tether(document),spill,lift);
  form.appendChild(this);
  form.querySelector("[name="+value+"]").focus();
  target.textContent=""; 
@@ -525,17 +532,19 @@
  this.ownerDocument.defaultView.history.pushState({},null,[origin,remote?encodeURI(source):path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
  let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
  let frame=this?.ownerDocument.defaultView.frame||
- compose(document,spill,lift,infer(insert,"before",this),cede())({div:{id:"frame"}});
+ compose(document,spill,lift,infer(insert,"before",this),cede)({div:{id:"frame"}});
  frame.dataset.source=route;
+ frame.controller?.abort("Rendering canceled.");
+ frame.controller=new AbortController();
  compose(document,spill,lift,infer(insert,"under",frame))(progress);
  resource=resource||compose(fetch,digest)(route+query);
  let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
  await compose(profile,["get"],record,form,pass(clear),document.bind(this),spill)(resource);
- let [module,feature]=await locate.call(import.meta.url,fields.fragment);
+ let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
  let fail=compose(crop(1),note.bind(1),"message",document,spill);
- let fragment=await buffer(resolve.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
+ let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
  return compose
-(document.bind(frame),spill
+(document.bind(frame),spill.bind(frame.controller)
 ,buffer(lift,compose(fail,document.bind(frame),spill,lift))
 ,pass(compose("firstChild","remove"))
 ,"firstChild"
@@ -689,10 +698,10 @@
  var body=
  // under isolation to event capture islands. 
  {imports:
- {"./Blik_2023_interface.js":["","resolve","locate","digest","cookie","cookies","query","path"]
+ {"./Blik_2023_interface.js":["","command","locate","digest","query","path"]
  ,"./Blik_2023_search.js":["","unfold"]
  ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
- ,"./Blik_2023_fragment.js":";* as fragment;document;form;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
+ ,"./Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
  ,"./Blik_2023_layout.js":["* as layout"]
  }
  ,exports:

@@ -1,8 +1,7 @@
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
- import {window} from "./Blik_2023_interface.js";
  import {merge,prune,numeric,note,defined,simple,exit} from "./Blik_2023_inference.js";
- import {qualify,document} from "./Blik_2023_fragment.js";
+ import {qualify,window,document} from "./Blik_2023_fragment.js";
 
 // Data-Driven Document Declarations (D4).
 

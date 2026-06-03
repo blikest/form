@@ -5,10 +5,10 @@
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
  import {axisBottom,axisLeft} from './Bostock_2016_axis.js';
- import {resolve,window,fetch,digest} from "./Blik_2023_interface.js";
- import {document,css,capture,ascend,keyboard} from "./Blik_2023_fragment.js";
+ import {command,fetch,digest} from "./Blik_2023_interface.js";
+ import {window,document,css,capture,ascend,keyboard} from "./Blik_2023_fragment.js";
  import * as vectors from "./Blik_2024_svg.js";
- var {default:awesome}=await resolve.call(import.meta.url,"./blessochampion_2019_awesomesvgs.json");
+ var {default:awesome}=await command.call(import.meta.url,"./blessochampion_2019_awesomesvgs.json");
  var location=new URL(import.meta.url).pathname;
 
  export function bar(source,negative)
@@ -161,7 +161,7 @@
  ,"&:last-of-type>span:not(:first-of-type)>span":{"transform":"translate(1.25em,-.25em) rotate(45deg)","transform-origin":"right",opacity:0.5}
  }
  }});
- let actions=!globalThis.window?"/"+(await resolve("path","relative",".",location)):location;
+ let actions=!globalThis.window?"/"+(await command("path","relative",".",location)):location;
  return capture.call(compose(document,"firstChild")({span:{class:"matrix",id:domain,style:{"#text":style},span,dataset:{source:string(arguments[0])?arguments[0]:""}}}),actions+"/actions");
 };
 

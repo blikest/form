@@ -1,7 +1,8 @@
- import {infer,tether,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
+ import {infer,tether,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
- import {window,fetch,digest,resolve,path} from "./Blik_2023_interface.js";
- import {document,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
+ import {serialize as ser} from "./Blik_2023_meta.js";
+ import {fetch,digest,command,path} from "./Blik_2023_interface.js";
+ import {document,window,demarkup,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image,metamarkup} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
  import * as d3 from './Bostock_2011_d3.js';
@@ -9,11 +10,14 @@
  import {forceSimulation as force3d,forceX,forceY,forceZ,forceLink,forceCenter,forceCollide,forceManyBody} from './Vasturiano_2016_force3d.js';
  import extend from "./Blik_2023_d4.js";
  import * as vectors from "./Blik_2024_svg.js";
- var browser=Boolean(globalThis.window);
- let location=new URL(import.meta.url).pathname.replace(/.*\//,"");
+ var browser=defined(globalThis.window);
+ var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
-(drop(1),combine(sprawl,drop(1)),lift,combine(spread,drop(1)),lift,chart,simulate
+(drop(1),whether(string,combine(compose(crop(1),fetch,digest),compose(drop(1,0,compose(["source"],record)),merge))),lift
+,stash(compose(matrix,["matrix"],record)),crop(1,compose(rotate(-1),flip,combine(merge,drop(2)))),lift
+,combine(whether([is(window.Node),match(something,{matrix:{}}),has("nodeName")],unit,reference,Graph,sprawl),drop(1)),lift
+,combine(spread,drop(1)),lift,chart,simulate
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
 );
 
@@ -22,14 +26,16 @@
  ,id:(node)=>deselect([node].flat()[0].name||"get"),class:"d3"
  ,"data-options":(nodes)=>JSON.stringify(prune.call(nodes,([field,value])=>isNaN(field)?value:undefined,1,0))
  ,title(node){return [node].flat()[0].name;}
- ,viewBox({monospace=10,spread="force",gap=0.2})
-{let {up,down,force,radial}={[spread]:true},vertical=Boolean(up||down);
- let {breadth,length}=measure(arguments[0][0]);
+ ,viewBox({monospace=10,spread="force",gap=0.2,range})
+{let {up,down,force,radial}={[spread]:true};
+ let vertical=Boolean(up||down);
+ let {breadth,length}=measure({nodes:arguments[0]});
+ if(range)length=extreme(arguments[0].map(node=>node[vertical?"y":"x"])).reduce((min,max)=>max-min);
  let [nodes,links]=forage(this);
  let density=links.size()/(nodes.size()*(nodes.size()-1)/2);
  let [width,height]=force
 ?Array(2).fill(scale(nodes.size()/Math.sqrt(density)||0))
-:[breadth*(1+gap),(length||breadth)+10].map(size=>size*monospace).sort(size=>vertical?1:-1);
+:[breadth*(1+gap),(length||breadth)+10].map((size,index)=>size*(index&&range?1:monospace)).sort(size=>vertical?1:-1);
  let space=radial?[-width,-width,width*2,width*2]:[-width/2,-height/2,width,height];
  merge(arguments[0],{space});
  if(this.__zoom)
@@ -276,7 +282,7 @@
 ,combine("0",compose
 (each(["1",compose
 (combine
-(infer()
+(unit
 ,buffer(differ("source"),drop())
 ,buffer(differ("nodes"),drop())
 ,buffer(compose(differ("relations"),"keys",Array.from),drop())
@@ -297,34 +303,34 @@
  }
  }};
 
- export function sprawl(resource,options={})
-{// parse object as a nodes. 
- // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
- if(typeof resource==="string")
- return compose(fetch,digest,infer(sprawl,Object.assign(options,{source:resource})))(resource);
- if(resource.nodeName)
- return Graph(resource);
- let {relations,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix}=options;
- if(resource.constructor.name==="Node")
- return resource;
- matrix=matrix?isolate.call(resource,[matrix].flat())
+ export function matrix(resource,{matrix})
+{return matrix?isolate.call(resource,[matrix].flat())
 :search.call(resource,([field,records])=>
  array(records)&&records.some(record=>
  array(record)&&record.every(numeric)));
- if(Object.values(matrix).length)
- return compose.call
-(resource,infer(({fields,records,direction},matrix)=>
+};
+
+ export function reference(resource,options)
+{// use matrix to define relations. 
+ return compose
+(({fields,records,direction},matrix)=>
  Object.values(Object.entries(matrix).reduce(infer(project,direction)
 ,sprawl({fields,records}).map(({nodes})=>
  unfold.call({nodes},childfold).filter(({nodes})=>
- !nodes)).reduce((range,domain)=>({range,domain})))).flat(),matrix)
+ !nodes)).reduce((range,domain)=>({range,domain})))).flat()
 ,pass(nodes=>merge(options
 ,{direction:Array.from(new Set(Array.from(nodes.reduce((direction,{source:[{name:source}],relations})=>
  Array.from(relations?.entries()||[]).reduce((direction,[{source:[{name:target}]}])=>
  direction.set(source,target),direction),new Map()).entries()).flat()))
  ,monospace
  }))
-);
+)(resource,options.matrix);
+};
+
+ export function sprawl(resource,options={})
+{// parse object as a nodes. 
+ // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
+ let {relations,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix,range}=options;
  let direct=false&&!Object.keys(search.call(resource,({1:value})=>
  !simple(value)&&!numeric(value))).length;
  if(direct)
@@ -339,11 +345,11 @@
  }));
  if(source&&linear&&Object.keys(resource).length>1)
  resource=record(resource,[source==="/get"?window.location.origin:source]);
- let {resource:{nodes}}=prune.call({resource},split,false,"value");
+ let {resource:{nodes}}=prune.call({resource},infer(split,relations),false,["value",relations,range]);
  prune.call(nodes,backlink,false,["source","value"]);
  if(!linear)
  nodes=unfold.call({nodes},childfold).slice(1).map(deduplicate);
- return nodes;
+ return note(nodes);
 //  note(unfold.call(nodes[0],childfold));
 //  if(depth)nodes.forEach(node=>node.depth===depth&&delete node.children);
 //  nodes.forEach((node,index,{length})=>Object.assign(node
@@ -355,16 +361,17 @@
 //  return node;
 };
 
- function split([name,value],path=[])
+ export function split(scope,relations,[name,value],path=[],trace=[])
 {// split entries into nodes. 
  let fields="value,name,nodes,depth".split(",");
- let node=compound(this)&&has.call(this||{},fields)&&Object.keys(this).length===fields.length;
+ let node=compound(scope)&&has.call(scope||{},fields)&&Object.keys(scope).length===fields.length;
  if(node)return value;
  let entry=path.at(-1)==="nodes";
- if(entry&&array(this))
- return rank((compound(value)?Object.entries(value):[[value]]).map(entry=>split.call(value,entry,path)));
- let nodes=compound(value)?[value].flat().filter(node=>
- !compound(node)||Object.keys(node).length):undefined;
+ if(entry&&array(scope))
+ return rank((compound(value)?Object.entries(value):[[value]]).map(entry=>
+ split(value,relations,entry,path,trace)));
+ let nodes=compound(value)?[relations&&value[relations]||value].flat().filter(node=>
+ node&&(!compound(node)||Object.keys(node).length)):undefined;
  // search.prune collects array indices in path, which doubles the depth. 
  // first entries only serve to expose resource entries, which increments depth. 
  let depth=path.length/2-1;
@@ -372,14 +379,15 @@
 };
 
  function backlink([field,value],path)
-{if(!path.length)return value;
+{if(!path.length)
+ return merge(value,{source:[null]});
  let {nodes,depth}={[field]:true};
  if(nodes&&array(value))
  value.forEach(entry=>merge(entry,{source:[this]},0));
  let terminal=depth&&!this.nodes?.length;
  if(terminal)
- unfold.call(this,"source").reverse().forEach((node,index)=>
- merge(node,{height:Math.max(node.height||0,value-index)}));
+ unfold.call(this,"source").filter(Boolean).reverse().forEach((node,index)=>
+ merge(node,{height:Math.max(node?.height||0,value-index)}));
  return value;
 };
 
@@ -389,59 +397,67 @@
  merge(node,prune.call(duplicate,([field,value])=>["source","nodes"].includes(field)
 ?[value,["source","nodes"].find(name=>name!==field)].reduce((contingent,reverse)=>
  contingent.filter(contingent=>
- contingent[reverse].splice(contingent[reverse].indexOf(duplicate),1,node)&&
+ contingent?.[reverse].splice(contingent[reverse].indexOf(duplicate),1,node)&&
  !node[field]?.includes(contingent)))
 :value,0,0),0)
 ,node);
 };
 
- export function spread(nodes,{spread="force",monospace=10,matrix,linear,gap=0.2}={})
+ export function spread(nodes,{spread="force",monospace=10,matrix,linear,gap=0.2,range,ratio}={})
 {let {force,radial,up,down,left,right}={[spread]:true};
- if(matrix)
+ if(Object.values(matrix).length)
  nodes=nodes.filter(({occurrence})=>occurrence);
  if(force)
  return nodes;
-//  nodes.reverse().reduce(({x,y},node)=>Object.assign(node,{x,y})
-// ,[breadth,length].map(size=>size*monospace/2).reduce((x,y)=>({x,y})));
  let horizontal=left||right;
  let vertical=down||up;
  let inverse=up||left||radial;
  nodes=unfold.call({nodes},childfold).slice(1);
- let {breadth,length}=measure(nodes[0]);
+ let {breadth,length}=measure({nodes});
  let terminal=10;
- nodes.map(node=>unfold.call(node,({source})=>
- [source].flat()[0]||[])).forEach(nodes=>
+ nodes.map(node=>
+ unfold.call(node,({source})=>[source].flat()[0]||[])).forEach(nodes=>
  Object.assign(nodes[0],[
 [-breadth*(1+gap)/2
 ,measure(nodes[0],0).breadth*(1+gap)/2
 ,nodes.flatMap(offset).map(offset=>offset*(1+gap))
 ],
-[radial?-indent(nodes[0]):-(length+terminal)/2
-,(nodes[0].nodes?nodes:nodes.slice(1)).map(indent)
+[radial?-inset(nodes[0]):-(length+terminal)/2
+,(nodes[0].nodes?nodes:nodes.slice(1)).map(inset)
 ,nodes[0].nodes?0:terminal
 ]].map(size=>sum(...size)*monospace).sort(size=>horizontal?-1:0).reduce((x,y)=>({x,y}))));
  if(inverse)
  nodes.forEach(node=>Object.assign(node,horizontal?{x:-node.x}:{y:-node.y}));
+ if(!range)
+ return nodes;
+ let start=extreme(nodes.map(({value})=>value[range]))[0]*ratio;
+ nodes.forEach(node=>node.x=node.value[range]*ratio-start);
  return nodes;
 };
 
  function offset(node)
-{return [node.source].flat().flatMap(node=>node?.nodes||[]).flatMap((child,index,nodes)=>
- child===node?nodes.splice(index)&&[]:child).map(node=>measure(node,0).breadth);
+{let {nodes=[]}=node.source?.[0]||{}
+ return Array.from(nodes).filter((child,index,nodes)=>
+ child!==node?child.source[0]===node.source[0]:!nodes.splice(index)).map(node=>
+ measure(node,0).breadth);
 };
 
- function indent(node)
-{let {1:source}=unfold.call(node,({source})=>[source].flat()[0]||[],1);
+ function inset(node)
+{let [source]=node?.source||[];
  return extreme((source?.nodes||[node]).map(({name})=>name?.length||0))[1];
 };
 
  export function measure(node,length=true)
-{let terms=unfold.call({nodes:[node]},childfold).filter(node=>!node?.nodes?.length);
- let breadth=terms.length;
- let depth=numeric(length)?length
-:extreme(terms.map(node=>sum(unfold.call(node,node=>
- [node.source].flat().shift()||[]).map(indent))))[1];
- return {breadth,length:depth};
+{let terminal=unfold.call(node,node=>node.name
+?node.nodes?.filter(match({source:[node]}))||[]
+:node.nodes||[]).filter(node=>
+ !node?.nodes?.filter(match({source:[node]}))?.length);
+ return (
+ {breadth:terminal.length
+ ,length:numeric(length)?length
+:extreme(terminal.map(node=>sum(unfold.call(node,node=>
+ [node.source].flat()[0]||[]).map(inset))))[1]
+ });
 };
 
  export function chart(nodes,options={},fragment)
@@ -462,47 +478,52 @@
 ]}
  }
  })
-,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),resolve.bind(import.meta.url)):undefined
+,axis===3?compose(slip("./Blik_2025_extrude.js","default",nodes,options),command.bind(import.meta.url)):undefined
 ,{datum:Object.assign(nodes,options),...svg},tether(extend)
 );
 };
 
+ var bezier=prune.call({radial:["angle","radius"],vertical:"xy",horizontal:"xy"},([field,[x,y]])=>
+ d3["link"+field.replace(/./,infer("toUpperCase"))]()[x](({x})=>x)[y](({y})=>y));
+
  function line(link,index,paths)
 {let fragment=ascend.call(this)[0];
- let {spread,layered,direction,space}=select(fragment).datum();
+ let {spread,layered,direction,space,linear}=select(fragment).datum();
  let {up,down,right,left,radial,force}={[spread]:true};
  let [vertical,horizontal]=[up||down,left||right];
+ let inverse=up||left;
  let [field]=Object.entries({vertical,horizontal,radial}).find(({1:value})=>value)||[];
- let line=d3["link"+field?.replace(/./,initial=>initial.toUpperCase())];
- if(line)
- return line()[radial?"angle":"x"](({x})=>x)[radial?"radius":"y"](({y})=>y)(link);
- let {source,target:{x,y}}=link;
- let {0:x0,2:width}=space;
+ let line=bezier[field];
+ if(line&&linear)
+ return line(link);
+ let {source,target}=link;
+ let [x,y,width,height]=space;
+ let [zone,flow]=vertical?"xy":"yx";
+ let horizon=vertical?width:height;
  let curve=!horizontal&&!vertical&&!layered?""
-://"C"+source.x+","+(source.y+y)/2+" "+x+","+(source.y+y)/2:
- compose.call(
- {distance:Math.sqrt((source.x-x)**2+(source.x-x)**2)
- ,middle:(y+source.y)/2
- ,side:(width/2+x0)<source.x?1:-1
- ,steer:Math.abs(source.x-width/2)
- ,feedback:direction.at(-2)===source.source[0].name
+:compose.call(
+ {distance:Math.sqrt((source[zone]-target[zone])**2+(source[zone]-target[zone])**2)
+ ,middle:(target[flow]+source[flow])/2
+ ,side:source[zone]<0?-1:1
+ ,steer:Math.abs(source[zone])
+ ,feedback:(inverse?not(is(true)):is(true))(target[flow]<source[flow])
  }
 ,({steer,...curve})=>(
  {...curve,steer
- ,ascent:curve.middle-(y-source.y)/4
- ,descent:curve.middle+(y-source.y)/4
- ,scope:((width/2/steer)*Math.sqrt(steer**2/4))
+ ,ascent:curve.middle-(target[flow]-source[flow])/4
+ ,descent:curve.middle+(target[flow]-source[flow])/4
+ ,scope:((horizon/2/steer)*Math.sqrt(steer**2/4))
  })
-,({distance,middle,side,steer,scope,feedback,ascent,descent})=>
-["C",feedback?[source.x,source.y-scope/3]:[source.x,ascent]
-    ,feedback?" "+[source.x+scope*side,source.y-scope/3]:""
-," ",feedback?[source.x+scope*side,middle]:[x,descent]
-    ,feedback?" "+[source.x+scope*side,y+distance]:""
-    ,feedback?" "+[x,y+scope/3]:""
-].join("")
-);
- let end=radial?Math.cos(x-Math.PI/2)*y+","+Math.sin(x-Math.PI/2)*y:[x,y];
- return "M"+[source.x,source.y]+curve+" "+end;
+,({distance,middle,side,steer,scope,feedback,ascent,descent})=>feedback?
+[[source[zone],source[flow]+scope/3]
+,[source[zone]+scope*side,source[flow]+scope/3]
+,[source[zone]+scope*side,middle]
+,[source[zone]+scope*side,target[flow]-distance]
+,[target[zone],target[flow]-distance]
+]:[[source[zone],ascent],[target[zone],descent]]
+).map(point=>point[vertical?"flat":"reverse"]()).join(" ");
+ let end=radial?["cos","sin"].map(sin=>Math[sin](x-Math.PI/2)*y):[target.x,target.y];
+ return "M"+[source.x,source.y]+"C"+curve+" "+end;
 };
 
  function pattern(node)
@@ -595,7 +616,7 @@
  //simulation.restart();
 }});
 
- function nodeindex(node){return node?deselect([node.source?.[0].name||[],node.name].join("-")):this?.getAttribute("id");};
+ function nodeindex(node){return node?deselect([node.source?.[0]?.name||[],node.name].join("-")):this?.getAttribute("id");};
  function linkindex(link){return link?[link.source,link.target].map(nodeindex).join("_"+link.value+"_"):this.getAttribute("id");};
  function patternindex({name}){return name.replace(/[^\d\w]/g,"");};
  function size(node,field){return node[field]||Math.cbrt(node.value?.weight)||node.centrality||1;};
@@ -615,7 +636,7 @@
  let {progress}=node.value||{};
  return defined(progress)
 ?Number(progress)?color.health(Number(progress)/100):"#616161"
-:node.color||color[node.source?.[0].name]||
+:node.color||color[node.source?.[0]?.name]||
  (scale||color.rainbow).call(color,node.height/(node.depth+node.height));
 };
 
@@ -952,7 +973,7 @@
 };
 
  export function collapse({target})
-{let targets=[target?this:Array.from(arguments).map(this.querySelector.bind(this))].flat();
+{let targets=[target?this:Array.from(arguments).map(this.querySelector.bind(this))].flat().filter(Boolean);
  let descendants=targets.map(target=>[select(target).datum(),target]).flatMap(([node,target])=>(
  [node.nodes,target.descendants]=[target.descendants,node.nodes]
 ,unfold.call({nodes:target.descendants},childfold).slice(1)));
@@ -1018,7 +1039,8 @@
  export var childfold=["nodes",node=>Array.from(node.relations?.keys()||[])];
 
  export var tests=
- {sprawl:compose.call
+ {sprawl:
+[compose.call
 ({a:{b:"c"}}
 ,{name:"a",height:1,depth:0,nodes:
 [{name:"b",depth:1,height:0}
@@ -1027,4 +1049,21 @@
  ,terms:[[merge(term,{value:context.a,nodes:Object.assign({},[{source:[term],value:context.a.b}])})]]
  ,condition:"deepEqual"
  })
-)};
+),
+[{a:{relations:["b","c"]},b:{relations:["c"]},c:{}},
+[{name:"a",height:1,depth:0,nodes:
+[{name:"b",depth:1,height:0}
+,{name:"c",depth:1,height:0}
+]}
+,{name:"b",depth:1,height:0,nodes:[{name:"c",depth:1,height:0}]}
+,{name:"c",depth:1,height:0}
+]
+].reduce((context,terms)=>(
+ {context:[context,{relations:"relations"}]
+ ,terms:[terms.map(node=>node.nodes?merge(node
+,{nodes:Object.fromEntries(Object.entries(Array(node.nodes.length).fill({source:[node]})))
+ ,value:context[node.name]
+ }):node),each(compose(crop(1),"json",note,ser)),note]
+ ,condition:"deepEqual"
+ }))
+]};
