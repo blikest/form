@@ -14,8 +14,8 @@
  var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  export default compose
-(drop(1),whether(string,combine(compose(crop(1),fetch,digest),compose(drop(1,0,compose(["source"],record)),merge))),lift
-,stash(compose(matrix,["matrix"],record)),crop(1,compose(rotate(-1),flip,combine(merge,drop(2)))),lift
+(drop(1),whether(string,combine(compose(crop(1),fetch,digest),compose(drop(1,0,compose(["source"],record)),merge),drop(2))),lift
+,stash(compose(matrix,["matrix"],record)),crop(1,compose(rotate(1),drop(2,0,merge)))
 ,combine(whether([is(window.Node),match(something,{matrix:{}}),has("nodeName")],unit,reference,Graph,sprawl),drop(1)),lift
 ,combine(spread,drop(1)),lift,chart,simulate
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
@@ -304,7 +304,7 @@
  }};
 
  export function matrix(resource,{matrix})
-{return matrix?isolate.call(resource,[matrix].flat())
+{return either(string,array)(matrix)?isolate.call(resource,[matrix].flat())
 :search.call(resource,([field,records])=>
  array(records)&&records.some(record=>
  array(record)&&record.every(numeric)));
