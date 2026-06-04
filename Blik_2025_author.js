@@ -24,12 +24,13 @@
  let [title]=descend.call(this,".author",0);
  let description=title.firstChild.nextSibling;
  if(title.nextSibling)
- return destroy(title.nextSibling),merge(description,{style:"display:none"});
+ return this.controller?.abort("Rendering canceled."),destroy(title.nextSibling),merge(description,{style:"display:none"});
+ this.controller=new AbortController();
  buffer(spell)(description);
  let source=this.dataset.source;
  await compose
 (buffer(compose(fetch,"json"),fail=>({fail})),{name:title.textContent}
-,merge,source,pub,rank,each(document.bind(this)),spill,lift
+,merge,source,pub,rank,each(document.bind(this)),spill.bind(this.controller),lift
 )(source);
 }}
  ,".title":
@@ -43,7 +44,10 @@
  if(expanded)
  return this.controller?.abort("Rendering cancelled"),[this,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);});
  let {source}=author.dataset;
- let article=await compose(buffer(compose(fetch,"json"),fail=>({fail})),source,syndicate,"pub",this.dataset.source)(source);
+ let article=await compose
+(buffer(compose(fetch,"json"),fail=>({fail}))
+,source,syndicate,search(["pub",this.parentNode.dataset.source])
+)(source);
  compose(tether(document),spill)(this.parentNode,{span:
  {class:"content",span:
  {class:"progress"
@@ -120,7 +124,7 @@
 (compose(combine(buffer(compose(crop(1),fetch,"json"),fail=>({fail})),drop(1)),lift,0,merge)
 ,crop(1)
 ),lift,syndicate,infer(author,0)
-,{class:"sub",style:{"@scope":{":scope":{display:"block"}}}}
+,slip({class:"sub",style:{"@scope":{":scope":{display:"block"}}}})
 ,merge,["span"],record,cede
 ));
  yield* await compose(articles,authors,collect,"flat",trickle)();
@@ -293,7 +297,7 @@
  let messages=compose
 (fetch,either("json",swap([])),rank,each(message)
 ,collect,["span","span"],record
-,{span:{class:"history"}},merge
+,{span:{class:"history"}},merge,note
 )("/Blik_2024_comments.json/module/namespace/default/"+source);
  let span=
  {class:"comments"
