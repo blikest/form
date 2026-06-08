@@ -52,7 +52,7 @@
 },g:
  {update:true,class:"graph",transform({monospace,spread})
 {let [x,y,scale]=this.getAttribute("transform")
-?compose.call(transform(this.getAttribute("transform")),({x,y,k})=>[x,y,k])
+?compose.call(this.ownerDocument.defaultView.getComputedStyle(this),({x,y,k})=>[x,y,k])
 :box(ascend.call(this)[0]).slice(2).reduce((width,height)=>
  [...{nonradial:[width/2,height/2]}[spread]||[0,0],1]);
  return "translate("+[x,y]+") scale("+scale+")";
