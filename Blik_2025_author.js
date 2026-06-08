@@ -44,9 +44,10 @@
  if(expanded)
  return this.controller?.abort("Rendering cancelled"),[this,"nextSibling"].reduce(function trim(node,next){destroy(node[next])&&trim(...arguments);});
  let {source}=author.dataset;
+ let {source:entry}=this.parentNode.dataset;
  let article=await compose
 (buffer(compose(fetch,"json"),fail=>({fail}))
-,source,syndicate,search(["pub",this.parentNode.dataset.source])
+,source,syndicate,search(["pub",entry])
 )(source);
  compose(tether(document),spill)(this.parentNode,{span:
  {class:"content",span:
@@ -63,11 +64,11 @@
 (compose("headers","Content-Type","get",is("text/html"))
 ,compose("text",text=>this.ownerDocument.createRange().createContextualFragment(text))
 ,compose("text",semiotics,parse)
-))(["",this.parentNode.dataset.source].join("/"));
+))(["",entry].join("/"));
  this.controller=new AbortController();
  await compose(tether(document),spill.bind(this.controller),lift)(this.parentNode.querySelector(".content"),content);
- spill(document.call(this.parentNode.querySelector(".content"),{span:{class:"progress",drop:true}}));
- spill(document.call(this.parentNode,{span:await comments(this.parentNode.dataset.source)}));
+ compose(spill,lift)(document.call(this.parentNode.querySelector(".content"),{span:{class:"progress",drop:true}}));
+ compose(spill,lift)(document.call(this.parentNode,await comments(entry,source)));
  //article.media&&link(article?.media,"");
  //,article.link&&link(article.link,this.parentNode.querySelector("span").textContent);
 }}
@@ -206,7 +207,15 @@
  return {span};
 };
 
- async function comment({put,name,comment},index,comments)
+ function comment({put,name,comment},{length:index})
+{return compose
+(fetch,buffer("json",swap({name})),{comment},merge
+,({name,icon,comment,put})=>message({icon,name,put,message:comment},index)
+,{class:"comment"},merge,["span"],record
+)("/author/"+name);
+};
+
+ export function comments(source,address)
 {if(this&&!modular(this)||arguments[0].constructor?.name==="IncomingMessage")
  return {imports:
  {"/Blik_2023_interface.js":["","resolve","locate","digest","query","path","socket"]
@@ -216,7 +225,7 @@
  ,"/Blik_2023_layout.js":["* as layout"]
  ,[file]:["author","syndicate","pub"]
  }
- ,exports:
+ ,exports:{default:
  {".comment":
  {keydown({target,keyCode:code,ctrlKey})
 {let {enter}=keyboard(code);
@@ -234,9 +243,9 @@
  if(empty)
  return ["warn 1s","unset"].forEach((animation,index)=>
  compose(wait(1000*index),Object.assign)(this.querySelector("span[title="+empty+"]").style,{animation}));
- let source=this.closest(".comments").parentNode.querySelector(".article").getAttribute("source");
+ let source=["feed","article"].map(name=>this.closest("."+name).dataset.source).join("/");
  let comments=target.closest(".comments").querySelector(".history");
- let text={put:note(Date.now()),...fields};
+ let text={put:Date.now(),...fields};
  let body=JSON.stringify({[source]:[text]});
  let {status}=await fetch("/Blik_2024_comments.json",{method:"put",body});
  if(status!==200)
@@ -283,57 +292,49 @@
  [message.previousSibling].forEach(function decrement(node){if(!node)return;decrement(node.previousSibling);node.dataset.index-=1;});
  message.remove();
 }}
- }};
- return compose
-(fetch,buffer("json",swap({name})),{comment},merge
-,async({name,icon,comment,put})=>insert(document({span:
- {class:"comment",...await message({icon,name,put,message:comment},index)
- }}),comments.firstChild?"before":"under",comments.firstChild||comments)
-)("/author/"+name);
-};
-
- export function comments(source)
-{let icon=compose(image,canvas)("/svg/object/paperplane/tilt/document");
- let messages=compose
-(fetch,either("json",swap([])),rank,each(message)
-,collect,["span","span"],record
-,{span:{class:"history"}},merge,note
-)("/Blik_2024_comments.json/module/namespace/default/"+source);
- let span=
- {class:"comments"
- ,span:[merge
-(form({name:cookie("author")||"",comment:""})
+ }}};
+ return capture.call({span:
+ {class:"comments",span:
+[merge(form({name:cookie("author")||"",comment:""})
 ,{class:"comment"
  ,style:
 [{"@scope":{":scope":
- {"&>span[title]":
- {display:"table-cell","align-content":"center","min-height":"2.5em"
+ {...layout.material,...layout.pill
+ ,"border-radius":"2.1em",overflow:"hidden"
+ ,"&>span":
+ {"align-content":"center","min-height":"2.5em"
  ,"&[id=name]":{"margin-right":0,"border-radius":"2.1em 0 0 2.1em","padding":"0 .5em"}
  ,"&[id=comment]":
  {"max-width":"100%","word-break":"break-all"
  ,"&>span:first-of-type":{display:"none"}
- ,"&>span[role=textbox]":{"min-width":0,"text-align":"left","white-space":"pre"}
+ ,"&>span[role=textbox]":{"text-align":"left","white-space":"pre"}
  }
  }
  ,"&>span[role=button]":
- {"border-radius":"0 2.1em 2.1em 0","margin-left":0,padding:".5em","vertical-align":"middle",overflow:"hidden",cursor:"pointer"
- ,"&>canvas":{width:"1.2em",height:"1.2em","vertical-align":"middle"}
+ {"border-radius":"0 2.1em 2.1em 0","margin-left":0,padding:".5em"
+ ,"padding-left":"0","vertical-align":"middle",cursor:"pointer"
+ ,"&>svg":{width:"1.5em",height:"1.5em","vertical-align":"middle"}
+ ,"&:hover&>svg":{animation:"fly 1.5s"}
  }
  ,"&:hover>span[id=comment]>span[role=textbox]":{"min-width":"5em"}
  }}
+ ,"@keyframes fly":
+ {"0%":{transform:"translate(0,0)"}
+ ,"32%":{transform:"translate(20px,-10px)"}
+ ,"32.5%":{transform:"translate(-80px,40px)"}
  }
-],span:[{role:"button",icon}]
+ }
+],span:[{role:"button",svg:compose(fetch,digest)("/svg/object/paperplane/tilt")}]
  },0)
-,messages]
- ,style:
+,{class:"history",span:compose.call
+("/Blik_2024_comments.json/module/namespace/default/"+address+"/"+source
+,fetch,either("json",swap([])),rank,each(message),collect
+)}
+],style:
  {"@scope":{":scope":
  {display:"inline-block"
  ,"&>span.history":{display:"table-cell","border-spacing":"0 1em","text-align":"left"}
- ,"&>span.comment":
- {...layout.material,display:"inline-block","border-radius":"2.1em"
- }
  ,"@keyframes warn":{from:{"box-shadow":"#880e4f 0px 0px 5px inset"},to:{"box-shadow":"revert"}}
  }}}
- };
- return capture.call(span,[file,"module",comments.name,"module"].join("/"));
+ }},[file,"module",comments.name,"module"].join("/"));
 };

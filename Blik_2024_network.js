@@ -52,7 +52,7 @@
 },g:
  {update:true,class:"graph",transform({monospace,spread})
 {let [x,y,scale]=this.getAttribute("transform")
-?compose.call(transform(this),({x,y,k})=>[x,y,k])
+?compose.call(transform(this.getAttribute("transform")),({x,y,k})=>[x,y,k])
 :box(ascend.call(this)[0]).slice(2).reduce((width,height)=>
  [...{nonradial:[width/2,height/2]}[spread]||[0,0],1]);
  return "translate("+[x,y]+") scale("+scale+")";
@@ -303,7 +303,7 @@
  }
  }};
 
- export function matrix(resource,{matrix})
+ export function matrix(resource,{matrix}={})
 {return either(string,array)(matrix)?isolate.call(resource,[matrix].flat())
 :search.call(resource,([field,records])=>
  array(records)&&records.some(record=>
@@ -403,7 +403,7 @@
 ,node);
 };
 
- export function spread(nodes,{spread="force",monospace=10,matrix,linear,gap=0.2,range,ratio}={})
+ export function spread(nodes,{spread="force",monospace=10,matrix={},linear,gap=0.2,range,ratio}={})
 {let {force,radial,up,down,left,right}={[spread]:true};
  if(Object.values(matrix).length)
  nodes=nodes.filter(({occurrence})=>occurrence);

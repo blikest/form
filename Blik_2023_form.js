@@ -40,8 +40,8 @@
 // ]),Object.fromEntries)(variants.length?{"":variants}:variants)
 // ]),Object.fromEntries,["truetype"],record,fonts,merge
  ,author:persistence("Blik_2024_author.json")
- ,document:compose(crop(1),infer(record,["svg"]),document,crop(1))
- ,media:compose(crop(1),"toString",media,collect,document,crop(1))
+ ,document:compose(crop(1),infer(record,["svg"]),document,spill,lift,crop(1))
+ ,media:compose(crop(1),"toString",media,collect,document,spill,lift,crop(1))
  ,interface:async function(request)
 {let queries=query(url(request));
  let fragment=match(["author",string])(arguments[3])?"author":basic(this)?"network":"fragment/media";
@@ -66,7 +66,7 @@
  ,...animation.dotdot
  });
  let address=request.url.replace(/\/($|\?.*)/g,"");
- let title=address.split("/").reverse().find(Boolean)||"JSInterface";
+ let title=address.split("/").reverse().find(Boolean)||"JSRebels";
  [fragment]=compose.call(body,title,"/svg/object/node/document",[],style,hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
