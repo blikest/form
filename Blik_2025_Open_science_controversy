@@ -1,0 +1,89 @@
+
+(Reception of Open Science initiatives across disciplinary divides)#h1{display:inline-block;text-align:center;}
+
+protocol#[[{"svg":
+ {"id":"protocol"
+ ,"viewBox":"0 0 1900 300"
+ ,"style":
+ {"#protocol":
+ {"margin":"0 15px","max-width":"800px"
+ ,"& foreignObject>span":
+ {"height":"250px","box-sizing":"border-box","font-size":"25px","display":"block","border-radius":"1em","text-align":"right","background":"var(--isle)"
+ ,"& img":{"height":"50px","width":"50px","margin":"15px 15px 5px"}
+ ,"& span":{"display":"block","padding":"0 5px","text-align":"center"}
+ }
+ ,"& text":{"font-size":"20","fill":"var(--text)"}
+ ,"&>defs path":{"fill":"var(--text)"}
+ ,"&>path":{"fill":"none","stroke-width":"10","stroke":"var(--text)","marker-end":"url(#arrow)"}
+ }
+ },"defs":{"marker":
+ {"id":"arrow"
+ ,"viewBox":"0 0 10 10"
+ ,"refX":"0"
+ ,"refY":"5"
+ ,"markerWidth":"2.5"
+ ,"markerHeight":"2.5"
+ ,"orient":"auto-start-reverse"
+ ,"path":{"d":"M 0 0 L 10 5 L 0 10 z"}
+ }},"foreignObject":
+[{"x":"0","y":"0","width":"300","height":"250"
+ ,"span":{"xmlns":"http://www.w3.org/1999/xhtml"
+ ,"img":{"":"","src":"https://seekvectors.com/files/download/Elsevier-logo.png","style":"filter:brightness(4)"}
+ ,"span":{"#text":"Query academic articles with \"replication crisis\" and \"open science\" keywords."}}
+ }
+,{"x":"400","y":"0","width":"300","height":"250"
+ ,"span":{"xmlns":"http://www.w3.org/1999/xhtml"
+ ,"img":{"src":"https://cdn.iconscout.com/icon/free/png-256/free-node-js-icon-svg-download-png-1174935.png"}
+ ,"span":{"#text":"Parse exported csv, aggregate by year and render timeline."}
+ }
+ }
+,{"x":"800","y":"0","width":"300","height":"250"
+ ,"span":{"xmlns":"http://www.w3.org/1999/xhtml"
+ ,"img":{"src":"https://gitlab.com/uploads/-/system/group/avatar/4288218/cortext_logo_gris_rose.png","style":"object-fit:cover;object-position:5% 0"}
+ ,"span":{"#text":"Curate csv data (split keywords), extract top 250 trigrams."}}
+ }
+,{"x":"1200","y":"0","width":"300","height":"250"
+ ,"span":{"xmlns":"http://www.w3.org/1999/xhtml"
+ ,"img":{"src":"https://gitlab.com/uploads/-/system/group/avatar/4288218/cortext_logo_gris_rose.png","style":"object-fit:cover;object-position:5% 0"}
+ ,"span":{"#text":"Aggregate term adjacency based on co-ocurrence, assign Louvain neighbors and (unknown) coordinates."}}
+ }
+,{"x":"1600","y":"0","width":"300","height":"250"
+ ,"span":{"xmlns":"http://www.w3.org/1999/xhtml"
+ ,"img":{"src":"https://images.seeklogo.com/logo-png/27/2/d3-logo-png_seeklogo-273157.png"}
+ ,"span":{"#text":"Parse exported GEXF file, layout with custom D3 forces. Inspect attributes and topology."}}
+ }
+],"path":
+[{"d":"M300,125 l25,0 c25,0 50,25 50,50 l0,50 c0,25 25,50 50,50 l250,0 c25,0 50,-25,50,-50 l0,-50 c0,-25 25,-50 50,-50"}
+,{"d":"M300,125 l75,0"}
+,{"d":"M1100,125 l75,0"}
+,{"d":"M1500,125 l75,0"}
+],"text":
+[{"x":"350","y":"50","text-anchor":"middle","font-size":"40","#text":"CSV"}
+,{"x":"350","y":"80","text-anchor":"middle","#text":"1145 + 9368"}
+,{"x":"350","y":"100","text-anchor":"middle","#text":"articles"}
+,{"x":"1150","y":"50","text-anchor":"middle","font-size":"40","#text":"DB"}
+,{"x":"1150","y":"80","text-anchor":"middle","#text":"250 terms"}
+,{"x":"1550","y":"50","text-anchor":"middle","font-size":"40","#text":"GEXF"}
+,{"x":"1550","y":"80","text-anchor":"middle","#text":"500 nodes"}
+]}}],"fragment/document","inference/spill","inference/lift",{"inference/crop":[1]}]
+
+{text-align:center;white-space:normal}
+
+Scopus#network("/Blik_2025_scopus_replicationcrisis_or_reproducibilitycrisis_250terms-500nodes.gexf",{"spread":"force"}){max-width:49%;max-height:50vh;}
+
+Scopus#network("/Blik_2025_scopus_epistemology_and_open_science_250terms-500nodes.gexf",{"spread":"force"}){max-width:49%;max-height:50vh;}
+
+timeline#chart/plot("/Blik_2025_scopus_replicationcrisis_or_reproducibilitycrisis.csv",{"domain":"[0,2024]"}){max-width:29%;margin:0 5%}
+
+timeline#chart/plot("/Blik_2025_scopus_open_science.csv",{"domain":"[2000,2024]","power":0.8}){max-width:49%;margin:0 5%}
+
+{text-align:center}
+
+( Reproducibility, along with a few others like falsifiability and generalizability, have been some of the informal foundations for our trust in scientific epistemology. Looking first at the timelines of publications on the "replication crisis" (left) and "open science" (rights) topics, they have clearly been subject of scrutiny in the past decade. Following suspicions over some publications in psychology, a field otherwise subscribing to these principles, the Open Science Foundation's Reproducibility Project ran a first large-scale audit of compliance between 2013-2015, yielding poor results overall (Nosek et al. 2015). The concern quickly prompted the establishment of new policies, with agreements made in 2018 both in the EU, the US, and globally to promote Open Science as a means to conduct academic housekeeping. 
+
+ My first query into academic articles on Scopus therefore combined the two involved terms ("replication crisis" or "reproducibility crisis"), and revealed three notably distinct discourses, one about relevant statistical methods (eg. "p-hacking"), one about medical sciences in specific, and one about various Open Science initiatives. A second query targetting "open science" returned 9369 articles, providing robust input for the exponential timeline. The semantic analysis resulted in a dense network, so I added "epistemology" to my query, yielding a reduced set of 140 articles for the network on the right. The clustering was made by CorText Manager, but the graph received a custom layout with D3. The replication crisis and medical science re-emerged as distinct clusters, but "Open science" had split into a plurality of overlapping topics, with fine details about methodological, cultural and educational concerns. The central "bridging" area in both networks touch on concerns particular to the social sciences, all showing great potential for sentiment analysis, suggesting both criticism and positive proposals.)#span{display:inline-block;max-width:500px;text-align:justify}
+
+
+
+
+

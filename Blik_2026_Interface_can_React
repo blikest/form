@@ -1,0 +1,14 @@
+
+ React sources are the following: 
+
+sources#[["/Blik_2023_sources.json"],"interface/fetch","interface/digest",[["facebook_2013_react.js","facebook_2013_react_dom_client.js","remix_2014_react_router_dom.js"]],"inference/flip","inference/extract","meta/aphorize",[{"source":"/Blik_2023_sources.json","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}#[[4],{"inference/tether":["script/fold"]}]
+
+ CreateElement is translated to "fiber" as React's components have nothing actually to do with DOM elements. Neither does JSX, so don't even look for it. 
+ 
+form#[["/Blik_2023_react.js/module/namespace/form"],"interface/fetch","interface/digest",[["exports","form"]],"inference/record",["module"],"meta/serialize",[{"source":"/Blik_2023_react.js/module/namespace/form","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em;border:2px dashed #616161}
+
+ And hello React. Goodbye. 
+
+( )#span{}#["inference/stash react/form","inference/flip","inference/note","/facebook_2013_react_dom_client.js/render"]
+
+

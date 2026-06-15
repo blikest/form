@@ -1,13 +1,15 @@
  import {note,sum,extreme,merge,search,prune,record,remember,each,drop,compose,either,infer,tether,is,slip,numeric,collect,extract,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
  import {fetch,path,query} from "./Blik_2023_interface.js";
+ import {url} from "./Blik_2023_meta.js";
  import {unfold} from "./Blik_2023_search.js";
  let parameters={query:{format:"json",origin:"*"}};
 
  export default 
  {async get(request)
-{let {title,depth=1,height,section,homogeneous=true}=query(request.url);
+{let {title,depth=1,height,section,homogeneous=true}=query(url(request));
  let pages=await expand(title,depth,height,section,homogeneous);
- if(path(request).split("/").at(-1)==="wikipedia")
+ let direct=path(request).split("/").at(-1)==="wikipedia";
+ if(direct)
  return note({[title]:prune.call(pages,({1:page})=>
  page.title?page.pages?{[page.title]:page.pages||{}}:page.title:page)});
  return unfold.call({title,pages},"pages").filter(page=>page.pages);
@@ -30,7 +32,7 @@
 ]),Object.fromEntries
 )(edits);
 },async coreference(request)
-{let pages=await this.get(request); note(pages)
+{let pages=await this.get(request);
  return pages.map(page=>
  merge(page,{pages:page.pages.map(({title})=>title)})).map(({title,pages:links},index,pages)=>(
  {[title]:pages.slice(index+1).filter(({pages:colinks})=>
@@ -43,7 +45,7 @@
  cotitle!==title&&pages.includes(title)).map(({title})=>title)})).reduce(merge);
 }};
 
- var harvest=remember.call({},async function harvest(query,rate=1000,limit=50,history=[])
+ var harvest=remember.call({},async function harvest(query,rate=1000,limit=1,history=[])
 {let entry=performance.now();
  this.requests=this.requests||new Map()
 ,this.buffer=this.buffer||new Set();
@@ -62,8 +64,9 @@
  this.requests.delete(query)&&
  result
 ]
-)("https://en.wikipedia.org/w/api.php?"+new URLSearchParams([history.at(-1)?.continue,query].reduce(merge,{})));
+)("https://en.wikipedia.org/w/api.php?"+new URLSearchParams([history.at(-1)?.continue,query].reduce(merge,{})),{headers:{"User-Agent":"jsrebels"}});
 },JSON.stringify);
+
 
  export function expand(title,depth,height,section,homogeneous)
 {// request page with subpages/subcategories. 
@@ -90,7 +93,11 @@
 ,infer("map",page=>merge(page,{title:page.title||page["*"]}))
 ,homogeneous?infer("filter",({ns})=>ns===namespaces[namespace]):infer()
 ,descend?compose
-(infer("map",compose(combine(compose("title",infer(expand,depth-1,height+1,section,homogeneous),["pages"],record),infer()),merge))
+(infer("map",compose
+(pass(compose(drop(1),combine(1000),sum,wait,"call"))
+,combine(compose("title",infer(expand,depth-1,height+1,section,homogeneous),["pages"],record),infer())
+,lift,merge
+))
 // ,infer("reduce",record(compose(pass(compose(performance.now(),(pages,{title},index,{length},time)=>
 //  colors.ready+(index+1)+"/"+length+" "+title+" ("+(performance.now()-time)/1000+"s)"+colors.steady,console.log)),drop(1,3))),[])
 ,Promise.all.bind(Promise)

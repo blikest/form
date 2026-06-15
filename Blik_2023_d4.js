@@ -15,7 +15,7 @@
  // To spawn extension of an empty selection, specify "name". 
  // eg: ul:{datum:1,li:{fold:n=>[n,n,n],update:true,text:n=>n}} = 1 ul, 3 li text, updated on each call.
  if(!this)
- return extend.call(document({span:{style:"display:inline-block"}}),...arguments);
+ return extend.call(compose.call({span:{style:"display:inline-block"}},document,spill,lift,crop(1),cede),...arguments);
  const [cast]=[[select,window.Node],[selectAll,window.NodeList]].find(({1:selectable})=>this instanceof selectable)||[];
  let selection=cast?.(this)||this;
  if(name)

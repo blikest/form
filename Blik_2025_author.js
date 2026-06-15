@@ -2,7 +2,7 @@
  import {unfold} from "./Blik_2023_search.js";
  import {note,debug,search,merge,prune,route,record,stagger,spill,model,lift,expect,compose,combine,compound,string,either,pass,trace,drop,crop,slip,flip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,rank,collect,is,match,basic,defined,stash,extract} from "./Blik_2023_inference.js";
  import * as fragment from "./Blik_2023_fragment.js";
- import {cookie,cookies,document,form,image,canvas,message,demarkup,insert,navigate,metamarkup,detransform,stretch,vectorspace,error,drillresize,deselect,namespaces,keyboard,spell,expand,parse,semiotics,destroy,reference,fill,annotate,qualify,cursor,capture} from "./Blik_2023_fragment.js";
+ import {cookie,cookies,document,form,image,canvas,message,demarkup,insert,navigate,detransform,stretch,vectorspace,error,drillresize,deselect,namespaces,keyboard,spell,expand,parse,semiotics,destroy,reference,fill,annotate,qualify,cursor,capture} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  var address=new URL(import.meta.url).pathname;
  var file=address.replace(/.*\//,"/");
@@ -13,7 +13,7 @@
  {"/Blik_2023_interface.js":["","agent","resolve","locate","digest","query","path","socket"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2023_inference.js":";control;note;stagger;expect;spill;generator;asyncgenerator;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;merge;prune;route;record;search;extract".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,[file]:["author","syndicate","pub","comments"]
  }
@@ -221,7 +221,7 @@
  {"/Blik_2023_interface.js":["","resolve","locate","digest","query","path","socket"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;merge;search;prune;extract;route;record".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,[file]:["author","syndicate","pub"]
  }
@@ -327,7 +327,7 @@
 ],span:[{role:"button",svg:compose(fetch,digest)("/svg/object/paperplane/tilt")}]
  },0)
 ,{class:"history",span:compose.call
-("/Blik_2024_comments.json/module/namespace/default/"+address+"/"+source
+("/Blik_2024_comments.json/module/namespace/default"+address+"/"+source
 ,fetch,either("json",swap([])),rank,each(message),collect
 )}
 ],style:

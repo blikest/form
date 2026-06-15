@@ -184,7 +184,7 @@
  ,http:({url})=>compose(fetch,"json")("http:/"+url)
  ,medium:request=>compose(fetch,"text",note,slip(new DOMParser()),"text/xml","parseFromString","item","querySelectorAll")("https://medium.com/feed/"+new URL(request.url).pathname.split("/").slice(2).join("/"))
  ,wikipedia
- ,mapbox(request){return infer("mapbox",request,syndication.mapbox)(command.bind(import.meta.url)("./Blik_2024_map.js","proxy"));}
+ ,mapbox(request){return compose.call(command.call(import.meta.url,"./Blik_2024_map.js","proxy"),infer("mapbox",request,syndication.mapbox));}
  ,overpass()
 {return fetch('https://www.overpass-api.de/api/interpreter?'+new URLSearchParams({data:'[out:json];rel[admin_level=2]'/*'convert item ::=::,::geom=geom(),_osm_type=type();'*/+';out geom;'}));
 },elsevier(request)
@@ -270,7 +270,7 @@
  return {imports:
  {"/Blik_2023_interface.js":["","path","command","locate","digest","query"]
  ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;progress;image;canvas;demarkup;insert;navigate;metamarkup;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain"]
  ,"/Blik_2023_search.js":["","unfold"]
@@ -701,7 +701,7 @@
  {"./Blik_2023_interface.js":["","command","locate","digest","query","path"]
  ,"./Blik_2023_search.js":["","unfold"]
  ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
- ,"./Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;image;canvas;demarkup;insert;navigate;metamarkup;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
+ ,"./Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;image;canvas;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
  ,"./Blik_2023_layout.js":["* as layout"]
  }
  ,exports:

@@ -1,0 +1,21 @@
+
+ For the earlier "controversy mapping" assignment, I used the "CorText" platform to analyze Scopus queries ("corpus" as they call it in high places). To be able to use my own algorithms instead, I integrated a minimal natural language parser in the meantime. 
+
+ I defined sources for Retext, its "VFile" constructor, keyword and position plugin and "natural language concrete syntax tree" (nlcst) serializer. 
+
+sources#[["/Blik_2023_sources.json"],"interface/fetch","interface/digest",[["Wormer_2014_nlcst2string.js","Wormer_2014_retext.js","Wormer_2014_retext-keywords.js","Wormer_2014_retext-pos.js","Wormer_2015_vfile.js"]],"inference/flip","inference/extract","meta/aphorize",[{"source":"/Blik_2023_sources.json","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em; border:2px dashed #616161}#[[4],{"inference/tether":["script/fold"]}]
+
+ The function takes a series of records, parses their Title and Abstract sanitized of copyright noise, and extends them with serialized "phrases" of multiple words. 
+ 
+prose#[["/Blik_2023_meta.js/module/namespace/prose"],"interface/fetch","interface/digest",[["exports","prose"]],"inference/record",["module"],"meta/serialize",[{"source":"/Blik_2023_meta.js/module/namespace/prose","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em;border:2px dashed #616161}
+
+ The subject series of records is a Scopus query of "replicatiom crisis OR reproducibility crisis" articles up to May 2025.
+
+csv#[["/Blik_2025_scopus_replicationcrisis_or_reproducibilitycrisis.csv"],"interface/fetch","interface/digest","meta/aphorize",[{"source":"/Blik_2025_scopus_replicationcrisis_or_reproducibilitycrisis.json","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;max-height:10em;overflow:scroll;margin:auto;border-radius:.5em;border:2px dashed #616161}#[[2],{"inference/tether":["script/fold"]}]
+
+ The cooccurrence function in inference references phrases in the same article, that the network module renders as links (warning: it's a big network, so prepare to close this post if your browser slows down). 
+
+cooccurrence#[["/Blik_2023_inference.js/module/namespace/cooccurrence"],"interface/fetch","interface/digest",[["exports","cooccurrence"]],"inference/record",["module"],"meta/serialize",[{"source":"/Blik_2023_inference.js/module/namespace/cooccurrence","scale":0.8}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em;border:2px dashed #616161}
+
+custom#[["/Blik_2025_scopus_replicationcrisis_or_reproducibilitycrisis.csv"],"interface/fetch","interface/digest","meta/prose","inference/cooccurrence",[""],"inference/infer",["call",{"spread":"force"}],"network"]{width:500px;height:500px}
+
