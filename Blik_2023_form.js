@@ -91,21 +91,23 @@
  {check(){this.send(JSON.stringify({action:"check"}));}
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
- let fields=Array.from(form.querySelectorAll("span[role=textbox]"));
+ let fields=Array.from(form.querySelectorAll("span[role]"));
  let input=fields.find(input=>demarkup(input,"name").name==="message");
  let label=input.parentNode;
  let list=label.querySelector("ul")||label.appendChild(...document({ul:{}}));
  let node=list.querySelector("span#signal");
- let entry=compose(document,"firstChild")({span:{id:"signal","#text":author.name+" is typing..."}});
- list[node?"replaceChild":"appendChild"](entry,node);
+ let [entry]=compose(document,spill,lift)({span:{id:"signal","#text":author.name+" is typing..."}});
+ list[(node?"replace":"append")+"Child"](entry,node);
  compose(wait(3000),node=>node.parentNode&&node.remove())(entry);
 },async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/document"}},window)
 {let form=window.document.querySelector("#composer");
- let span=compose(document,"firstChild")({span:await entry({icon:icon||"/svg/animal/deer/document",name:name||"anonymous",put,message})});
- if(form.querySelector("#message"))
- collect(document.call(form,{span:{id:"message",span:{class:"messages",role:"list",span}}}));
- if(name==="system")
- compose(wait(10000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")(li);
+ let [span]=compose(document,spill,lift)({span:await entry({icon:icon||"/svg/animal/deer/document",name:name||"anonymous",put,message})});
+ if(!form.querySelector("#message"))
+ return;
+ compose
+(tether(document),spill,lift,crop(1)
+,name==="system"&&compose(wait(5000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")
+)(form,{span:{id:"message",span:{class:"messages",role:"list",span}}});
 },broadcast({message,room,author})
 {let {href}=window.location;
  compose({source:room,...query(href)},transform,infer(insert,"under",window.document.querySelector("[actions='"+room+"']")))(message);
@@ -272,7 +274,7 @@
  ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
  ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
- ,"/Blik_2023_meta.js":["","domain"]
+ ,"/Blik_2023_meta.js":["","domain","url"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2024_svg.js":"* as svg"
  }
@@ -287,7 +289,7 @@
  let fields=fill.call(form,method);
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
- await buffer(submission[method].bind(form))(fields);
+ await buffer(submission[method].bind(form),note)(fields);
  this.style.pointerEvents="";
 },...observe({point({x,y,target,isTrusted:click})
 {if(target.closest("ul"))
@@ -365,10 +367,13 @@
  if(method)
  toggle.call(form,method);
  if(name==="message")return;
- return Array.from(list).map(li=>
-[li,value&&!unfold.call(li,li=>li.parentNode.closest("li")).map(li=>
- li.firstChild?.nodeValue||"").join("/").includes(value)?"setProperty":"removeProperty"
-]).forEach(([li,term])=>li.style[term]("display","none"));
+ return Array.from(list).filter(li=>li.children.length<2).forEach(leaf=>
+ [value,unfold.call(leaf,li=>li.parentNode.closest("li"))].reduce((value,branch)=>
+[branch,!value||branch.toReversed().map(li=>li?.firstChild?.textContent||"").join("/").includes(value)
+]).reduce((branch,show)=>
+ branch.forEach((li,height)=>li?.style[(!show
+?!height||unfold.call(li,li=>li.querySelector("li")).at(-2)===leaf&&"set"
+:"remove")+"Property"]?.("display","none"))));
 },change({target})
 {let {method}=demarkup(this.closest("[role=form]"),"method");
  if(target.type!=="text"&&method==="get")
@@ -488,7 +493,7 @@
  })}
 ];
  let fields=
- {send:{message:[],code:message||cookie("author")?undefined:""}
+ {send:{message:[],code:message||cookie("author")?null:""}
  ,put:{name:message,code:code}
  ,code:method==="put"||{[code?"name":"message"]:code?message:name}
  }[method]||{};
@@ -554,17 +559,17 @@
  let {name}=fields;
  let action="/author/"+name;
  let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
- let [status,author]=await compose(fetch,combine("status","text"))(action,request);
+ let [status,author]=await compose(fetch,combine("status","text"),lift)(action,request);
  if(status!==200)
  return toggle.call(this,"send")
 ,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
-,{data:JSON.stringify({action:"message",message:author})}));
+,{data:{action:"message",message:author}}));
  let expires=new Date(Date.now()+1000*60*60).toUTCString();
  this.ownerDocument.cookie=cookie({author:name,path:"/",expires});
  if(author.rank)
  this.ownerDocument.cookie=cookie({rank:author.rank,path:"/",expires});
- let address=this.ownerDocument.defaultView.location.href;
- let room=["",path(address),query(address).source].join("/");
+ let {href}=this.ownerDocument.defaultView.location;
+ let room=["",path(href),query(url(href)).source].join("/");
  this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
  fill.call(this,{name:"",code:"",message:""});
  toggle.call(this,"send");
@@ -579,8 +584,8 @@
  toggle.call(this,"get");
 },send({message})
 {if(!message)return;
- let address=this.ownerDocument.defaultView.location.href;
- let room=["",path(address),query(address).source].join("/");
+ let {href}=this.ownerDocument.defaultView.location;
+ let room=["",path(href),query(url(href)).source].join("/");
  this.dispatchEvent(new MessageEvent("message",{data:{action:"message",room,message,put:Date.now()},bubbles:true}));
  fill.call(this,{message:""});
  toggle.call(this,"send");
@@ -622,10 +627,9 @@
  let record=Object.entries(node.data[node.title]);
  record=record.filter(([key,value])=>typeof value=="string"||form.dataset.inputs[key]);
  record.unshift(["source",node.title]);
- note(form)
  form.call(form,{[node.title]:Object.fromEntries(record)});
  form.appendChild(...document({span:{class:"field","#text":"+",style:"cursor:pointer"}}));
- form.source.focus()
+ form.source.focus();
  window.room.on("put",function({body,room})
 {window.Tone.Transport.start();
  if(fragment.getAttribute("title")==room)
@@ -636,7 +640,16 @@
 
  export var relay=
  {check(event,peer){peer.connected=true;}
- ,join({room},peer)
+ ,broadcast(event,peer)
+{let message=JSON.stringify(event);
+ this.clients.forEach(client=>
+ client.readyState===1&&client!==peer&&client.room===event.room&&
+ client.send(message));
+},message({message,room,put},peer)
+{let event={action:"message",author:peer.author,message,room,put};
+ this.rooms[room].messages.push({message,author:peer.author,put});
+ relay.broadcast.call(this,event);
+},join({room},peer)
 {this.rooms[room]=this.rooms[room]||{messages:[]};
  let {author}=merge(peer,{room},0);
  let event={action:"message",message:author.name+" joined.",room};
@@ -651,16 +664,7 @@
  peer.send(JSON.stringify({action:"message",author,message:"signed in as "+author.name}));
 },signal({room},peer)
 {let event={action:"signal",author:peer.author,room};
- relay.broadcast.call(this,event,peer);
-},message({message,room,put},peer)
-{let event={action:"message",author:peer.author,message,room,put};
- this.rooms[room].messages.push({message,author:peer.author,put});
  relay.broadcast.call(this,event);
-},broadcast(event,peer)
-{let message=JSON.stringify(event);
- this.clients.forEach(client=>
- client.readyState===1&&client!==peer&&client.room===event.room&&
- client.send(message));
 },save:async function({room,content,updates,version},peer)
 {peer.room=this.rooms[room]||relay.join.call(this,...arguments);
  let {EditorState,collab,receiveUpdates,getSyncedVersion,ChangeSet}=await import("./haverbeke_2020_codemirror.js");

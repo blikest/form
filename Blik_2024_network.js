@@ -1,6 +1,5 @@
  import {infer,tether,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
- import {serialize as ser} from "./Blik_2023_meta.js";
  import {fetch,digest,command,path} from "./Blik_2023_interface.js";
  import {document,window,demarkup,dataset,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
@@ -37,7 +36,7 @@
  let [nodes,links]=forage(this);
  let density=links.size()/(nodes.size()*(nodes.size()-1)/2);
  let [width,height]=force
-?Array(2).fill(scale(nodes.size()/Math.cbrt(density)||0))
+?Array(2).fill(scale(nodes.size()/Math.sqrt(density)||0))
 :[breadth*(1+gap),(length||breadth)+10].map((size,index)=>size*(index&&range?1:monospace)).sort(size=>vertical?1:-1);
  let space=radial?[-width,-width,width*2,width*2]:[-width/2,-height/2,width,height];
  merge(arguments[0],{space});
@@ -840,8 +839,7 @@
 };
 
  export function collapse({target})
-{let selectors=target?[qualify(this,false)]:Array.from(arguments);
- let targets=selectors.map(this.querySelector.bind(this)).filter(Boolean);
+{let targets=target?[this]:Array.from(arguments).map(this.querySelector.bind(this)).filter(Boolean);
  let descendants=targets.map(target=>[select(target).datum(),target]).flatMap(([node,target])=>(
  [node.nodes,target.descendants]=[target.descendants,node.nodes]
 ,unfold.call({nodes:target.descendants},childfold).slice(1)));
