@@ -1,10 +1,10 @@
  import {note,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
- import {window,document,hypertext,dispose,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules,cookie,cookies} from "./Blik_2023_fragment.js";
- import {url,serialize,proceduralize,parse,mime,calendar} from "./Blik_2023_meta.js";
+ import {window,document,hypertext,dispose,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
+ import {url,serialize,proceduralize,parse,mime,calendar,cookie,query,path} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
  import {encrypt} from "./Blik_2023_search.js";
- import {access,command,locate,fetch,digest,script,query,path,stage,worker} from "./Blik_2023_interface.js";
+ import {access,command,locate,fetch,digest,script,stage,worker} from "./Blik_2023_interface.js";
  import routes from "./Blik_2023_form.js";
  import network from "./Blik_2024_network.js";
  import editor from "./Blik_2024_script.js";
@@ -82,9 +82,10 @@
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
 ),relay()
 {return {imports:
- {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock"]
- ,"/Blik_2023_interface.js":["","path","query","locate","command"]
+ {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","surge","collect","compose","wait","has","clock"]
+ ,"/Blik_2023_interface.js":["","locate","command"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
+ ,"/Blik_2023_meta.js":["","query"]
  }
  ,exports:
  {default: 
@@ -94,7 +95,7 @@
  let fields=Array.from(form.querySelectorAll("span[role]"));
  let input=fields.find(input=>demarkup(input,"name").name==="message");
  let label=input.parentNode;
- let list=label.querySelector("ul")||label.appendChild(...document({ul:{}}));
+ let [,list]=surge(document.call(label,{ul:{}}));
  let node=list.querySelector("span#signal");
  let [entry]=compose(document,spill,lift)({span:{id:"signal","#text":author.name+" is typing..."}});
  list[(node?"replace":"append")+"Child"](entry,node);
@@ -105,7 +106,7 @@
  if(!form.querySelector("#message"))
  return;
  compose
-(tether(document),spill,lift,crop(1)
+(tether(document),spill,lift,drop(6,7),note
 ,name==="system"&&compose(wait(5000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")
 )(form,{span:{id:"message",span:{class:"messages",role:"list",span}}});
 },broadcast({message,room,author})
@@ -270,11 +271,11 @@
  export function composer(fields)
 {if(this)
  return {imports:
- {"/Blik_2023_interface.js":["","path","command","locate","digest","query"]
+ {"/Blik_2023_interface.js":["","command","locate","digest"]
  ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag;list".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
- ,"/Blik_2023_meta.js":["","domain","url"]
+ ,"/Blik_2023_meta.js":["","domain","url","cookie","query","path"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2024_svg.js":"* as svg"
  }
@@ -286,7 +287,7 @@
  this.style.pointerEvents="none";
  let form=this;
  let {method}=demarkup(form,"method");
- let fields=fill.call(form,method);
+ let fields=fill.call(form)[method];
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
  await buffer(submission[method].bind(form),note)(fields);
@@ -298,7 +299,7 @@
 }})
  }
  ,"span[name]":
- {focusin({isTrusted:focus,target})
+ {...observe({focus({isTrusted:focus,target})
 {if(target.nodeName==="#text")
  target=target.parentNode;
  if(target.role!=="textbox")
@@ -318,25 +319,32 @@
  if(type=="text")
  cursor(target);
  label?.setAttribute("focused",label.getAttribute("focused")!=="true");
-},focusout({target}){return target.dispatchEvent(new Event("focusin",{bubbles:true}));}
- ,keydown(event)
-{let {target,keyCode,ctrlKey}=event;
- let {enter,escape,updown,leftright}=keyboard(keyCode);
- let list=this.closest("[title]").querySelector("ul");
- let selection=Array.from(list?.querySelectorAll("li.hover")||[]);
- let message=target.id==="message";
- if(enter&&(!message||ctrlKey))
- return event.preventDefault()
-,selection.length?selection.pop().click():target.dispatchEvent(new Event("submit",{bubbles:true}));
- if(escape)
- return target.dispatchEvent(new Event("blur",{bubbles:true}));
- if(!list||message)return;
- if(updown||leftright)
- return [Array.from(list.querySelectorAll("li")),![38,39].includes(keyCode)||-1].reduce((list,step)=>compose
-(next=>selection.at(-1)?.contains(next)?[next]:[selection,unfold.call(next,({parentNode:node})=>node.closest("li"))]
-,"flat",infer("forEach",selection=>selection.classList.toggle('hover'))
-)(list.at((list.indexOf(selection.at(-1))+step)%list.length)));
-},input({target})
+}})
+ ,input({target})
+{let form=target.closest("[role=form]");
+ let value=target.textContent;
+ let {name}=demarkup(target,"name");
+ if(name==="message"&&value)
+ form.dispatchEvent(new MessageEvent("message",{data:{action:"signal"},bubbles:true}));
+ let {message,code}=fill.call(form)[form.getAttribute("method")];
+ let method=
+ {put:!code&&"send"
+ ,get:name!=="source"&&!value&&"erase"
+ ,erase:value&&"get"
+ ,send:code?"put":message?.length<2?"send":undefined
+ }[form.getAttribute("method")];
+ if(method)
+ toggle.call(form,method);
+ if(name==="message")return;
+ let list=target.parentNode.querySelectorAll("li");
+ return Array.from(list).filter(li=>li.children.length<2).forEach(leaf=>
+ [value,unfold.call(leaf,li=>li.parentNode.closest("li"))].reduce((value,branch)=>
+[branch,!value||branch.toReversed().map(li=>li?.firstChild?.textContent||"").join("/").includes(value)
+]).reduce((branch,show)=>
+ branch.forEach((li,height)=>li?.style[(!show
+?!height||unfold.call(li,li=>li.querySelector("li")).at(-2)===leaf&&"set"
+:"remove")+"Property"]?.("display","none"))));
+},change({target})
 {let form=target.closest("[role=form]");
  let value=target.textContent;
  let {name}=demarkup(target,"name");
@@ -354,53 +362,6 @@
 ,form.ownerDocument.defaultView.location.pathname.split("/").length<4?"files":"get"
 )
 :form.ownerDocument.defaultView.frame.dataset.source);
- if(name==="message"&&value)
- form.dispatchEvent(new MessageEvent("message",{data:{action:"signal"},bubbles:true}));
- let list=target.parentNode.querySelectorAll("li");
- let {message,code}=fill.call(form);
- let method=
- {put:!code&&"send"
- ,get:name!=="source"&&!value&&"erase"
- ,erase:value&&"get"
- ,send:code?"put":message?.length<2?"send":undefined
- }[form.getAttribute("method")];
- if(method)
- toggle.call(form,method);
- if(name==="message")return;
- return Array.from(list).filter(li=>li.children.length<2).forEach(leaf=>
- [value,unfold.call(leaf,li=>li.parentNode.closest("li"))].reduce((value,branch)=>
-[branch,!value||branch.toReversed().map(li=>li?.firstChild?.textContent||"").join("/").includes(value)
-]).reduce((branch,show)=>
- branch.forEach((li,height)=>li?.style[(!show
-?!height||unfold.call(li,li=>li.querySelector("li")).at(-2)===leaf&&"set"
-:"remove")+"Property"]?.("display","none"))));
-},change({target})
-{let {method}=demarkup(this.closest("[role=form]"),"method");
- if(target.type!=="text"&&method==="get")
- return this.dispatchEvent(new target.ownerDocument.defaultView.Event("submit",{bubbles:true}));
-}}
- ,"[role=checkbox]":
- {click({target})
-{compose.call(target,{"aria-checked":this.getAttribute("aria-checked")==="false"},tether(document),spill,lift);
- this.dispatchEvent(new Event("submit",{bubbles:true}));
-},keydown({keyCode,target})
-{let {space}=keyboard(keyCode);
- if(!space)return;
- this.dispatchEvent(new Event("click",{bubbles:true}));
-}}
- ,li:
- {click({target})
-{if(target.nodeName.toLowerCase()!=="span")
- return;
- let label=this.closest("[title]");
- if(label.getAttribute("for")==="message")
- return;
- let input=label.querySelector("span[role=menu]");
- input.textContent=unfold.call(target.closest("li")
-,li=>li.parentNode.closest("li")).map(li=>
- li.childNodes[0].textContent).reverse().join("/");
- input.dispatchEvent(new Event("blur",{bubbles:true})); 
- input.closest("[role=form]").dispatchEvent(new Event("submit",{bubbles:true}));
 }}
  ,"#toggle":
  {async click({isTrusted:genuine}={})
@@ -445,11 +406,10 @@
  }
  ,"&>span[title]":
 [{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
- ,"&>ul"://{"padding-top":"6em",bottom:"6em"}
+ ,"&>ul":
  {"margin-top":"calc(-100vh)"
  ,"max-height":"calc(100vh - 3em)"
  ,"padding-top":"calc(100vh - 7em)"
- //,"box-sizing":"content-box"
  ,"overflow":"scroll"
  }
  }
@@ -477,28 +437,16 @@
  async function toggle(method)
 {let active=this.ownerDocument.activeElement;
  if(!this.contains(active))active=undefined;
- let {source,message,name,code}=fill.call(this);
+ let {author}=cookie.call(this);
+ let {source,message,name,code}=fill.call(this)[this.getAttribute("method")];
  let icon=
  {get:"node",put:code?"fingerprint":"plus"
  ,erase:"plus",send:message?"paperplane/up":"chat"
  }[method];
- let style=
-[{class:"icon","#text":css(
- {"#toggle":
- {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
- ,"clip-path":"circle(50%)",padding:"1em",transform:"scale(0.8)",position:"sticky",left:0
- ,...["node","fingerprint"].includes(icon)&&{padding:0,width:"5em",height:"5em"}
- ,"&>path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
- }
- })}
-];
- let fields=
- {send:{message:[],code:message||cookie("author")?null:""}
- ,put:{name:message,code:code}
- ,code:method==="put"||{[code?"name":"message"]:code?message:name}
- }[method]||{};
- compose(tether(document),spill,lift)(this
-,merge(prune.call(form({[method]:fields}),([field,value])=>
+ compose.call
+({send:{message:name||message||"",code:message||author?null:""}
+ ,put:{name:message,code}
+ }[method]||{},[method],record,form,tether(prune,({1:value})=>
  value?.title==="message"?merge(value
 ,{style:{"@scope":{":scope":
  {"&>ul":
@@ -513,10 +461,20 @@
  }
  ,"&>span.status":{position:"absolute",left:"-0.5em",top:"-1.5em",color:"black"}
  }}}
- }):value,0,2),{style}));
+ }):value,0,2)
+,{style:
+[{class:"icon","#text":css({"#toggle":
+ {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
+ ,"clip-path":"circle(50%)",padding:"1em",transform:"scale(0.8)",position:"sticky",left:0
+ ,...["node","fingerprint"].includes(icon)&&{padding:0,width:"5em",height:"5em"}
+ ,"&>path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
+ }})
+ }
+]},merge,slip(this),tether(document),spill,lift
+);
  this.append(...[this.querySelector("#code"),this.querySelector("#extend")].filter(Boolean));
  if(active)
- focus(active);
+ focus(this.querySelector(qualify(active)));
  let control=this.querySelector("#toggle");
  compose(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild))({svg:
  {...search.call(svg.object,icon.split("/")),title:method,id:"toggle"
@@ -661,7 +619,7 @@
 },async sign({name},peer)
 {let author=await compose(fetch,"json",extract(["name","icon"]))("/author/"+name);
  Object.assign(peer,{author});
- peer.send(JSON.stringify({action:"message",author,message:"signed in as "+author.name}));
+ peer.send(JSON.stringify({action:"message",message:"signed in as "+author.name}));
 },signal({room},peer)
 {let event={action:"signal",author:peer.author,room};
  relay.broadcast.call(this,event);
@@ -702,10 +660,11 @@
  var body=
  // under isolation to event capture islands. 
  {imports:
- {"./Blik_2023_interface.js":["","command","locate","digest","query","path"]
+ {"./Blik_2023_interface.js":["","command","locate","digest"]
  ,"./Blik_2023_search.js":["","unfold"]
+ ,"./Blik_2023_meta.js":["","cookie","query","path"]
  ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
- ,"./Blik_2023_fragment.js":";* as fragment;cookie;cookies;document;form;image;canvas;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
+ ,"./Blik_2023_fragment.js":";* as fragment;document;form;image;canvas;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
  ,"./Blik_2023_layout.js":["* as layout"]
  }
  ,exports:

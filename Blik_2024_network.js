@@ -1,6 +1,6 @@
  import {infer,tether,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
- import {fetch,digest,command,path} from "./Blik_2023_interface.js";
+ import {fetch,digest,command} from "./Blik_2023_interface.js";
  import {document,window,demarkup,dataset,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
@@ -14,12 +14,12 @@
 
  var resource=combine(compose(crop(1),fetch,digest),compose(drop(1,0,compose(["source"],record)),merge),drop(2));
  var graph=whether([has("nodeName"),match(something,{matrix:{}})],Graph,reference,sprawl);
- var collapsing=compose(stash(compose(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
+ var collapsed=compose(stash(compose(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
  export default compose
 (drop(1),whether(string,resource),lift
 ,stash(compose(matrix,["matrix"],record)),crop(1,compose(rotate(1),drop(2,0,merge)))
 ,combine(graph,drop(1)),lift,combine(spread,drop(1)),lift,chart,simulate,"fragment"
-,buffer(collapsing,drop(1)),lift
+,buffer(collapsed,drop(1)),lift
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
 );
 
@@ -113,7 +113,7 @@
  return force?"translate("+[x,y].map(x=>x.toPrecision(5).replace(/e\+\d+/,""))+")"
 :radial?"rotate("+(x*180/Math.PI-90)+") translate("+y+",0)"
 :"translate("+[x,y]+") rotate("+(right?0:down?90:up?-90:0)+")";
-},title:{text:({name})=>name}
+},title:{text:({name,source,value,nodes,...intension})=>JSON.stringify(intension)}
  ,circle:
 [{name({name,source,nodes}){return source&&!nodes?source.name+"_"+name:null;}
  ,r(node)
@@ -331,7 +331,7 @@
  export function sprawl(resource,options={})
 {// parse object as a nodes. 
  // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
- let {relations,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix,range}=options;
+ let {relations,intension,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix,range}=options;
  let direct=false&&!Object.keys(search.call(resource,({1:value})=>
  !simple(value)&&!numeric(value))).length;
  if(direct)
@@ -346,7 +346,7 @@
  }));
  if(source&&linear&&Object.keys(resource).length>1)
  resource=record(resource,[source==="/get"?window.location.origin:source]);
- let {resource:{nodes}}=prune.call({resource},infer(split,relations),false,["value",relations,range]);
+ let {resource:{nodes}}=prune.call({resource},infer(split,options),false,["value",relations,range,intension]);
  prune.call(nodes,backlink,false,["source","value"]);
  if(!linear)
  nodes=unfold.call({nodes},childfold).slice(1).map(deduplicate);
@@ -362,15 +362,15 @@
 //  return node;
 };
 
- export function split(scope,relations,[name,value],path=[],trace=[])
+ export function split(scope,{relations,intension},[name,value],path=[],trace=[])
 {// split entries into nodes. 
  let fields="value,name,nodes,depth".split(",");
- let node=compound(scope)&&has.call(scope||{},fields)&&Object.keys(scope).length===fields.length;
+ let node=compound(scope)&&has.call(scope,fields)&&Object.keys(scope).length===fields.length;
  if(node)return value;
  let entry=path.at(-1)==="nodes";
  if(entry&&array(scope))
- return rank((compound(value)?Object.entries(value):[[value]]).map(entry=>
- split(value,relations,entry,path,trace)));
+ return rank((compound(value)?Object.entries(value):[[value]]).filter(not(match([intension]))).map(entry=>
+ split(value,{relations,intension},entry,path,trace)));
  let nodes=compound(value)?[relations&&value[relations]||value].flat().filter(node=>
  node&&(!compound(node)||Object.keys(node).length)):undefined;
  // search.prune collects array indices in path, which doubles the depth. 

@@ -1,5 +1,5 @@
 
- Representing any data with any Fragment is only a matter of access to the latter and compatibility with the former. Wikipedia has an open interface, so access can be provided, but I defined some routes that proxies it with a simple query language and convenient transformations for Network. 
+ Representing any data with any Fragment is only a matter of access to the former and compatibility with the latter. Wikipedia has an open interface, so access can be provided, but I defined some routes that proxies it with a simple query language and convenient transformations for Network. 
 
 proxy#[["/Blik_2024_wikipedia.js/module/namespace/default"],"interface/fetch","interface/digest",[["exports","default"]],"inference/record",["module"],"meta/serialize",[{"source":"/Blik_2024_wikipedia.js/module/namespace/default","scale":0.8,"fold":2}],"script","script/index"]{background:transparent;max-width:90%;margin:auto;border-radius:.5em;border:2px dashed #616161}
 

@@ -1,6 +1,6 @@
  import {note,sum,extreme,merge,search,prune,record,remember,each,drop,compose,either,infer,tether,is,slip,numeric,collect,extract,combine,whether,when,crop,buffer,pass,colors,expect,wait,exit} from "./Blik_2023_inference.js";
- import {fetch,path,query} from "./Blik_2023_interface.js";
- import {url} from "./Blik_2023_meta.js";
+ import {fetch} from "./Blik_2023_interface.js";
+ import {url,path,query} from "./Blik_2023_meta.js";
  import {unfold} from "./Blik_2023_search.js";
  let parameters={query:{format:"json",origin:"*"}};
 
