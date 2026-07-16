@@ -11,19 +11,20 @@
  import extend from "./Blik_2023_d4.js";
  import wikipedia from "./Blik_2024_wikipedia.js";
  import * as svg from "./Blik_2024_svg.js";
- import local,{persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
  import inspect from "./Blik_2025_inspector.js";
- export {encryption,classify,classified,published,permit};
- var address=new URL(import.meta.url).pathname;
- export const file=address.replace(/.*\//,"");
- await publish("./Blik_2024_comments.json",new RegExp(".*\\/author.*[^\\/]$"));
- var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
- export var syndication=
+ import local,{syndication,persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
+ merge(syndication,
  {rss2json:{key:undefined}
- ,google:{api:undefined,search}
+ ,google:{api:undefined}
  ,elsevier:{api:undefined}
  ,mapbox:undefined
- };
+ });
+ export {encryption,classify,classified,published,permit,syndication};
+ var address=new URL(import.meta.url).pathname;
+ export const file=address.replace(/.*\//,"");
+ // Port excludes published paths from cache. 
+ await publish(/^(?!.*\/module)(?!.*\/sourcemap).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
+ var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
 
  export default
  {...local
