@@ -23,7 +23,7 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  // Port excludes published paths from cache. 
- await publish(/^(?!.*\/module)(?!.*\/sourcemap).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
+ await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
  var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
 
  export default
