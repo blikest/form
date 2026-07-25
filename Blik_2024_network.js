@@ -1,4 +1,4 @@
- import {infer,tether,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
+ import {infer,tether,crop,stash,something,match,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
  import {fetch,digest,command} from "./Blik_2023_interface.js";
  import {document,window,demarkup,dataset,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image} from "./Blik_2023_fragment.js";

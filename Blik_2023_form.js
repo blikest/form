@@ -1,4 +1,4 @@
- import {note,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
+ import {note,lift,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
  import {window,document,hypertext,dispose,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,media,stylerules} from "./Blik_2023_fragment.js";
  import {url,serialize,proceduralize,parse,mime,calendar,cookie,query,path} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
@@ -505,7 +505,7 @@
  let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
  await compose(profile,["get"],record,form,pass(clear),document.bind(this),spill)(resource);
  let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
- let fail=compose(crop(1),note.bind(1),"message",document,spill);
+ let fail=compose(crop(1),note.bind(1),"stack",note,document);
  let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
  return compose
 (document.bind(frame),spill.bind(frame.controller)

@@ -1,14 +1,14 @@
  import {resolve,locate,fetch,digest,socket} from "./Blik_2023_interface.js";
  import {unfold} from "./Blik_2023_search.js";
  import {cookie,path,query} from "./Blik_2023_meta.js";
- import {note,debug,search,merge,prune,route,record,stagger,spill,model,lift,expect,compose,combine,compound,string,either,pass,trace,drop,crop,slip,flip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,rank,collect,is,match,basic,defined,stash,extract} from "./Blik_2023_inference.js";
+ import {note,debug,produce,search,merge,prune,route,record,stagger,spill,model,lift,expect,compose,combine,compound,string,either,pass,trace,drop,crop,slip,flip,infer,tether,whether,modular,wait,trickle,observe,buffer,swap,when,array,has,each,differ,rank,collect,is,match,basic,defined,stash,extract} from "./Blik_2023_inference.js";
  import * as fragment from "./Blik_2023_fragment.js";
  import {document,form,image,canvas,message,demarkup,insert,navigate,detransform,stretch,vectorspace,error,drillresize,deselect,namespaces,keyboard,spell,expand,parse,semiotics,destroy,reference,fill,annotate,qualify,cursor,capture} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  var address=new URL(import.meta.url).pathname;
  var file=address.replace(/.*\//,"/");
 
- export default async function* author({source,name,icon,info,address},expand)
+ export default async function* author({source,name,icon,info,address,sub},expand)
 {if(this&&!modular(this)||arguments[0].constructor?.name==="IncomingMessage")
  return yield {imports:
  {"/Blik_2023_interface.js":["","agent","resolve","locate","digest","socket"]
@@ -31,7 +31,7 @@
  buffer(spell)(description);
  let source=this.dataset.source;
  await compose
-(buffer(compose(fetch,"json"),fail=>({fail})),{name:title.textContent}
+(buffer(expect(compose(fetch,"json"),0,2),fail=>({fail})),{name:title.textContent}
 ,merge,source,pub,rank,each(document.bind(this)),spill.bind(this.controller),lift
 )(source);
 }}
@@ -48,7 +48,7 @@
  let {source}=author.dataset;
  let {source:entry}=this.parentNode.dataset;
  let article=await compose
-(buffer(compose(fetch,"json"),fail=>({fail}))
+(buffer(expect(compose(fetch,"json"),0,2),fail=>({fail}))
 ,source,syndicate,search(["pub",entry])
 )(source);
  compose(tether(document),spill)(this.parentNode,{span:
@@ -122,9 +122,9 @@
  yield capture.call(span,[file,"module","default","module"].join("/"));
  let align=infer("map",compose(lift,infer(record,["span"]),{span:{class:"feed"}},merge));
  let articles=expand?compose(pub,align)(arguments[0],source):undefined;
- let authors=Object.entries(arguments[0].sub||[]).map(compose
+ let authors=Object.entries(sub||[]).map(compose
 (rank,combine
-(compose(combine(buffer(compose(crop(1),fetch,"json"),fail=>({fail})),drop(1)),lift,0,merge)
+(compose(combine(buffer(compose(expect(compose(crop(1),fetch,"json"),0,2)),fail=>({fail})),drop(1)),lift,0,merge)
 ,crop(1)
 ),lift,syndicate,infer(author,0)
 ,slip({class:"sub",style:{"@scope":{":scope":{display:"block"}}}})
@@ -133,7 +133,7 @@
  yield* await compose(articles,authors,collect,"flat",trickle)();
 };
 
- export var syndicate=compose
+ export var syndicate=produce
 (when(compound,string),stash(either("items","posts","data",drop()))
 ,({feed,...author},source,pub)=>(
  {source,...pub
@@ -168,13 +168,13 @@
  })
 );
 
- export var pub=compose
-(syndicate,compose
+ export var pub=produce
+(syndicate,produce
 (combine
-(compose("pub",Object.entries,infer("sort",({1:{put:past}},{1:{put:next}})=>
+(produce("pub",Object.entries,infer("sort",({1:{put:past}},{1:{put:next}})=>
  [next,past].map(time=>new Date(clock(time,"datetime")).getTime()).reduce((next,past)=>
  next-past)))
-,compose(slip(compose
+,produce(slip(produce
 (([source,article],author)=>({author,source,...article}) 
 ,buffer(article,fail=>({"#text":fail.message}))
 )),infer)

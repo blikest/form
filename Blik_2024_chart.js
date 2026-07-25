@@ -1,6 +1,6 @@
  import {color,spectrum} from "./Blik_2023_layout.js";
  import {rgb,cluster} from "./Blik_2023_search.js";
- import {note,sum,prune,extreme,extract,infer,spill,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip,each} from "./Blik_2023_inference.js";
+ import {note,sum,lift,prune,extreme,extract,infer,spill,buffer,exit,compose,tether,defined,string,functor,array,compound,numeric,finite,when,major,wait,pass,observe,slip,each} from "./Blik_2023_inference.js";
  import extend from './Blik_2023_d4.js';
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
