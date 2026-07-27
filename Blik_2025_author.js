@@ -32,7 +32,7 @@
  let source=this.dataset.source;
  await compose
 (buffer(expect(compose(fetch,"json"),0,2),fail=>({fail})),{name:title.textContent}
-,merge,source,pub,rank,each(document.bind(this)),spill.bind(this.controller),lift
+,merge,source,pub,rank,each(compose(crop(1),document.bind(this))),spill.bind(this.controller),lift
 )(source);
 }}
  ,".title":

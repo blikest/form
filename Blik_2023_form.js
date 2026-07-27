@@ -93,13 +93,11 @@
  {check(){this.send(JSON.stringify({action:"check"}));}
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
- let fields=Array.from(form.querySelectorAll("span[role]"));
- let input=fields.find(input=>demarkup(input,"name").name==="message");
+ let fields=Array.from(form.querySelectorAll("span[name]"));
+ let input=fields.find(input=>input.parentNode.id==="message");
  let label=input.parentNode;
- let [,list]=surge(document.call(label,{ul:{}}));
- let node=list.querySelector("span#signal");
- let [entry]=compose(document,spill,lift)({span:{id:"signal","#text":author.name+" is typing..."}});
- list[(node?"replace":"append")+"Child"](entry,node);
+ let node=label.querySelector("span#signal");
+ let [entry]=compose(document.bind(label),spill,lift,drop(1))({span:{id:"signal","#text":author.name+" is typing..."}});
  compose(wait(3000),node=>node.parentNode&&node.remove())(entry);
 },async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/document"}},window)
 {let form=window.document.querySelector("#composer");
@@ -250,20 +248,34 @@
  {imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
  ,procedures:[function()
 {var address=new URL(import.meta.url).pathname;
+ function revalidate(url,cache)
+{return cache.match(url).then(existing=>
+ fetch(url,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
+ fresh.status===304?existing:cache.put(url,fresh.clone()).then(cached=>
+ console.log("Cached module: ",{url,cached,fresh})||fresh))
+ .catch(fail=>existing||Promise.reject(fail)));
+}
+ function refresh()
+{let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
+ return Promise.all([caches.open("modules"),modules]).then(([cache,modules])=>
+ Promise.all(modules.map(file=>revalidate(self.location.origin+file,cache))))
+ .catch(console.error);
+}
  observe.call(self
-,{install(){this.postMessage(address+" installed.");}
- ,activate(){this.postMessage(address+" activated.");}
- }).postMessage("Worker ready: "+address)
- let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
- Promise.all([caches.open(import.meta.url),modules]).then(([cache,modules])=>
- cache.addAll(modules)).catch(console.error);
+,{install(event){console.log(address+" installed.");event.waitUntil(refresh());}
+ ,activate(){console.log(address+" activated.");}
+ ,fetch(event){event.respondWith(event.request.destination==="script"
+ ?caches.open("modules").then(cache=>revalidate(event.request,cache))
+ :fetch(event.request));}
+ });
 }]
  };
  return module;
-},manifest()
-{let module=
- {name:"JS Interface",short_name:"interface",theme_color:"#ffcbe4",background_color:"#fa99ca"
- ,display:"standalone",scope:"/",start_url:"https://jsinterface.org/",description:"public js interface"
+},manifest(request)
+{let {origin}=url(request);
+ let module=
+ {name:"JS Rebels",short_name:"jsrebels",theme_color:"#ffcbe4",background_color:"#fa99ca"
+ ,display:"standalone",scope:"/",start_url:origin,description:"JS Rebels"
  ,orientation:"any",icons:[{src:"/svg/object/node/document",sizes:"1024x1024"}]
  };
  return module;
@@ -396,7 +408,7 @@
  let composer=
  {span:merge(form({get:fields})
 ,{id:"composer",style:[{"@scope":{":scope":
- {...layout.material,...layout.pill
+ {...layout.material,...layout.pill,...layout.animation.fade.out
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em"
  ,"padding-right":"1.5em",overflow:"scroll","box-sizing":"border-box","max-width":"calc(100% - 20px)"
  ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
@@ -405,6 +417,7 @@
  {[[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
  "&[method="+method+"]>span:not([title="+primary+"])"),"&>span#extend"]]:{width:0,display:"none"}
  }
+ ,"&:not([method=get])>span#extend":{display:"none"}
  ,"&>span[title]":
 [{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
  ,"&>ul":
@@ -417,18 +430,27 @@
 ,Object.entries({message:"",source:"",fragment:"as",title:"of",category:"on",spread:"by",matrix:"from",relations:"with"}).map(([field,value])=>(
  {["&[title="+field+"]"]:{"&>span:first-child":{display:"none"},"&:before":{content:"'"+value+"'"}}}))
 ].flat().reduce(merge)
- ,[["source","message"].map(title=>"&>span[title="+title+"]")]:
+ ,"&:hover>#message>.messages":{"pointer-events":"all","&>.message":{opacity:1,animation:"fadein 1s"}}
+ ,[["source","message"].map(title=>"&>span#"+title)]:
  {"&>ul":
  {"text-align":"left",width:"auto","margin-left":"-0.5em"
  ,"&>li":{"white-space":"nowrap"}
  }
- ,"&>.messages":{"margin-left":"-6em"}
+ ,"&>span#signal":{position:"absolute",left:"-0.5em",top:"1.5em",color:"black"}
+ ,"&>.messages":
+ {display:"block","margin-left":"-4.25em","max-height":"calc(100% - 6em)","min-width":"150px","pointer-events":"none"
+ ,"&>.message":
+ {opacity:0,animation:"fadeout 2s","padding-left":0,"white-space":"normal"
+ ,...layout.message
+ ,"&>span>.title+span":{}
+ ,"&:last-of-type":{animation:"fadeout 6s"}
  }
- ,"&:hover>span[title=message]>ul>li":{opacity:1,animation:"fadein 1s"}
+ }
+ }
  ,...Object.fromEntries(["erase","get","put","send"].map((method,index)=>
  ["&[method="+method+"]>span[title]:not(."+(index?method:"get")+")",{display:"none"}]))
  ,"&>span[role=textbox]#extend":{...layout.input,"&:empty:after":{content:'"..."'}}
- }}}]
+ }},id:"composer-style"}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
  },0)
  };
@@ -447,22 +469,7 @@
  compose.call
 ({send:{message:name||message||"",code:message||author?null:""}
  ,put:{name:message,code}
- }[method]||{},[method],record,form,tether(prune,({1:value})=>
- value?.title==="message"?merge(value
-,{style:{"@scope":{":scope":
- {"&>ul":
- {display:"block","margin-left":"-5em","max-height":"50vh","min-width":"150px"
- ,"&>span":{position:"fixed",bottom:"1.5em",left:"5.5em",color:"black"}
- ,"&>li":
- {...layout.animation.fade.out,opacity:0,animation:"fadeout 6s","padding-left":0,"min-height":"4em","white-space":"normal"
- ,...layout.message
- ,"&:not(:last-of-type)":{animation:"fadeout 2s"}
- }
- ,"&:hover>li":{opacity:1,animation:"fadein 1s"}
- }
- ,"&>span.status":{position:"absolute",left:"-0.5em",top:"-1.5em",color:"black"}
- }}}
- }):value,0,2)
+ }[method]||{},[method],record,form
 ,{style:
 [{class:"icon","#text":css({"#toggle":
  {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
@@ -480,7 +487,7 @@
  compose(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild))({svg:
  {...search.call(svg.object,icon.split("/")),title:method,id:"toggle"
  }});
- let room=["",path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
+ let room=[path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
  if(method==="send"&&!defined(message))
  this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
 };
@@ -528,7 +535,7 @@
  if(author.rank)
  this.ownerDocument.cookie=cookie({rank:author.rank,path:"/",expires});
  let {href}=this.ownerDocument.defaultView.location;
- let room=["",path(href),query(url(href)).source].join("/");
+ let room=[path(href),query(url(href)).source].join("/");
  this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
  fill.call(this,{name:"",code:"",message:""});
  toggle.call(this,"send");
@@ -544,7 +551,7 @@
 },send({message})
 {if(!message)return;
  let {href}=this.ownerDocument.defaultView.location;
- let room=["",path(href),query(url(href)).source].join("/");
+ let room=[path(href),query(url(href)).source].join("/");
  this.dispatchEvent(new MessageEvent("message",{data:{action:"message",room,message,put:Date.now()},bubbles:true}));
  fill.call(this,{message:""});
  toggle.call(this,"send");
