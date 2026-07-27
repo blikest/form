@@ -41,7 +41,6 @@
 // ]),Object.fromEntries)(variants.length?{"":variants}:variants)
 // ]),Object.fromEntries,["truetype"],record,fonts,merge
  ,author:persistence("Blik_2024_author.json")
- ,document:compose(crop(1),infer(record,["svg"]),document,spill,lift,crop(1))
  ,media:compose(crop(1),"toString",media,collect,document,spill,lift,crop(1))
  ,interface:async function(request)
 {let queries=query(url(request));
@@ -68,7 +67,7 @@
  });
  let address=request.url.replace(/\/($|\?.*)/g,"");
  let title=address.split("/").reverse().find(Boolean)||"JSRebels";
- [fragment]=compose.call(body,title,"/svg/object/node/document",[],style,hypertext,document,spill,lift);
+ [fragment]=compose.call(body,title,"/svg/object/node/vector",[],style,hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
 ,{source:path(window.origin+(this===routes?"/get":request.url))
@@ -99,9 +98,9 @@
  let node=label.querySelector("span#signal");
  let [entry]=compose(document.bind(label),spill,lift,drop(1))({span:{id:"signal","#text":author.name+" is typing..."}});
  compose(wait(3000),node=>node.parentNode&&node.remove())(entry);
-},async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/document"}},window)
+},async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/vector"}},window)
 {let form=window.document.querySelector("#composer");
- let [span]=compose(document,spill,lift)({span:await entry({icon:icon||"/svg/animal/deer/document",name:name||"anonymous",put,message})});
+ let [span]=compose(document,spill,lift)({span:await entry({icon:icon||"/svg/animal/deer/vector",name:name||"anonymous",put,message})});
  if(!form.querySelector("#message"))
  return;
  compose
@@ -276,7 +275,7 @@
  let module=
  {name:"JS Rebels",short_name:"jsrebels",theme_color:"#ffcbe4",background_color:"#fa99ca"
  ,display:"standalone",scope:"/",start_url:origin,description:"JS Rebels"
- ,orientation:"any",icons:[{src:"/svg/object/node/document",sizes:"1024x1024"}]
+ ,orientation:"any",icons:[{src:"/svg/object/node/vector",type:"image/svg+xml",sizes:"any"}]
  };
  return module;
 }};
@@ -306,7 +305,7 @@
  await buffer(submission[method].bind(form),note)(fields);
  this.style.pointerEvents="";
 },...observe({point({x,y,target,isTrusted:click})
-{if(target.closest("ul"))
+{if(target.closest("span[role=list]")||target.closest("ul"))
  return;
  drag.pointerdown.call(this,...arguments);
 }})
@@ -407,9 +406,12 @@
  };
  let composer=
  {span:merge(form({get:fields})
-,{id:"composer",style:[{"@scope":{":scope":
+,{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
+ ,"@scope":{":scope":
  {...layout.material,...layout.pill,...layout.animation.fade.out
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em"
+ ,"&.right":{transition:"all",left:"unset",right:"0px"}
+ ,"&.top":{transition:"all",bottom:"unset",top:"0px"}
  ,"padding-right":"1.5em",overflow:"scroll","box-sizing":"border-box","max-width":"calc(100% - 20px)"
  ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
  ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
@@ -450,7 +452,8 @@
  ,...Object.fromEntries(["erase","get","put","send"].map((method,index)=>
  ["&[method="+method+"]>span[title]:not(."+(index?method:"get")+")",{display:"none"}]))
  ,"&>span[role=textbox]#extend":{...layout.input,"&:empty:after":{content:'"..."'}}
- }},id:"composer-style"}]
+ ,"&.toggling":{"&>span[title]":{width:0},padding:0}
+ }}}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
  },0)
  };
@@ -458,7 +461,8 @@
 };
 
  async function toggle(method)
-{let active=this.ownerDocument.activeElement;
+{this.classList.add("toggling");
+ let active=this.ownerDocument.activeElement;
  if(!this.contains(active))active=undefined;
  let {author}=cookie.call(this);
  let {source,message,name,code}=fill.call(this)[this.getAttribute("method")];
@@ -490,6 +494,7 @@
  let room=[path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
  if(method==="send"&&!defined(message))
  this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
+ this.classList.remove("toggling");
 };
 
  var submission=
@@ -510,7 +515,7 @@
  compose(document,spill,lift,infer(insert,"under",frame))(progress);
  resource=resource||compose(fetch,digest)(route+query);
  let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
- await compose(profile,["get"],record,form,pass(clear),document.bind(this),spill)(resource);
+ await compose(profile,note,["get"],record,form,pass(clear),document.bind(this),spill)(resource);
  let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
  let fail=compose(crop(1),note.bind(1),"stack",note,document);
  let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
