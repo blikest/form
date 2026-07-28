@@ -1,4 +1,4 @@
- import {infer,tether,crop,stash,something,match,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
+ import {infer,tether,crop,produce,stash,something,match,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
  import {fetch,digest,command} from "./Blik_2023_interface.js";
  import {document,window,demarkup,dataset,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image} from "./Blik_2023_fragment.js";
@@ -12,12 +12,12 @@
  var browser=defined(globalThis.window);
  var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
- var resource=combine(compose(crop(1),fetch,digest),compose(drop(1,0,compose(["source"],record)),merge),drop(2));
+ var resource=combine(produce(crop(1),fetch,digest),produce(drop(1,0,produce(["source"],record)),merge),drop(2));
  var graph=whether([has("nodeName"),match(something,{matrix:{}})],Graph,reference,sprawl);
- var collapsed=compose(stash(compose(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
- export default compose
-(drop(1),whether(string,resource),lift
-,stash(compose(matrix,["matrix"],record)),crop(1,compose(rotate(1),drop(2,0,merge)))
+ var collapsed=produce(stash(produce(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
+ export default produce
+(whether(string,resource),lift
+,stash(produce(matrix,["matrix"],record)),crop(1,produce(rotate(1),drop(2,0,merge)))
 ,combine(graph,drop(1)),lift,combine(spread,drop(1)),lift,chart,simulate,"fragment"
 ,buffer(collapsed,drop(1)),lift
 ,pass(whether(search(["dataset","actions"]),report,tether(capture,["",location,"module","actions","module"].join("/"))))
