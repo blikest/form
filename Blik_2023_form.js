@@ -104,9 +104,11 @@
  if(!form.querySelector("#message"))
  return;
  compose
-(tether(document),spill,lift,drop(6,7),note
+(tether(document),spill,lift,collect,infer("find",match({className:"message"})),note
 ,name==="system"&&compose(wait(5000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")
-)(form,{span:{id:"message",span:{class:"messages",role:"list",span}}});
+)(form,{span:{id:"message",span:{class:"messages",role:"list"
+,dataset:{source:"/Blik_2026_chat.json"+window.location.pathname,actions:["/Blik_2023_fragment.js/module/erase/module"]}
+,span}}});
 },broadcast({message,room,author})
 {let {href}=window.location;
  compose({source:room,...query(href)},transform,infer(insert,"under",window.document.querySelector("[actions='"+room+"']")))(message);
@@ -427,7 +429,7 @@
  {[[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
  "&[method="+method+"]>span:not([title="+primary+"])"),"&>span#extend"]]:{width:0,display:"none"}
  }
- ,"&:not([method=get])>span#extend":{display:"none"}
+ ,"&:not([method=get])>span[role=textbox]#extend":{display:"none"}
  ,"&>span[title]":
 [{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
  ,"&>ul":

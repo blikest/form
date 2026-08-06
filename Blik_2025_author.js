@@ -70,7 +70,7 @@
  this.controller=new AbortController();
  await compose(tether(document),spill.bind(this.controller),lift)(this.parentNode.querySelector(".content"),content);
  compose(spill,lift)(document.call(this.parentNode.querySelector(".content"),{span:{class:"progress",drop:true}}));
- compose(spill,lift)(document.call(this.parentNode,await comments(entry,source)));
+ compose(spill,lift)(document.call(this.parentNode,await comments("/"+source+entry)));
  //article.media&&link(article?.media,"");
  //,article.link&&link(article.link,this.parentNode.querySelector("span").textContent);
 }}
@@ -217,14 +217,14 @@
 )("/author/"+name);
 };
 
- export function comments(source,address)
+ export function comments(field)
 {if(this&&!modular(this)||arguments[0].constructor?.name==="IncomingMessage")
  return {imports:
  {"/Blik_2023_interface.js":["","resolve","locate","digest","socket"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2023_meta.js":["","cookie","query","path"]
  ,"/Blik_2023_inference.js":";note;expect;compose;combine;pass;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;merge;search;prune;extract;route;record".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;descend;form;image;canvas;link;message;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;descend;form;image;canvas;link;message;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;annotate;qualify;cursor;capture".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,[file]:["author","syndicate","pub"]
  }
@@ -246,11 +246,11 @@
  if(empty)
  return ["warn 1s","unset"].forEach((animation,index)=>
  compose(wait(1000*index),Object.assign)(this.querySelector("span[title="+empty+"]").style,{animation}));
- let source=["feed","article"].map(name=>this.closest("."+name).dataset.source).join("/");
- let comments=target.closest(".comments").querySelector(".history");
+ let [,resource,...source]=this.closest(".messages").dataset.source.split("/");
+ let comments=target.closest(".messages").querySelector(".history");
  let text={put:Date.now(),...fields};
- let body=JSON.stringify({[source]:[text]});
- let {status}=await fetch("/Blik_2024_comments.json",{method:"put",body});
+ let body=JSON.stringify({[source.join("/")]:[text]});
+ let {status}=await fetch("/"+resource,{method:"put",body});
  if(status!==200)
  return ["warn 1s","unset"].forEach((animation,index)=>
  compose(wait(1000*index),Object.assign)(target.closest(".comment").style,{animation}));
@@ -263,41 +263,9 @@
  let expires=rank.status===200?undefined:new Date().toUTCString();
  this.ownerDocument.cookie=cookie({rank:await rank.text(),path:"/",expires});
 }}
- ,".message>span:first-of-type":
- {...observe({hover({isTrusted:hover,target})
-{if(this!==target)return;
- if(!hover)
- return [target.firstChild.nextSibling].forEach(function remove(node){node&&remove(node.nextSibling),node?.remove();});
- let name=this.closest(".message").querySelector(".name").textContent;
- if(name!==cookie("author")&&cookie("rank")!=="ranger")
- return;
- let actions=document({span:{class:"actions",style:"width:0",svg:
- {role:"button",viewBox:"0 0 448 512"
- ,...svg.effect.shadow_amber
- ,path:{d:"M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"}
- }}});
- this.firstChild.after(actions);
- actions.style.width="auto";
-}})
- //,touchstart(event){event.preventDefault();}
- }
- ,".message svg[role=button]":
- {async click()
-{let source=this.closest(".comments").parentNode.querySelector(".article").getAttribute("source");
- let message=this.closest(".message");
- let {index}=message.dataset;
- let body=JSON.stringify({[source]:{[index]:null}});
- let comments=await fetch("/Blik_2024_comments.json?override=true",{method:"put",body});
- if(comments.status!==200)return;
- let style=message.querySelector("style");
- if(style)
- (message.nextSibling||message.previousSibling)?.append(style);
- [message.previousSibling].forEach(function decrement(node){if(!node)return;decrement(node.previousSibling);node.dataset.index-=1;});
- message.remove();
-}}
  }}};
  return capture.call({span:
- {class:"comments",span:
+ {class:"messages",dataset:{source:"/Blik_2024_comments.json"+field},span:
 [merge(form({name:cookie("author")||"",comment:""})
 ,{class:"comment"
  ,style:
@@ -330,7 +298,7 @@
 ],span:[{role:"button",svg:compose(fetch,digest)("/svg/object/paperplane/tilt")}]
  },0)
 ,{class:"history",span:compose.call
-("/Blik_2024_comments.json/module/namespace/default"+address+"/"+source
+("/Blik_2024_comments.json/module/namespace/default"+field
 ,fetch,either("json",swap([])),rank,each(message),collect
 )}
 ],style:
@@ -339,5 +307,6 @@
  ,"&>span.history":{display:"table-cell","border-spacing":"0 1em","text-align":"left"}
  ,"@keyframes warn":{from:{"box-shadow":"#880e4f 0px 0px 5px inset"},to:{"box-shadow":"revert"}}
  }}}
- }},[file,"module",comments.name,"module"].join("/"));
+ }}
+,[[file,"module",comments.name,"module"].join("/"),"/Blik_2023_fragment.js/module/erase/module"]);
 };
