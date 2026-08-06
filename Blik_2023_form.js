@@ -1,5 +1,7 @@
- import {note,lift,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record} from "./Blik_2023_inference.js";
- import media,{window,document,hypertext,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,stylerules} from "./Blik_2023_fragment.js";
+ import {note,lift,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record,major} from "./Blik_2023_inference.js";
+
+
+ import media,{window,document,hypertext,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,stylerules,memory,image,canvas} from "./Blik_2023_fragment.js";
  import {url,serialize,proceduralize,parse,mime,calendar,cookie,query,path} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
@@ -11,7 +13,6 @@
  import extend from "./Blik_2023_d4.js";
  import wikipedia from "./Blik_2024_wikipedia.js";
  import * as svg from "./Blik_2024_svg.js";
- import inspect from "./Blik_2025_inspector.js";
  import local,{syndication,persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
  merge(syndication,
  {rss2json:{key:undefined}
@@ -23,12 +24,11 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  // Port excludes published paths from cache. 
- await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
+ await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$)(?!.*\.js$).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
  var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
 
  export default
  {...local
- ,inspect
  ,svg(){return svg;}
  // ,fonts:compose.call
 // (fonts.truetype,Object.entries,infer("map",([name,variants])=>
@@ -67,7 +67,7 @@
  });
  let address=request.url.replace(/\/($|\?.*)/g,"");
  let title=address.split("/").reverse().find(Boolean)||"JSRebels";
- [fragment]=compose.call(body,title,"/svg/object/node/vector",[],style,hypertext,document,spill,lift);
+ [fragment]=compose.call(body,{title,icon:"/svg/object/node/vector",scripts:[],styles:style},hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
 ,{source:path(window.origin+(this===routes?"/get":request.url))
@@ -82,13 +82,13 @@
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
 ),relay()
 {return {imports:
- {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","surge","collect","compose","wait","has","clock"]
- ,"/Blik_2023_interface.js":["","locate","command"]
+ {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock","string","prune","flatten"]
+ ,"/Blik_2023_interface.js":["","locate","reload"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
- ,"/Blik_2023_meta.js":["","query"]
+ ,"/Blik_2023_meta.js":["","query","relate"]
  }
  ,exports:
- {default: 
+ {default:
  {check(){this.send(JSON.stringify({action:"check"}));}
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
@@ -123,7 +123,8 @@
 :changes.toJSON()).map((changes,index)=>
  Object.assign(updates[index],{changes})))).then(updates=>
  this.room.content.update([updates]));
-}}
+},async bust({modules}){return reload(modules);}
+ }
  }
  };
 },async rss(request)
@@ -242,35 +243,7 @@
  }
 }};
 },worker(){return worker;}
- ,serviceworker()
-{let module=
- {imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
- ,procedures:[function()
-{var address=new URL(import.meta.url).pathname;
- function revalidate(url,cache)
-{return cache.match(url).then(existing=>
- fetch(url,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
- fresh.status===304?existing:cache.put(url,fresh.clone()).then(cached=>
- console.log("Cached module: ",{url,cached,fresh})||fresh))
- .catch(fail=>existing||Promise.reject(fail)));
-}
- function refresh()
-{let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
- return Promise.all([caches.open("modules"),modules]).then(([cache,modules])=>
- Promise.all(modules.map(file=>revalidate(self.location.origin+file,cache))))
- .catch(console.error);
-}
- observe.call(self
-,{install(event){console.log(address+" installed.");event.waitUntil(refresh());}
- ,activate(){console.log(address+" activated.");}
- ,fetch(event){event.respondWith(event.request.destination==="script"
- ?caches.open("modules").then(cache=>revalidate(event.request,cache))
- :fetch(event.request));}
- });
-}]
- };
- return module;
-},manifest(request)
+,manifest(request)
 {let {origin}=url(request);
  let module=
  {name:"JS Rebels",short_name:"jsrebels",theme_color:"#ffcbe4",background_color:"#fa99ca"
@@ -280,14 +253,50 @@
  return module;
 }};
 
+ export var serviceworker=
+ {imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
+ ,procedures:[function()
+{var address=new URL(import.meta.url).pathname;
+ function revalidate(url,cache)
+{// same-URL canonicalization as the resolve/load hooks: a bust timestamp only
+ // needs to reach the browser's own module map, never the cache key or the network request.
+ let canonical=(url.url||url).replace(/\?.*$/,"");
+ return cache.match(canonical).then(existing=>
+ fetch(canonical,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
+ fresh.status===304?existing:fresh.status<400&&cache.put(canonical,fresh.clone()).then(cached=>
+ console.debug("Cached module: "+canonical)||fresh))
+ .catch(fail=>existing||Promise.reject(fail)));
+}
+ function refresh()
+{let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
+ return Promise.all([caches.open("assets"),modules]).then(([cache,modules])=>
+ Promise.all(modules.map(file=>revalidate(self.location.origin+file,cache))))
+ .catch(console.error);
+}
+ observe.call(self
+,{install(event){console.log(address+" installed.");event.waitUntil(Promise.all([refresh(),self.skipWaiting()]));}
+ ,activate(event)
+{console.log(address+" activated.");
+ event.waitUntil(Promise.all(
+[caches.keys().then(keys=>Promise.all(keys.filter(key=>key!=="assets").map(key=>caches.delete(key))))
+ // dispatches controllerchange event on clients' navigator.serviceWorker-s. 
+ ,self.clients.claim()
+]));
+},fetch(event){event.respondWith(event.request.method==="GET"
+ ?caches.open("assets").then(cache=>revalidate(event.request,cache))
+ :fetch(event.request));}
+ });
+}]
+ };
+
  export function composer(fields)
 {if(this)
  return {imports:
  {"/Blik_2023_interface.js":["","command","locate","digest"]
- ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag;list".split(";")
+ ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract;major".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag;list;memory".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
- ,"/Blik_2023_meta.js":["","domain","url","cookie","query","path"]
+ ,"/Blik_2023_meta.js":["","domain","url","query","path"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Blik_2024_svg.js":"* as svg"
  }
@@ -299,7 +308,7 @@
  this.style.pointerEvents="none";
  let form=this;
  let {method}=demarkup(form,"method");
- let fields=fill.call(form)[method];
+ let fields=fill.call(form)[method]||{};
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
  await buffer(submission[method].bind(form),note)(fields);
@@ -338,7 +347,7 @@
  let {name}=demarkup(target,"name");
  if(name==="message"&&value)
  form.dispatchEvent(new MessageEvent("message",{data:{action:"signal"},bubbles:true}));
- let {message,code}=fill.call(form)[form.getAttribute("method")];
+ let {message,code}=fill.call(form)[form.getAttribute("method")]||{};
  let method=
  {put:!code&&"send"
  ,get:name!=="source"&&!value&&"erase"
@@ -410,8 +419,7 @@
  ,"@scope":{":scope":
  {...layout.material,...layout.pill,...layout.animation.fade.out
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em"
- ,"&.right":{transition:"all",left:"unset",right:"0px"}
- ,"&.top":{transition:"all",bottom:"unset",top:"0px"}
+ ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
  ,"padding-right":"1.5em",overflow:"scroll","box-sizing":"border-box","max-width":"calc(100% - 20px)"
  ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
  ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
@@ -432,7 +440,7 @@
 ,Object.entries({message:"",source:"",fragment:"as",title:"of",category:"on",spread:"by",matrix:"from",relations:"with"}).map(([field,value])=>(
  {["&[title="+field+"]"]:{"&>span:first-child":{display:"none"},"&:before":{content:"'"+value+"'"}}}))
 ].flat().reduce(merge)
- ,"&:hover>#message>.messages":{"pointer-events":"all","&>.message":{opacity:1,animation:"fadein 1s"}}
+ ,"&:hover>#message>.messages":{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
  ,[["source","message"].map(title=>"&>span#"+title)]:
  {"&>ul":
  {"text-align":"left",width:"auto","margin-left":"-0.5em"
@@ -452,7 +460,7 @@
  ,...Object.fromEntries(["erase","get","put","send"].map((method,index)=>
  ["&[method="+method+"]>span[title]:not(."+(index?method:"get")+")",{display:"none"}]))
  ,"&>span[role=textbox]#extend":{...layout.input,"&:empty:after":{content:'"..."'}}
- ,"&.toggling":{"&>span[title]":{width:0},padding:0}
+ ,"&.toggling":{"&>span":{width:0,"min-width":0},padding:0}
  }}}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
  },0)
@@ -464,13 +472,13 @@
 {this.classList.add("toggling");
  let active=this.ownerDocument.activeElement;
  if(!this.contains(active))active=undefined;
- let {author}=cookie.call(this);
- let {source,message,name,code}=fill.call(this)[this.getAttribute("method")];
+ let author=memory("author",match({expires:major(Date.now())}));
+ let {source,message,name,code}=fill.call(this)[this.getAttribute("method")]||{};
  let icon=
  {get:"node",put:code?"fingerprint":"plus"
  ,erase:"plus",send:message?"paperplane/up":"chat"
  }[method];
- compose.call
+ await compose.call
 ({send:{message:name||message||"",code:message||author?null:""}
  ,put:{name:message,code}
  }[method]||{},[method],record,form
@@ -478,7 +486,7 @@
 [{class:"icon","#text":css({"#toggle":
  {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
  ,"clip-path":"circle(50%)",padding:"1em",transform:"scale(0.8)",position:"sticky",left:0
- ,...["node","fingerprint"].includes(icon)&&{padding:0,width:"5em",height:"5em"}
+ ,...(author?.icon||["node","fingerprint"].includes(icon))&&{padding:0,width:"5em",height:"5em"}
  ,"&>path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
  }})
  }
@@ -488,9 +496,11 @@
  if(active)
  focus(this.querySelector(qualify(active)));
  let control=this.querySelector("#toggle");
- compose(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild))({svg:
- {...search.call(svg.object,icon.split("/")),title:method,id:"toggle"
- }});
+ let picture=method==="send"&&author?.icon;
+ let node=picture&&Object.assign(await buffer(compose(fetch,digest,whether(is(Blob),compose(image,canvas),infer())),swap({role:"img"}))(picture),{id:"toggle",title:method});
+ await compose
+(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild)
+)(node?.nodeType?node:node?{canvas:node}:{svg:{...search.call(svg.object,icon.split("/")),title:method,id:"toggle"}});
  let room=[path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
  if(method==="send"&&!defined(message))
  this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
@@ -530,17 +540,14 @@
  let {name}=fields;
  let action="/author/"+name;
  let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
- let [status,author]=await compose(fetch,combine("status","text"),lift)(action,request);
+ let [status,message]=await compose(fetch,combine("status","text"),lift)(action,request);
  if(status!==200)
  return toggle.call(this,"send")
-,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message"
-,{data:{action:"message",message:author}}));
- let expires=new Date(Date.now()+1000*60*60).toUTCString();
- this.ownerDocument.cookie=cookie({author:name,path:"/",expires});
- if(author.rank)
- this.ownerDocument.cookie=cookie({rank:author.rank,path:"/",expires});
+,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message",{data:{action:"message",message}}));
+ let author=JSON.parse(message);
+ localStorage.setItem("author",JSON.stringify(author));
  let {href}=this.ownerDocument.defaultView.location;
- let room=[path(href),query(url(href)).source].join("/");
+ let room=path(href);
  this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
  fill.call(this,{name:"",code:"",message:""});
  toggle.call(this,"send");
