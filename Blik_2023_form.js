@@ -47,7 +47,8 @@
  let fragment=match(["author",string])(arguments[3])?"author":basic(this)?"network":"fragment";
  let {controls,...fields}={source:"",fragment,...queries};
  let [form]=compose(composer,document,spill,lift)(fields);
- await toggle.call(form,"get");
+ let wrapper=form.querySelector("[role=form]");
+ await toggle.call(wrapper,"get");
  let body=
  {style:
 [extract.call(layout,["body","a","blockquote","table"])
@@ -72,9 +73,9 @@
  // root needs explicit /get method to reach json representation. 
 ,{source:path(window.origin+(this===routes?"/get":request.url))
  ,resource:this!==routes&&
- await compose(stage,digest,cede)(this.get?.(...arguments)||this,{url:address,headers:request.headers})
+ await compose.call(this.get?.(...arguments)||this,{url:address,headers:request.headers},stage,digest,cede)
  },1);
- await buffer(compose(tether(submission.get),throttle))(form,fields);
+ await buffer(compose(tether(submission.get),throttle))(wrapper,fields);
  if(String(controls)==="false")
  form.remove();
  return fragment;
@@ -82,7 +83,7 @@
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
 ),relay()
 {return {imports:
- {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock","string","prune","flatten"]
+ {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock","string","prune","flatten","spill","lift","tether"]
  ,"/Blik_2023_interface.js":["","locate","reload"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
  ,"/Blik_2023_meta.js":["","query","relate"]
@@ -92,11 +93,8 @@
  {check(){this.send(JSON.stringify({action:"check"}));}
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
- let fields=Array.from(form.querySelectorAll("span[name]"));
- let input=fields.find(input=>input.parentNode.id==="message");
- let label=input.parentNode;
- let node=label.querySelector("span#signal");
- let [entry]=compose(document.bind(label),spill,lift,drop(1))({span:{id:"signal","#text":author.name+" is typing..."}});
+ let toggle=form.querySelector("#toggle");
+ let [entry]=compose(document.bind(toggle),spill,lift,drop(1))({span:{id:"signal","#text":author.name+" is typing..."}});
  compose(wait(3000),node=>node.parentNode&&node.remove())(entry);
 },async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/vector"}},window)
 {let form=window.document.querySelector("#composer");
@@ -104,16 +102,20 @@
  if(!form.querySelector("#message"))
  return;
  compose
-(tether(document),spill,lift,collect,infer("find",match({className:"message"})),note
+(tether(document),spill,lift,collect,infer("find",match({className:"message"}))
 ,name==="system"&&compose(wait(5000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")
-)(form,{span:{id:"message",span:{class:"messages",role:"list"
-,dataset:{source:"/Blik_2026_chat.json"+window.location.pathname,actions:["/Blik_2023_fragment.js/module/erase/module"]}
-,span}}});
+)(form,{span:{id:"messages",class:"messages",role:"list"
+,dataset:{source:"/Blik_2026_chat.json"+window.location.pathname,actions:["/Blik_2023_fragment.js/module/message/module"]}
+,span}});
 },broadcast({message,room,author})
 {let {href}=window.location;
  compose({source:room,...query(href)},transform,infer(insert,"under",window.document.querySelector("[actions='"+room+"']")))(message);
-},history({messages},window)
-{collect(each.call(rank(messages),async event=>entry(event,window)));
+},async history({messages},window)
+{let form=window.document.querySelector("#composer");
+ let span=await collect(each.call(rank(messages),async(event,context)=>entry(event,context)));
+ compose(tether(document),spill,lift)(form,{span:{id:"messages",class:"messages",role:"list"
+ ,dataset:{source:"/Blik_2026_chat.json"+window.location.pathname,actions:["/Blik_2023_fragment.js/module/message/module"]}
+ ,span}});
 },save({author,room,updates})
 {if(author===window.room.labels.message)
  return window.Tone.Transport.start();
@@ -255,14 +257,15 @@
  return module;
 }};
 
- export var serviceworker=
- {imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
- ,procedures:[function()
+ export var serviceworker=merge(worker
+,{imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
+ ,procedures:{register()
 {var address=new URL(import.meta.url).pathname;
  function revalidate(url,cache)
-{// same-URL canonicalization as the resolve/load hooks: a bust timestamp only
- // needs to reach the browser's own module map, never the cache key or the network request.
- let canonical=(url.url||url).replace(/\?.*$/,"");
+{// bust timestamp on js only hits the page memory, never this cache or the server (like Interface's resolve/load)
+ let raw=url.url||url;
+ let script=url.destination==="script"||!url.url;
+ let canonical=script?raw.replace(/\?.*$/,""):raw;
  return cache.match(canonical).then(existing=>
  fetch(canonical,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
  fresh.status===304?existing:fresh.status<400&&cache.put(canonical,fresh.clone()).then(cached=>
@@ -288,14 +291,14 @@
  ?caches.open("assets").then(cache=>revalidate(event.request,cache))
  :fetch(event.request));}
  });
-}]
- };
+}}
+ });
 
  export function composer(fields)
 {if(this)
  return {imports:
- {"/Blik_2023_interface.js":["","command","locate","digest"]
- ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract;major".split(";")
+ {"/Blik_2023_interface.js":["","command","locate","digest","fetch","socket"]
+ ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;lift;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract;major".split(";")
  ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag;list;memory".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain","url","query","path"]
@@ -315,7 +318,9 @@
  fill.call(form,{[method]:{source:""}});
  await buffer(submission[method].bind(form),note)(fields);
  this.style.pointerEvents="";
-},...observe({point({x,y,target,isTrusted:click})
+}}
+ ,"#composer":
+ {...observe({point({x,y,target,isTrusted:click})
 {if(target.closest("span[role=list]")||target.closest("ul"))
  return;
  drag.pointerdown.call(this,...arguments);
@@ -360,13 +365,28 @@
  toggle.call(form,method);
  if(name==="message")return;
  let list=target.parentNode.querySelectorAll("li");
- return Array.from(list).filter(li=>li.children.length<2).forEach(leaf=>
- [value,unfold.call(leaf,li=>li.parentNode.closest("li"))].reduce((value,branch)=>
-[branch,!value||branch.toReversed().map(li=>li?.firstChild?.textContent||"").join("/").includes(value)
-]).reduce((branch,show)=>
+ let matching=Array.from(list).filter(li=>li.children.length<2).map(leaf=>
+{let branch=unfold.call(leaf,li=>li.parentNode.closest("li"));
+ let path=branch.toReversed().map(li=>li?.firstChild?.textContent||"").join("/");
+ let match=value&&path.includes(value);
+ let show=!value||match;
  branch.forEach((li,height)=>li?.style[(!show
 ?!height||unfold.call(li,li=>li.querySelector("li")).at(-2)===leaf&&"set"
-:"remove")+"Property"]?.("display","none"))));
+:"remove")+"Property"]?.("display","none"));
+ return match&&path;
+}).filter(Boolean);
+ if(name!=="source")return;
+ let svg=form.ownerDocument.getElementById("frame")?.querySelector("svg.d3");
+ let source=form.ownerDocument.defaultView.frame.dataset.source;
+ let root=source==="/get"?form.ownerDocument.defaultView.location.origin:source;
+ let cluster=matching.flatMap(path=>
+{let segments=[root,...path.split("/").slice(1)];
+ return segments.slice(0,-1).map((segment,index)=>
+ form.ownerDocument.getElementById(deselect([segments[index-1]||[],segment].join("-"))));
+}).filter(Boolean);
+ if(svg)
+ value?command.call(import.meta.url,"/Blik_2024_network.js","region",svg,cluster)
+ :command.call(import.meta.url,"/Blik_2024_network.js","region",svg);
 },change({target})
 {let form=target.closest("[role=form]");
  let value=target.textContent;
@@ -386,15 +406,56 @@
 )
 :form.ownerDocument.defaultView.frame.dataset.source);
 }}
+ ,"span[name=source]":
+ {...observe({focus({isTrusted:focus})
+{if(focus)
+ return this.dispatchEvent(new Event("input",{bubbles:true}));
+ let form=this.closest("[role=form]");
+ let svg=form.ownerDocument.getElementById("frame")?.querySelector("svg.d3");
+ svg&&command.call(import.meta.url,"/Blik_2024_network.js","region",svg);
+}})
+ }
+ ,".actions>#unsign":
+ {async click()
+{let author=memory("author",match({expires:major(Date.now())}));
+ await fetch("/author/"+author.name+"?override=true",{method:"put",body:JSON.stringify({signature:null})});
+ localStorage.removeItem("author");
+ let control=this.closest("#toggle");
+ let form=control.parentNode.querySelector("[role=form]");
+ let window=this.ownerDocument.defaultView;
+ await socket(window.location.origin,window);
+ let room=path(window.location.href);
+ form.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
+ toggle.call(form,form.getAttribute("method"));
+}}
  ,"#toggle":
- {async click({isTrusted:genuine}={})
-{let form=this.closest("[role=form]");
+ {async click({isTrusted:genuine,target}={})
+{if(target?.closest(".actions"))return;
+ let form=this.parentNode.querySelector("[role=form]");
  let method=form.getAttribute("method");
  let {message}=fill.call(form,method);
  if({send:message,put:true}[method])
  return form.dispatchEvent(new Event("submit",{bubbles:true}));
  toggle.call(form,{get:"send",send:"get"}[method]);
-}}
+},...observe({hover({isTrusted:hover,relatedTarget})
+{if(this.contains(relatedTarget))return;
+ let icon=this.children[1];
+ if(!hover)
+ return [icon.nextSibling].forEach(function remove(node){node&&remove(node.nextSibling),node?.remove();});
+ let form=this.parentNode.querySelector("[role=form]");
+ let author=memory("author",match({expires:major(Date.now())}));
+ if(form.getAttribute("method")!=="send"||!author)
+ return;
+ let glyph=
+ {id:"unsign",role:"button",viewBox:"0 0 512 512"
+ ,...svg.effect.shadow_amber
+ ,path:{d:"M497 273L329 441c-15 15-41 4.5-41-17v-96H152c-13.3 0-24-10.7-24-24V208c0-13.3 10.7-24 24-24h136V88c0-21.4 25.9-32 41-17l168 168c9.4 9.4 9.4 24.6 0 34zM192 436V76c0-6.6-5.4-12-12-12H96c-53 0-96 43-96 96v192c0 53 43 96 96 96h84c6.6 0 12-5.4 12-12z"}
+ };
+ compose(tether(document),spill,lift)
+(this,{span:{class:"actions",svg:[{...glyph,style:"transform:translate(-50%,-50%) rotate(-30deg) translate(3em) rotate(30deg)"}]}
+ });
+}})
+ }
  ,"#extend":
  {input(event)
 {event.stopPropagation();
@@ -415,48 +476,33 @@
  ,toggle,submission,profile
  }
  };
- let composer=
- {span:merge(form({get:fields})
-,{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
+ let inner=merge(form({get:fields})
+,{id:"fields",style:[{id:"fields-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
- {...layout.material,...layout.pill,...layout.animation.fade.out
- ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em"
- ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
- ,"padding-right":"1.5em",overflow:"scroll","box-sizing":"border-box","max-width":"calc(100% - 20px)"
- ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
- ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
+ {overflow:"scroll","box-sizing":"border-box"
+ ,"padding-right":"1.5em","max-width":"calc(100% - 3.5em)"
  ,"&:not(.focused):not(:hover)":
  {[[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
  "&[method="+method+"]>span:not([title="+primary+"])"),"&>span#extend"]]:{width:0,display:"none"}
  }
  ,"&:not([method=get])>span[role=textbox]#extend":{display:"none"}
  ,"&>span[title]":
-[{"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
+[{cursor:"auto"
+ ,"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
  ,"&>ul":
- {"margin-top":"calc(-100vh)"
- ,"max-height":"calc(100vh - 3em)"
- ,"padding-top":"calc(100vh - 7em)"
+ {"margin-top":"calc(-100vh + 3em)"
+ ,"padding-top":"calc(100vh - 9em)"
+ ,"max-height":"calc(100vh - 6em)"
  ,"overflow":"scroll"
  }
  }
 ,Object.entries({message:"",source:"",fragment:"as",title:"of",category:"on",spread:"by",matrix:"from",relations:"with"}).map(([field,value])=>(
  {["&[title="+field+"]"]:{"&>span:first-child":{display:"none"},"&:before":{content:"'"+value+"'"}}}))
 ].flat().reduce(merge)
- ,"&:hover>#message>.messages":{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
  ,[["source","message"].map(title=>"&>span#"+title)]:
  {"&>ul":
  {"text-align":"left",width:"auto","margin-left":"-0.5em"
  ,"&>li":{"white-space":"nowrap"}
- }
- ,"&>span#signal":{position:"absolute",left:"-0.5em",top:"1.5em",color:"black"}
- ,"&>.messages":
- {display:"block","margin-left":"-4.25em","max-height":"calc(100% - 6em)","min-width":"150px","pointer-events":"none"
- ,"&>.message":
- {opacity:0,animation:"fadeout 2s","padding-left":0,"white-space":"normal"
- ,...layout.message
- ,"&>span>.title+span":{}
- ,"&:last-of-type":{animation:"fadeout 6s"}
- }
  }
  }
  ,...Object.fromEntries(["erase","get","put","send"].map((method,index)=>
@@ -465,8 +511,32 @@
  ,"&.toggling":{"&>span":{width:0,"min-width":0},padding:0}
  }}}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
- },0)
- };
+ },0);
+ let composer=
+ {span:{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
+ ,"@scope":{":scope":
+ {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap
+ ,{"&>span[role=form]":{height:"100%","&:before":{content:"''",display:"inline-block",height:"100%","vertical-align":"middle",width:0}}}
+ ].reduce(merge,{})
+ ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
+ ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
+ ,"box-sizing":"border-box","max-width":"calc(100% - 20px)"
+ ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
+ ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
+ ,"&:hover>span[method=send]+.messages":{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
+ ,"&>.messages":
+ {position:"absolute",bottom:"100%",left:0,overflow:"scroll",cursor:"auto"
+ ,display:"block","margin-left":"1em","max-height":"calc(100vh - 6em)","max-width":"300px","pointer-events":"none"
+ ,"&>.message":
+ {opacity:0,animation:"fadeout 2s","padding-left":0,"margin-bottom":"0.5em"
+ ,...layout.message
+ ,"&>span>.title+span":{}
+ ,"&:last-of-type":{animation:"fadeout 6s"}
+ }
+ }
+ }}}]
+ ,span:[inner]
+ }};
  return capture.call(composer,["",file,"module","composer","module"].join("/"));
 };
 
@@ -483,29 +553,29 @@
  await compose.call
 ({send:{message:name||message||"",code:message||author?null:""}
  ,put:{name:message,code}
- }[method]||{},[method],record,form
-,{style:
-[{class:"icon","#text":css({"#toggle":
- {height:"3em",width:"3em",cursor:"pointer",fill:"var(--isle)","vertical-align":"middle","background-color":"black"
- ,"clip-path":"circle(50%)",padding:"1em",transform:"scale(0.8)",position:"sticky",left:0
- ,...(author?.icon||["node","fingerprint"].includes(icon))&&{padding:0,width:"5em",height:"5em"}
- ,"&>path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
- }})
- }
-]},merge,slip(this),tether(document),spill,lift
+ }[method]||{},[method],record,form,slip(this),tether(document),spill,lift
 );
  this.append(...[this.querySelector("#code"),this.querySelector("#extend")].filter(Boolean));
  if(active)
  focus(this.querySelector(qualify(active)));
- let control=this.querySelector("#toggle");
+ let composer=this.closest("#composer");
  let picture=method==="send"&&author?.icon;
- let node=picture&&Object.assign(await buffer(compose(fetch,digest,whether(is(Blob),compose(image,canvas),infer())),swap({role:"img"}))(picture),{id:"toggle",title:method});
- await compose
-(document,spill,lift,crop(1),infer(insert,control?"over":"before",control||this.firstChild)
-)(node?.nodeType?node:node?{canvas:node}:{svg:{...search.call(svg.object,icon.split("/")),title:method,id:"toggle"}});
- let room=[path(this.ownerDocument.defaultView.location.href),fill.call(this).source].join("/");
- if(method==="send"&&!defined(message))
- this.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
+ let node=picture&&await buffer(compose(fetch,digest,whether(is(Blob),compose(image,canvas),infer())),swap({role:"img"}))(picture);
+ let [next]=node?.nodeType?[node]:await compose(document,spill,lift)(node?{canvas:node}:{svg:{...search.call(svg.object,icon.split("/"))}});
+ let toggle=await compose(tether(document),spill,lift,drop(1,2))
+ (composer,{span:{id:"toggle",sort:0,style:{"@scope":{"#toggle:scope":
+ {height:"4em",width:"4em",cursor:"pointer",position:"relative",padding:".5em"
+ ,"&>svg,&>canvas,&>img":{width:"100%",height:"100%",fill:"var(--isle)","clip-path":"circle(50%)","background-color":"black"}
+ ,"& path":{erase:{transform:"rotate(45deg)","transform-origin":"center center"}}[method]
+ ,"&>.actions":
+ {position:"absolute",top:0,left:0,width:"100%",height:"100%","pointer-events":"none"
+ ,"&>svg":{position:"absolute",top:"50%",left:"50%",width:"1.5em",height:"1.5em","pointer-events":"auto"}
+ }
+ ,"&>span#signal":{color:"black","text-shadow":Array(25).fill("var(--note) 0px 0px .25em").join()}
+ }}}}});
+ let past=toggle.firstChild.nextSibling;
+ toggle[(past?"replace":"append")+"Child"](next,past);
+ let room=path(this.ownerDocument.defaultView.location.href)
  this.classList.remove("toggling");
 };
 
@@ -519,8 +589,9 @@
  if(globalThis.window)
  this.ownerDocument.defaultView.history.pushState({},null,[origin,remote?encodeURI(source):path.replace(/(^\/*|\/*$)/g,""),query].filter(Boolean).join("/"));
  let route=[path,path==="/"?"get":""].join("").replace(/\/+$/,"");
+ let composer=this.closest("#composer")||this;
  let frame=this?.ownerDocument.defaultView.frame||
- compose(document,spill,lift,infer(insert,"before",this),cede)({div:{id:"frame"}});
+ compose(document,spill,lift,infer(insert,"before",composer),cede)({div:{id:"frame"}});
  frame.dataset.source=route;
  frame.controller?.abort("Rendering canceled.");
  frame.controller=new AbortController();
@@ -538,21 +609,23 @@
 ,"firstChild"
 )(fragment);
 },async put(fields)
-{let {method}=demarkup(this,"method");
+{let form=this;
+ let {method}=demarkup(form,"method");
  let {name}=fields;
  let action="/author/"+name;
  let request={method,body:JSON.stringify(fields),headers:{"Content-Type":"application/json"}};
  let [status,message]=await compose(fetch,combine("status","text"),lift)(action,request);
  if(status!==200)
- return toggle.call(this,"send")
-,this.ownerDocument.defaultView.socket.dispatchEvent(new MessageEvent("message",{data:{action:"message",message}}));
+ return toggle.call(form,"send")
+,form.dispatchEvent(new MessageEvent("message",{data:{action:"message",message},bubbles:true}));
  let author=JSON.parse(message);
  localStorage.setItem("author",JSON.stringify(author));
- let {href}=this.ownerDocument.defaultView.location;
- let room=path(href);
- this.dispatchEvent(new MessageEvent("message",{data:{action:"sign",name,room},bubbles:true}));
- fill.call(this,{name:"",code:"",message:""});
- toggle.call(this,"send");
+ let window=form.ownerDocument.defaultView;
+ await socket(window.location.origin,window);
+ let room=path(window.location.href);
+ form.dispatchEvent(new MessageEvent("message",{data:{action:"join",room},bubbles:true}));
+ fill.call(form,{name:"",code:"",message:""});
+ toggle.call(form,"send");
 },erase()
 {let {method}=demarkup(this,"method");
  let active=this.ownerDocument.activeElement;
@@ -565,7 +638,7 @@
 },send({message})
 {if(!message)return;
  let {href}=this.ownerDocument.defaultView.location;
- let room=[path(href),query(url(href)).source].join("/");
+ let room=path(href);
  this.dispatchEvent(new MessageEvent("message",{data:{action:"message",room,message,put:Date.now()},bubbles:true}));
  fill.call(this,{message:""});
  toggle.call(this,"send");
@@ -573,15 +646,14 @@
 
  export async function profile(resource)
 {let source=basic(resource)?resource:"";
- let fragment={"fragment":"","script":"","chart":"","network":"","extrude":"","map":""};
+ let fragment={fragment:"",script:"",chart:"",network:"",extrude:"",map:"",canvas:""};
  return {source,fragment};
  fragment=await compose(Object.keys,rank,each(compose(crop(1),stash(compose
-(locate,rank,crop(1),slip("/"),"concat",infer("concat","/module/namespace"),fetch,digest
+(locate,crop(1),infer("concat","/module/namespace"),fetch,digest
 ,({default:fragment,...exports})=>prune.call(exports,({1:value})=>
  string(value)&&value.startsWith("data:text/javascript;")?value:undefined,0,0),Object.keys
 )),(name,fragments)=>({[name]:fragments})
 )),collect,infer("reduce",merge))(fragment);
- return {source,fragment};
 };
 
  function edit(target)
@@ -592,8 +664,8 @@
  if(form)return delete node.selected&&form.remove();
  node.selected=true;
  let {x,width,y,height}=target.querySelector("circle").getBoundingClientRect();
- form=target.appendChild(...document(
- {foreignObject:
+ form=compose.call(document.call(target
+,{foreignObject:
  {requiredExtensions:"http://example.com/SVGExtensions/EmbeddedXHTML"
  ,height,width:"400px"
  ,body:{xmlns:namespaces.xhtml
@@ -603,9 +675,9 @@
  ,"data-inputs":JSON.stringify({source:"string",start:"date",end:"date"})
  }     }
  }
- },namespaces.svg)).querySelector("form");
+ },namespaces.svg),spill,lift,infer("querySelector","form"));
  let record=Object.entries(node.data[node.title]);
- record=record.filter(([key,value])=>typeof value=="string"||form.dataset.inputs[key]);
+ record=record.filter(([key,value])=>string(value)||form.dataset.inputs[key]);
  record.unshift(["source",node.title]);
  form.call(form,{[node.title]:Object.fromEntries(record)});
  form.appendChild(...document({span:{class:"field","#text":"+",style:"cursor:pointer"}}));
@@ -633,15 +705,11 @@
 {this.rooms[room]=this.rooms[room]||{messages:[]};
  let {author}=merge(peer,{room},0);
  let event={action:"message",message:author.name+" joined.",room};
- relay.broadcast.call(this,event,peer);
+ relay.broadcast.call(this,event);
  let {messages}=this.rooms[room];
  if(messages.length)
  peer?.send(JSON.stringify({action:"history",messages}));
  return this.rooms[room];
-},async sign({name},peer)
-{let author=await compose(fetch,"json",extract(["name","icon"]))("/author/"+name);
- Object.assign(peer,{author});
- peer.send(JSON.stringify({action:"message",message:"signed in as "+author.name}));
 },signal({room},peer)
 {let event={action:"signal",author:peer.author,room};
  relay.broadcast.call(this,event);

@@ -253,7 +253,7 @@
 ]};
 
  export var actions={imports:
- {["/"+location]:["","forage","svg","chart","simulate","populate","measure","spread","dim","highlight","childfold","collapse","interact"]
+ {["/"+location]:["","forage","svg","chart","simulate","populate","measure","spread","dim","highlight","childfold","collapse","interact","neighbors","region"]
  ,"/Blik_2023_inference.js":["","infer","compose","combine","buffer","each","when","array","has","differ","slip","collect","drop"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Bostock_2011_d3_select.js":["","select"]
@@ -271,33 +271,18 @@
 {target=target.closest(".link");
  target.style.removeProperty("filter");
  target.setAttribute("opacity",target.getAttribute("opacity")<1?1:0.5);
-}//,mouseout({target}){target.dispatchEvent(new Event("mouseover",{bubbles:true}));}
- })
+}})
  }
  ,"g.node":
- {...observe({hover({target})
-{compose
-(combine(compose("svg","closest",forage),compose(select,"datum"))
-,when(array,has(["x","y"]))
-,combine("0",compose
-(each(["1",compose
-(combine
-(unit
-,buffer(differ("source"),drop())
-,buffer(differ("nodes"),drop())
-,buffer(compose(differ("relations"),"keys",Array.from),drop())
-),collect,"flat",collect,slip(Set),Reflect.construct
-)
-])
-,(links,nodes)=>links.each(dim).filter(({source,target})=>[source,target].every(node=>nodes.has(node)))
-,infer("each",infer("dispatchEvent",new Event("pointerover",{bubbles:true})))
-,links=>new Set(links.data().flatMap(({source,target})=>[source,target]))
-))
-,(nodes,cluster)=>nodes.each(dim).filter(node=>cluster.has(node)).each(highlight)
-)(target.closest(".node"));
-}//,pointerout({target}){target.dispatchEvent(new Event("pointerover",{bubbles:true}));}
- ,click(){collapse.call(this,...arguments);}
- ,dblclick(){interact.call(this,...arguments);}
+ {...observe({hover({target,isTrusted:hover})
+{compose(combine(compose("svg","closest"),hover?neighbors:drop()),region)(target.closest(".node"));
+},click()
+{clearTimeout(this.clicked);
+ this.clicked=setTimeout(interact.bind(this,...arguments),200);
+},dblclick()
+{clearTimeout(this.clicked);
+ collapse.call(this,...arguments);
+}
  })
  }
  }
@@ -470,7 +455,7 @@
  {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
  ,class:"d3"
  ,"data-source":options.source
- ,style:{"#text":css({".d3":layout.media})}
+ ,style:{"@scope":{":scope":layout.media}}
  ,defs:{filter:
 [vectors.effect.shadow.defs.filter
 ,vectors.effect.shadow_white.defs.filter
@@ -565,7 +550,7 @@
  var drag=observe.call(d3.drag()
 ,{start(drag,node)
 {["x","y"].forEach(dimension=>node["s"+dimension]=node[dimension]);
- this.dispatchEvent(new Event("mouseout"));
+ this.dispatchEvent(new Event("pointerout"));
  //setTimeout(tick=>event.target.editing&&this.window.subject.reform({delete:{name:node.title}}),event.target.editing=1000);
 },drag(drag,node)
 {["x","y"].forEach(dimension=>node["f"+dimension]=drag[dimension]);
@@ -685,13 +670,24 @@
  relation?[{source,target:relation[0]||relation,value:relation[1]},connect(relation[0]||relation,sources)].flat():[]));
 };
 
- function neighbors({target})
-{let node=select(target).datum();
- let {source,nodes}=node;
- let {1:links}=forage(target.closest("svg"));
- let cluster=[node,source,nodes].flat().filter(Boolean).map();
- return links.filter(({source,target})=>[source,target].every(node=>cluster.includes(node)));
-};
+ export var neighbors=produce
+(compose(select,"datum"),when(has(["x","y"])),combine
+(unit
+,buffer(differ("source"),drop())
+,buffer(differ("nodes"),drop())
+,buffer(produce(differ("relations"),"keys",Array.from),drop())
+),collect,"flat",collect,slip(Set),Reflect.construct
+);
+
+ export var region=produce
+(drop(1,0,produce(forage,rank,each(infer("each",dim(true))))),lift
+,crop(2,whether(array,produce(selectAll,"data",collect,slip(Set),Reflect.construct)))
+,(nodes,links,cluster)=>cluster?.size
+?links.filter(({source,target})=>[source,target].every(node=>cluster.has(node))).each(infer("dispatchEvent",new Event("pointerover",{bubbles:true})))&&
+ nodes.filter(node=>cluster.has(node)).each(highlight(true))
+:links.each(infer("dispatchEvent",new Event("pointerover",{bubbles:true})))&&
+ nodes.each(dim(false)).each(highlight(false))
+);
 
  function degree(link,rate=1)
 {if(!link)return [];
@@ -827,15 +823,17 @@
  return {domain,range};
 };
 
- export function dim()
-{let mode=this.style.filter?"remove":"set";
- this.style[mode+"Property"]("filter","brightness(0.2)");
+ export function dim(on=true)
+{function set(){this.style[on?"setProperty":"removeProperty"]("filter","brightness(0.2)");};
+ return defined(this)?set.call(this):set;
 };
 
- export function highlight(node)
+ export function highlight(on=true)
+{function set()
 {this.style.removeProperty("filter");
- let filter="url(#shadow"+(this.getAttribute("filter")==="url(#shadow)"?"_white)":")");
- extend.call(this,{fold:false,filter});
+ extend.call(this,{fold:false,filter:"url(#shadow"+(on?"_white":"")+")"});
+};
+ return defined(this)?set.call(this):set;
 };
 
  export function collapse({target})
@@ -856,11 +854,9 @@
  return;
  let composer=target.closest("body").querySelector("#composer");
  let node=select(target).datum();
- let source=compose(tether(unfold,"source"),rank,each("name"),collect,"reverse")(node);
- return form.call(composer
-,{get:annotate({source:"",gradual:true},{source:""})})
-,fill.call(composer,{source:source.length>1?source.slice(1).join("/"):"..",gradual:true})
-,composer.dispatchEvent(new Event("submit"));
+ note(node);
+ let source=compose.call(node,tether(unfold,"source"),infer("filter",simple),infer("map",infer("name")),"reverse");
+ return fill.call(composer,{source:source.length>1?source.slice(1).join("/"):"..",gradual:true});
  //if(!node.parent)return retreat();
  //let simulation=target.closest("svg").simulation.force("link");
  //let linked=simulation.links().length-
