@@ -84,13 +84,17 @@
 ),relay()
 {return {imports:
  {"/Blik_2023_inference.js":["","note","record","each","infer","buffer","rank","collect","compose","wait","has","clock","string","prune","flatten","spill","lift","tether"]
- ,"/Blik_2023_interface.js":["","locate","reload"]
+ ,"/Blik_2023_interface.js":["","locate","reload","recompose"]
  ,"/Blik_2023_fragment.js":["","demarkup","document","insert","fill","image","canvas","message as entry"]
  ,"/Blik_2023_meta.js":["","query","relate"]
  }
  ,exports:
  {default:
  {check(){this.send(JSON.stringify({action:"check"}));}
+ ,update({scope,command,context},window)
+{let svg=window.document.getElementById(scope);
+ compose.call([[svg],{"inference/tether":[command,context]}],recompose,compose,"call");
+}
  ,signal({author},window)
 {let form=window.document.querySelector("#composer");
  let toggle=form.querySelector("#toggle");
@@ -99,8 +103,6 @@
 },async message({message,put,author:{name,icon}={name:"system",icon:"/svg/object/cog/vector"}},window)
 {let form=window.document.querySelector("#composer");
  let [span]=compose(document,spill,lift)({span:await entry({icon:icon||"/svg/animal/deer/vector",name:name||"anonymous",put,message})});
- if(!form.querySelector("#message"))
- return;
  compose
 (tether(document),spill,lift,collect,infer("find",match({className:"message"}))
 ,name==="system"&&compose(wait(5000),{style:"transition:all 1s;opacity:0;"},Object.assign,wait(1000),"remove")
@@ -209,7 +211,7 @@
 },".well-known":{appspecific:{"com.chrome.devtools.json":function()
 {return {"workspace":
  {root:process.env.PWD.replace
-("/mnt/chromeos/GoogleDrive/MyDrive"
+("/mnt/shared/GoogleDrive/MyDrive"
 ,"/media/fuse/drivefs-062c2a5118ec2abb3fe013c8e3b3cbeb/root"
 ),uuid:"53b029bb-c989-4dca-969b-835fecec3717"
  }};
@@ -246,7 +248,7 @@
 }}
  }
 }};
-},worker(){return worker;}
+},worker(){return merge({exports:{name:"Generic worker"}},worker,0);}
 ,manifest(request)
 {let {origin}=url(request);
  let module=
@@ -257,42 +259,76 @@
  return module;
 }};
 
- export var serviceworker=merge(worker
-,{imports:{"/Blik_2023_inference.js":["","note","observe","compose","infer","cede"]}
- ,procedures:{register()
-{var address=new URL(import.meta.url).pathname;
- function revalidate(url,cache)
+ export var serviceworker={imports:
+ {"/Blik_2023_inference.js":["","compose","induce","infer","note","exit","observe"]
+ }
+ ,exports:
+ {name:"Service worker"
+ ,census(cache)
+{return cache.keys().then(keys=>Promise.all(keys.map(request=>
+ cache.match(request).then(response=>response.headers.get("Content-Type")||"")))).then(types=>
+ ({total:types.length
+ ,html:types.filter(type=>type.includes("html")).length
+ ,css:types.filter(type=>type.includes("css")).length
+ ,js:types.filter(type=>type.includes("javascript")).length
+ }));
+},checkout(url,cache)
 {// bust timestamp on js only hits the page memory, never this cache or the server (like Interface's resolve/load)
  let raw=url.url||url;
  let script=url.destination==="script"||!url.url;
  let canonical=script?raw.replace(/\?.*$/,""):raw;
  return cache.match(canonical).then(existing=>
  fetch(canonical,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
- fresh.status===304?existing:fresh.status<400&&cache.put(canonical,fresh.clone()).then(cached=>
- console.debug("Cached module: "+canonical)||fresh))
- .catch(fail=>existing||Promise.reject(fail)));
-}
- function refresh()
-{let modules=compose(fetch,"json",Object.keys,infer("filter",file=>/\.js$/.test(file)),cede)("/sources");
- return Promise.all([caches.open("assets"),modules]).then(([cache,modules])=>
- Promise.all(modules.map(file=>revalidate(self.location.origin+file,cache))))
- .catch(console.error);
-}
+ fresh.status===304?existing
+:fresh.status<400?cache.put(canonical,fresh.clone()).then(cached=>
+ console.debug("Installed "+canonical)||fresh)
+:existing&&cache.delete(canonical).then(evicted=>
+ console.debug("Uninstalled "+canonical+" ("+fresh.status+")")||fresh)).catch(fail=>
+ console.error(fail)||existing||Promise.reject(fail)));
+},pull()
+{// pull the server cache for offline use — to be called on appinstalled (PWA), not controllerchange (SW).
+ produce.call
+("/sources",fetch,"json",Object.keys,infer("filter",file=>
+ /\.js$/.test(file)),caches.open("assets"),(modules,cache)=>
+ modules.map(file=>checkout(self.location.origin+file,cache))
+,rank,collect
+);
+}}
+ ,procedures:{register()
+{var address=new URL(import.meta.url).pathname;
  observe.call(self
-,{install(event){console.log(address+" installed.");event.waitUntil(Promise.all([refresh(),self.skipWaiting()]));}
- ,activate(event)
+,{install(event)
+{console.log(address+" installed.");
+ event.waitUntil(Promise.all([caches.open("assets").then(cache=>checkout(import.meta.url,cache)),self.skipWaiting()]));
+},activate(event)
 {console.log(address+" activated.");
  event.waitUntil(Promise.all(
 [caches.keys().then(keys=>Promise.all(keys.filter(key=>key!=="assets").map(key=>caches.delete(key))))
- // dispatches controllerchange event on clients' navigator.serviceWorker-s. 
- ,self.clients.claim()
+ // dispatches controllerchange event on clients' navigator.serviceWorker-s.
+,self.clients.claim()
 ]));
-},fetch(event){event.respondWith(event.request.method==="GET"
- ?caches.open("assets").then(cache=>revalidate(event.request,cache))
- :fetch(event.request));}
- });
-}}
- });
+},fetch(event)
+{event.respondWith(event.request.method==="GET"
+?caches.open("assets").then(cache=>checkout(event.request,cache))
+:fetch(event.request));
+},message(event)
+{let {action}=event.data||{};
+ // bypass the browser's own slow update polling, but only when the conditional fetch found a real change.
+ if(action==="PWAinstall")
+ return event.waitUntil(pull());
+ if(action==="reload")
+ return event.waitUntil(caches.open("assets").then(cache=>
+ cache.match(import.meta.url).then(existing=>
+ checkout(import.meta.url,cache).then(fresh=>
+ fresh.headers.get("ETag")!==existing?.headers.get("ETag")&&
+ self.registration.update()).catch(fail=>
+ census(cache).then(stats=>
+ self.clients.matchAll({includeUncontrolled:true}).then(clients=>
+ clients.forEach(client=>client.postMessage(JSON.stringify(
+ {action:"message",message:self.location.origin+" down. Installed offline: "+stats.total+" ("+stats.html+" html, "+stats.css+" css, "+stats.js+" js)."
+ })))))))));
+}});
+}}};
 
  export function composer(fields)
 {if(this)
@@ -479,7 +515,7 @@
  let inner=merge(form({get:fields})
 ,{id:"fields",style:[{id:"fields-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
- {overflow:"scroll","box-sizing":"border-box"
+ {...layout.fields
  ,"padding-right":"1.5em","max-width":"calc(100% - 3.5em)"
  ,"&:not(.focused):not(:hover)":
  {[[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
@@ -488,7 +524,11 @@
  ,"&:not([method=get])>span[role=textbox]#extend":{display:"none"}
  ,"&>span[title]":
 [{cursor:"auto"
- ,"&>span[role=textbox]":{"&[name=code]":{"-webkit-text-security":"disc"}}
+ ,"&>span":
+ {margin:"0 .4em"
+ ,"&[role=textbox],&[role=menu]":{"min-width":"20px"}
+ ,"&[name=code]":{"-webkit-text-security":"disc"}
+ }
  ,"&>ul":
  {"margin-top":"calc(-100vh + 3em)"
  ,"padding-top":"calc(100vh - 9em)"
@@ -516,12 +556,12 @@
  {span:{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
  {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap
- ,{"&>span[role=form]":{height:"100%","&:before":{content:"''",display:"inline-block",height:"100%","vertical-align":"middle",width:0}}}
  ].reduce(merge,{})
+ ,...layout.fields
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
  ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
- ,"box-sizing":"border-box","max-width":"calc(100% - 20px)"
- ,background:"var(--isle)","vertical-align":"middle","white-space":"nowrap"
+ ,"max-width":"calc(100% - 20px)"
+ ,background:"var(--isle)","vertical-align":"middle"
  ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
  ,"&:hover>span[method=send]+.messages":{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
  ,"&>.messages":
@@ -596,7 +636,7 @@
  frame.controller?.abort("Rendering canceled.");
  frame.controller=new AbortController();
  compose(document,spill,lift,infer(insert,"under",frame))(progress);
- resource=resource||compose(fetch,digest)(route+query);
+ resource=resource||buffer(compose(fetch,digest),()=>fetch(route,{method:"put",body:""}).then(()=>""))(route+query);
  let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
  await compose.call(resource,profile,["get"],record,form,pass(clear),document.bind(this),spill);
  let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
@@ -656,40 +696,6 @@
 )),collect,infer("reduce",merge))(fragment);
 };
 
- function edit(target)
-{let label=target.querySelector("text.label");
- let form=target.querySelector("form");
- label.style.display=form?"block":"none";
- let node=d3.select(target).datum();
- if(form)return delete node.selected&&form.remove();
- node.selected=true;
- let {x,width,y,height}=target.querySelector("circle").getBoundingClientRect();
- form=compose.call(document.call(target
-,{foreignObject:
- {requiredExtensions:"http://example.com/SVGExtensions/EmbeddedXHTML"
- ,height,width:"400px"
- ,body:{xmlns:namespaces.xhtml
- ,form:
- {class:"editor"
- ,title:node.title
- ,"data-inputs":JSON.stringify({source:"string",start:"date",end:"date"})
- }     }
- }
- },namespaces.svg),spill,lift,infer("querySelector","form"));
- let record=Object.entries(node.data[node.title]);
- record=record.filter(([key,value])=>string(value)||form.dataset.inputs[key]);
- record.unshift(["source",node.title]);
- form.call(form,{[node.title]:Object.fromEntries(record)});
- form.appendChild(...document({span:{class:"field","#text":"+",style:"cursor:pointer"}}));
- form.source.focus();
- window.room.on("put",function({body,room})
-{window.Tone.Transport.start();
- if(fragment.getAttribute("title")==room)
- network(sprawl(body),{fragment,still:true,spread:"left",cluster:true});
- else actions.get({name:room},window.document.querySelector("div[title$='"+room+"']"))
-});
-};
-
  export var relay=
  {check(event,peer){peer.connected=true;}
  ,broadcast(event,peer)
@@ -697,6 +703,8 @@
  this.clients.forEach(client=>
  client.readyState===1&&client!==peer&&client.room===event.room&&
  client.send(message));
+},update({scope,command,context},peer)
+{relay.broadcast.call(this,{action:"update",scope,command,context,room:peer.room},peer);
 },message({message,room,put},peer)
 {let event={action:"message",author:peer.author,message,room,put};
  this.rooms[room].messages.push({message,author:peer.author,put});
@@ -746,65 +754,3 @@
 ,{action:"message",message:this.author+" updated "+room}
 ].forEach(event=>message.broadcast.call(this,event));
 }};
-
- var body=
- // under isolation to event capture islands. 
- {imports:
- {"./Blik_2023_interface.js":["","command","locate","digest"]
- ,"./Blik_2023_search.js":["","unfold"]
- ,"./Blik_2023_meta.js":["","cookie","query","path"]
- ,"./Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
- ,"./Blik_2023_fragment.js":";* as fragment;document;form;image;canvas;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;consume;syndicate;article;destroy;reference;fill;qualify;focus;capture;socket".split(";")
- ,"./Blik_2023_layout.js":["* as layout"]
- }
- ,exports:
- {default:
- {".editor":
- {submit(event)
-{event.preventDefault();
- let record=Object.fromEntries(Object.values(form.elements).map(({id,value})=>[id,value]));
- for(let [key,value] of Object.entries(record))
- if(form.inputs[key]==Date)
- record[key]=Number(new Date(value));
- if(record.key)
- Object.assign(record,{[record.key]:record.value})&&
- delete record.key&&delete record.value;
- let svg=fragment.querySelector("svg");
- let blank=!record.name&&confirm("delete "+node.title+"?");
- let match=blank?d3.select()
-:d3.select(svg).selectAll("g.node").select(function(other){return other!=node&&(other.parent==node.parent)&&(other.title==record.name)&&this});
- let progress=node.data[node.title].progress;
- progress=!progress||[record.progress,progress].map(Number).reduce((was,is)=>was-is);
- if(match.size()||isNaN(progress))
- return [form[isNaN(progress)?"progress":"name"],...match.nodes()].forEach(node=>node.style.animation="pulse 2s");
- let root=[svg.simulation.nodes()[0],0].reduce(function root(node){return node.parent?root(node.parent):node});
- update(node,blank?undefined:record,root);
- let room=fragment.getAttribute("title");
- let body=root.data;
- let report={join:room,put:[]};
- report.put.push({room,body})
- if(progress)
- report.put.push(
- {room:room.replace(/\.json$/,"_log.json"),append:true,body:
- {[Date.now()]:root.children[1].leaves().map(task=>
- task.data[task.title]).filter(Boolean).reduce((progress,task)=>
- progress+Number(task.progress||0)/100,0)
- }
- });
- Object.entries(report).forEach(([emit,body])=>
- (Array.isArray(body)?body:[body]).forEach(body=>
- window.composer.room.emit(emit,body)));
- this.escape();
- //Object.entries({join:this.closest("div").title,put:{room,body}}).forEach(entry=>window.room.room.emit(...entry));
-},keydown({keyCode})
-{if(keyCode!=27)return;
- let label=target.parentNode.querySelector("text.label");
- label.style.display="block";
- delete node.selected;
- this.remove();
-}}
- }
- ,edit,proceduralize
- }
- };
-

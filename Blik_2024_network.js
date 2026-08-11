@@ -1,11 +1,12 @@
- import {infer,tether,crop,produce,stash,something,match,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate} from "./Blik_2023_inference.js";
+ import {infer,tether,crop,produce,stash,something,match,rotate,flip,tally,sum,extreme,search,merge,prune,record,remember,simple,swap,wait,numeric,drop,pass,note,lift,has,collect,compose,combine,whether,each,slip,differ,buffer,observe,ascending,defined,compound,array,string,clock,revert,rank,plural,when,debug,is,extract,isolate,unit} from "./Blik_2023_inference.js";
  import {unfold} from "./Blik_2023_search.js";
+ import {GraphXML} from "./Blik_2023_meta.js";
  import {fetch,digest,command} from "./Blik_2023_interface.js";
  import {document,window,demarkup,dataset,namespaces,deselect,css,capture,destroy,ascend,form,fill,transform,annotate,canvas,image} from "./Blik_2023_fragment.js";
  import * as layout from "./Blik_2023_layout.js";
  import {color} from "./Blik_2023_layout.js";
  import * as d3 from './Bostock_2011_d3.js';
- import {select,selectAll} from './Bostock_2011_d3_select.js';
+ import {select,selectAll,pointer} from './Bostock_2011_d3_select.js';
  import {forceSimulation as force3d,forceX,forceY,forceZ,forceLink,forceCenter,forceCollide,forceManyBody} from './Vasturiano_2016_force3d.js';
  import extend from "./Blik_2023_d4.js";
  import * as vectors from "./Blik_2024_svg.js";
@@ -13,7 +14,7 @@
  var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  var resource=combine(produce(crop(1),fetch,digest),produce(drop(1,0,produce(["source"],record)),merge),drop(2));
- var graph=whether([has("nodeName"),match(something,{matrix:{}})],Graph,reference,sprawl);
+ var graph=whether([has("nodeName"),match(something,{matrix:{}})],GraphXML,reference,sprawl);
  var collapsed=produce(stash(produce(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
  export default produce
 (whether(string,resource),lift
@@ -113,7 +114,7 @@
  return force?"translate("+[x,y].map(x=>x.toPrecision(5).replace(/e\+\d+/,""))+")"
 :radial?"rotate("+(x*180/Math.PI-90)+") translate("+y+",0)"
 :"translate("+[x,y]+") rotate("+(right?0:down?90:up?-90:0)+")";
-},title:{text:({name,source,value,nodes,...intension})=>JSON.stringify(intension)}
+}//,title:{text:({name,source,value,nodes,...intension})=>JSON.stringify(intension)}
  ,circle:
 [{name({name,source,nodes}){return source&&!nodes?source.name+"_"+name:null;}
  ,r(node)
@@ -253,7 +254,7 @@
 ]};
 
  export var actions={imports:
- {["/"+location]:["","forage","svg","chart","simulate","populate","measure","spread","dim","highlight","childfold","collapse","interact","neighbors","region"]
+ {["/"+location]:["","forage","svg","chart","simulate","populate","measure","spread","dim","highlight","childfold","collapse","interact","clear","neighbors","region"]
  ,"/Blik_2023_inference.js":["","infer","compose","combine","buffer","each","when","array","has","differ","slip","collect","drop"]
  ,"/Blik_2023_search.js":["","unfold"]
  ,"/Bostock_2011_d3_select.js":["","select"]
@@ -265,7 +266,7 @@
 {let options=JSON.parse(this.dataset.options);
  let module=await import(import.meta.url.replace(/\.js.*/,".js"));
  return infer("default",options.source,options,this)(module);
-}}
+},click({target}){target.closest(".node")||clear({target});}}
  ,"g.link":
  {...observe({hover({target})
 {target=target.closest(".link");
@@ -455,7 +456,21 @@
  {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
  ,class:"d3"
  ,"data-source":options.source
- ,style:{"@scope":{":scope":layout.media}}
+ ,style:{"@scope":{":scope":
+ {"& g.node":
+ {"&.selected":{filter:"url(#shadow_white)"}
+ ,"& text":{"pointer-events":"none"}
+ ,"& foreignObject":{transform:"tanslate(-5px,-5px)"}
+ ,"& body":{background:"transparent"}
+ ,"& form":
+ {overflow:"scroll"
+ ,color:"inherit"
+ ,"font-size":"inherit"
+ ,"text-shadow":"black 0px 0px 2px,black 0px 0px 2px,black 0px 0px 2px"
+ ,"white-space":"nowrap"
+ }
+ }
+ }}}
  ,defs:{filter:
 [vectors.effect.shadow.defs.filter
 ,vectors.effect.shadow_white.defs.filter
@@ -586,10 +601,12 @@
  let {1:links}=forage(fragment);
  //node.update(select(this));
  //links.filter((link)=>[link.source,link.target].includes(node)).remove();
- fragment.simulation.alpha(fragment.simulation.alpha()+0.1);
+ fragment.simulation.alpha(fragment.simulation.alpha()+0.02);
  //link.update(links.filter((link)=>[link.source,link.target].includes(node)))
  this.dispatchEvent(new Event("mouseover"));
- ["fx","fy","sx","sy"].forEach(track=>delete node[track]);
+ ["sx","sy"].forEach(track=>delete node[track]);
+ if(!this.classList.contains("selected"))
+ ["fx","fy"].forEach(track=>delete node[track]);
  delete this.style.zIndex;
  let title=fragment.getAttribute("title");
  if(node.edited)
@@ -823,168 +840,7 @@
  return {domain,range};
 };
 
- export function dim(on=true)
-{function set(){this.style[on?"setProperty":"removeProperty"]("filter","brightness(0.2)");};
- return defined(this)?set.call(this):set;
-};
-
- export function highlight(on=true)
-{function set()
-{this.style.removeProperty("filter");
- extend.call(this,{fold:false,filter:"url(#shadow"+(on?"_white":"")+")"});
-};
- return defined(this)?set.call(this):set;
-};
-
- export function collapse({target})
-{let targets=target?[this]:Array.from(arguments).map(this.querySelector.bind(this)).filter(Boolean);
- let descendants=targets.map(target=>[select(target).datum(),target]).flatMap(([node,target])=>(
- [node.nodes,target.descendants]=[target.descendants,node.nodes]
-,unfold.call({nodes:target.descendants},childfold).slice(1)));
- let fragment=targets[0].closest("svg");
- let meta=dataset(fragment);
- let cluster=select(fragment).datum();
- let nodes=descendants.length?cluster.filter(node=>!descendants.includes(node)):cluster;
- return compose(spread,meta.options,fragment,chart,"simulation",populate,swap(fragment))(nodes,meta.options);
-};
-
- export function interact({target})
-{target=target.closest(".node");
- if(target.editing)
- return;
- let composer=target.closest("body").querySelector("#composer");
- let node=select(target).datum();
- note(node);
- let source=compose.call(node,tether(unfold,"source"),infer("filter",simple),infer("map",infer("name")),"reverse");
- return fill.call(composer,{source:source.length>1?source.slice(1).join("/"):"..",gradual:true});
- //if(!node.parent)return retreat();
- //let simulation=target.closest("svg").simulation.force("link");
- //let linked=simulation.links().length-
- //note(simulation.links(simulation.links().filter(link=>
- //!node.descendants().includes(link.source)||
- //!fuse(link,-1))).links()).length
- //if(linked)return;
- //let links=node.descendants().slice(1).map(target=>(
- //{source:(target[0]||target).parent
- //,target:target[0]||target
- //,value:target[1]||1
- //}));
- //simulation.links(simulation.links().concat(links));
- edit(target);
-};
-
- function update(node,body,root)
-{let presence=[node.parent.data[node.parent.title],node.data];
- if(!body)return presence.forEach(place=>place[node.title]=undefined);
- let related=root.descendants().filter(({relations})=>relations);
- let domain=root.children[0];
- let relations=related.map(({relations})=>relations.filter(({target})=>target==node))
- relations=relations.flat().reduce((relations,{source:{title},value})=>Object.assign(relations
-,{[title]:!relations[title]?value
-:(Array.isArray(relations[title])?relations[title]:[relations[title]]).concat(value)}),{});
- node[domain.title]=domain.leaves().map(({title})=>relations[title]);
- Object.entries(body).forEach(function([key,value])
-{if(key==node.title)
- return value?node.data[body.name][value]={roles:[],progress:0}:null;
- note(key,value)
- if(key!="name"||node.data[node.title][key])
- return (value||confirm("delete "+key+"?"))&&
- (node.data[body.name][key]=!value?undefined:
- Array.isArray(node.data[node.title][key])?value.split(","):value);
- if(value==node.title)return;
- value={[value]:node.data[node.title],[node.title]:undefined};
- presence.forEach(data=>Object.assign(data,value));
-});
- note(node.data)
-};
-
  export var childfold=["nodes",node=>Array.from(node.relations?.keys()||[])];
-
- export function Graph(xml)
-{let graph=xml.getElementsByTagName('graph')[0];
- let meta=xml.getElementsByTagName('meta')[0];
- let hasViz=Boolean(xml.getAttribute("xmlns:viz")??xml.getAttributeNS("xmlns","viz")??xml.getAttribute("viz"));
- let version=xml.getAttribute('version')||'1.0';
- let mode=graph.getAttribute('mode')||'static';
- let defaultEdgetype=graph.getAttribute('defaultedgetype')||'undirected';
- let attributes=Array.from(xml.getElementsByTagName('attribute')).filter(node=>node.nodeName!=="#text").map(node=>(
- {defaultValue:Array.from(node.childNodes).filter(node=>node.nodeName!=="#text")[0]?.textContent
- ,id:node.getAttribute('id')||node.getAttribute('for')
- ,type:node.getAttribute('type')||'string'
- ,title:node.getAttribute('title')||''
- }));
- let model=Object.fromEntries(attributes.map(model=>[model.title.toLowerCase(),model.defaultValue]));
- let nodes=Array.from(xml.getElementsByTagName('node')).filter(node=>node.nodeName!=="#text").map(n=>(
- {id:n.getAttribute('id'),label:n.getAttribute('label')||''
- ,attributes:[{},model
-,Object.fromEntries(Array.from(n.getElementsByTagName('attvalue')).filter(node=>
- node.nodeName!=="#text").map(node=>
- Array.from(node.attributes).map(node=>node.value)).map(([field,value])=>
- [attributes.find(model=>model.id===field),value].reduce((model,value)=>
-[model.title.toLowerCase()
-,[model.type,value].reduce((type,value)=>type==="boolean"?value===true
-:'integer/long/float/double'.split('/').includes(type)?+value:value)
-])))].reduce(merge)
- ,viz:hasViz?
- {color:[getFirstElementByTagNS(n,'viz','color'),"rgba"].reduce((color,fields)=>
- color?fields.split("").map(field=>color.getAttribute(field)).filter(Boolean).reduce((color,hue,index,{length})=>
- color+(!index?length>3?"a(":"(":",")+hue,"rgb")+")":undefined)
- ,position:[getFirstElementByTagNS(n,'viz','position'),"xyz"].reduce((position,fields)=>
- position?Object.fromEntries(fields.split("").map(p=>[p,+position.getAttribute(p)])):undefined)
- ,size:[getFirstElementByTagNS(n,'viz','size')?.getAttribute('value')].map(size=>size&&Number(size)).shift()
- ,shape:getFirstElementByTagNS(n,'viz','shape')?.getAttribute('value')
- }:{}
- })).map(({id,label,viz,attributes})=>({id,name:label,...viz,value:attributes}));
- let links=Array.from(xml.getElementsByTagName('edge')).filter(node=>node.nodeName!=="#text").map(e=>(
- {type:defaultEdgetype||"undirected",label:'',weight:1.0
- ,...Object.fromEntries(Array.from(e.attributes).map(node=>[node.name,node.value]).map(([field,value])=>
- [field,field==="weight"?Number(value):value]))
- ,viz:hasViz?
- {shape:getFirstElementByTagNS(e,'viz','shape')?.getAttribute('value')
- ,thickness:Number(getFirstElementByTagNS(e,'viz','thickness')?.getAttribute('value'))
- ,color:[getFirstElementByTagNS(e,'viz','color'),"rgba"].reduce((color,fields)=>color?fields.split("").map(field=>
- color.getAttribute(field)).filter(Boolean).reduce((color,hue,index,{length})=>
- color+(!index?length>3?"a(":"(":",")+hue,"rgb")+")":undefined)
- }:{}
- }));
- links.forEach(({source,target,weight})=>[source,target].map(name=>
- nodes.find(({id})=>id===name)).forEach((node,index,nodes)=>merge(node
-,{[index?"source":weight?"relations":"nodes"]
- :new (!index&&weight?Map:Set)(!index&&weight?[[nodes[(index+1)%2],weight]]:[nodes[(index+1)%2]])
- },0)));
- return nodes.map(node=>merge(node,Object.fromEntries(["nodes","source"].map(field=>
- [field,node[field]?Array.from(node[field]):undefined])),1));
- //return {nodes,edges:links,version: version,mode: mode,defaultEdgeType: defaultEdgetype
- //,meta:meta&&{lastmodifieddate:meta.getAttribute('lastmodifieddate'),...Object.fromEntries(Array.from(meta.childNodes).filter(node=>node.nodeName!=="#text").map(child=>[child.tagName.toLowerCase(), child.textContent]))}
- // ,model: attributes
- // };
- function getFirstElementByTagNS(node, ns, tag)
-{return node.getElementsByTagName(ns+':'+tag)[0]||
- node.getElementsByTagNameNS(ns,tag)[0]||
- node.getElementsByTagName(tag)[0];
-};
-};
-
- function conceptualise()
-{return Object.entries(seed).reduce(function latch(concepts,[name,concept])
-{path.push(name);
- let passive=!concept||["string","number"].includes(typeof concept)||["/awesome","/vectors","/d3"].includes(name);
- let relations=passive?[]:!concept[reference]?reference?[]:concept
-:Array.isArray(concept[reference])||!Object.values(concept[reference]).some(isNaN)?concept[reference]:[concept[reference]];
- relations=Object.entries(relations).map(([key,relation],index)=>
- parseInt(key)==index&&!relation.length&&!reference
-?Object.entries(relation).reduce(latch,concepts)
-&&Object.keys(relation).map(relation=>[relation,1])
-:latch(concepts,[key=parseInt(key)==index?typeof relation.name=="string"?relation.name:relation:key,relation])
-&&[[key,typeof relation=="number"?relation:1]]).flat();
- console.log(concept,relations);
- relations=Object.fromEntries([...concepts[name]&&concepts[name].relations?concepts[name].relations.length?concepts[name].relations.map(relation=>[relation,1]):Object.entries(concepts[name].relations):[],...relations]);
- concepts[path.pop()]=Object.assign({data:{name,path:[...path]},parent:concepts[path.slice(-1)[0]]},concept.length||concept,concepts[name],{relations});
- if(!reference&&!path.length&&Object.keys(seed)[1])
- concepts[seed.name||""]={data:{relations:{...(concepts[seed.name||""]||{}).relations,[name]:1}}};
- return concepts;
-},{})
-};
 
  function descend(value,{relations,title,routed})
 {// split data structure into node hierarchy. cyclical references 
@@ -1033,6 +889,220 @@
  return node;
 },node),node));
  return node;
+};
+
+ export function dim(on=true)
+{function set(){this.style[on?"setProperty":"removeProperty"]("filter","brightness(0.2)");};
+ return defined(this)?set.call(this):set;
+};
+
+ export function highlight(on=true)
+{function set()
+{this.style.removeProperty("filter");
+ extend.call(this,{fold:false,filter:"url(#shadow"+(on?"_white":"")+")"});
+};
+ return defined(this)?set.call(this):set;
+};
+
+ export function collapse({target})
+{let targets=target?[this]:Array.from(arguments).map(this.querySelector.bind(this)).filter(Boolean);
+ let descendants=targets.map(target=>[select(target).datum(),target]).flatMap(([node,target])=>(
+ [node.nodes,target.descendants]=[target.descendants,node.nodes]
+,unfold.call({nodes:target.descendants},childfold).slice(1)));
+ let fragment=targets[0].closest("svg");
+ let meta=dataset(fragment);
+ let cluster=select(fragment).datum();
+ let nodes=descendants.length?cluster.filter(node=>!descendants.includes(node)):cluster;
+ return compose(spread,meta.options,fragment,chart,"simulation",populate,swap(fragment))(nodes,meta.options);
+};
+
+ function unlink(svg)
+{let pending=svg.querySelector("line.pending");
+ if(!pending)return;
+ pending.remove();
+ svg.linking?.abort();
+ delete svg.linking;
+};
+
+ function drawlink(event)
+{let [x,y]=pointer(event,this.querySelector("g.graph"));
+ let pending=this.querySelector("line.pending");
+ pending.setAttribute("x2",x);
+ pending.setAttribute("y2",y);
+};
+
+ export function clear({target})
+{let svg=target.closest("svg");
+ unlink(svg);
+ let selected=svg.querySelector(".node.selected");
+ if(selected)
+{selected.classList.remove("selected");
+ let node=select(selected).datum();
+ delete node.fx;
+ delete node.fy;
+ let label=selected.querySelector("text.label");
+ label.style.display="block";
+ selected.querySelector("foreignObject")?.remove();
+}
+ let composer=target.closest("body").querySelector("#composer");
+ return fill.call(composer,{source:"",gradual:true});
+};
+
+ export function wire(source,target)
+{if([source,target].some(string))
+ [source,target]=[source,target].map(id=>
+ this.querySelector("#"+id));
+ [source,target]=[source,target].map(node=>
+ select(node).datum());
+ source.relations=source.relations||new Map();
+ source.relations.set(target,1);
+ let meta=dataset(this);
+ let cluster=select(this).datum();
+ compose(spread,meta.options,this,chart,"simulation",populate,swap(this))(cluster,meta.options);
+};
+
+ export function interact({target,ctrlKey})
+{let node=target.closest(".node");
+ let svg=node.closest("svg");
+ if(svg.querySelector("line.pending"))
+{let source=svg.querySelector(".node.selected");
+ unlink(svg);
+ if(source===node)return;
+ wire.call(svg,source,node);
+ return svg.dispatchEvent(new MessageEvent("message",{data:{action:"update",scope:svg.id,command:"network/wire",context:[source.id,node.id]},bubbles:true}));
+}
+ if(node.classList.contains("selected"))
+ return;
+ if(!ctrlKey)
+ clear({target:node});
+ node.classList.add("selected");
+ let composer=node.closest("body").querySelector("#composer");
+ let scope=select(node).datum();
+ scope.fx=scope.x;
+ scope.fy=scope.y;
+ note(scope);
+ let source=compose.call(scope,tether(unfold,"source"),infer("filter",simple),infer("map",infer("name")),"reverse");
+ fill.call(composer,{source:source.length>1?source.slice(1).join("/"):"..",gradual:true});
+ edit(node);
+ compose.call(svg,{line:{class:"pending",x1:scope.x,y1:scope.y,x2:scope.x,y2:scope.y,stroke:"var(--text)",opacity:0.3,"pointer-events":"none"}},tether(document),spill,lift);
+ svg.linking=new AbortController();
+ observe.call(svg,{pointermove:drawlink},{signal:svg.linking.signal});
+};
+
+ function update(node,body)
+{let parent=node.source[0];
+ if(!body)
+{if(parent)
+ delete parent.value[node.name],parent.nodes=parent.nodes.filter(child=>child!==node);
+ return;
+}
+ if(body.source&&body.source!==node.name)
+{if(parent)
+ parent.value[body.source]=parent.value[node.name],delete parent.value[node.name];
+ node.name=body.source;
+}
+ Object.entries(body).filter(([key])=>key!=="source").forEach(([key,value])=>
+ (value||confirm("delete "+key+"?"))&&
+ (node.value[key]=!value?undefined:
+ Array.isArray(node.value[key])?value.split(","):value));
+ note(node);
+};
+
+ export function edit(target)
+{if(this)
+ return {imports:
+ {"/Blik_2023_interface.js":["","command","locate","digest","fetch"]
+ ,"/Blik_2023_search.js":["","unfold"]
+ ,"/Blik_2023_meta.js":["","cookie","query","path"]
+ ,"/Blik_2023_inference.js":";note;merge;search;prune;expect;compose;combine;pass;route;record;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;extract".split(";")
+ ,"/Blik_2023_fragment.js":";* as fragment;document;form;fill;image;canvas;demarkup;insert;navigate;detransform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;qualify;focus;capture".split(";")
+ ,"/Blik_2023_layout.js":["* as layout"]
+ }
+ ,exports:
+ {default:
+ {".editor":
+ {submit(event)
+{event.preventDefault();
+ let {put:record={}}=fill.call(this);
+ let name=this.querySelector("span.name").textContent;
+ let blank=!name&&confirm("delete "+node.name+"?");
+ let siblings=(node.source[0]?.nodes||[]).filter(sibling=>sibling!==node);
+ let duplicate=!blank&&name!==node.name&&siblings.find(sibling=>sibling.name===name);
+ if(duplicate)
+ return this.querySelector("span.name").style.animation="pulse 2s";
+ update(node,blank?undefined:{...record,source:name});
+ let room=fragment.getAttribute("title");
+ let root=unfold.call(node,"source").filter(Boolean).at(-1)||node;
+ fetch(room,{method:"put",body:JSON.stringify(root.value),headers:{"Content-Type":"application/json"}});
+ this.escape();
+},keydown({keyCode})
+{if(keyCode!=27)return;
+ let label=target.parentNode.querySelector("text.label");
+ label.style.display="block";
+ this.remove();
+},dblclick(event){event.stopPropagation();}
+ ,wheel(event){event.stopPropagation();}
+ ,mousedown(event){event.stopPropagation();}}
+ }
+ }
+ };
+ let label=target.querySelector("text.label");
+ label.style.display="none";
+ let node=select(target).datum();
+ let scale=target.closest("svg").getScreenCTM().a;
+ let circle=target.querySelector("circle");
+ let radius=circle.getAttribute("r");
+ let fontSize=Number(radius*2)/4*scale/2;
+ let record=Object.entries(node.value);
+ record=record.filter(([key,value])=>string(value)||editor.dataset.inputs[key]);
+ let editor=compose.call(document.call(target
+,{foreignObject:
+ {x:-radius,y:-radius,height:radius*2,width:400*scale
+ ,body:{xmlns:namespaces.xhtml
+ ,style:{"@scope":{":scope":{height:"100%",width:"100%"}}}
+ ,span:
+ {class:"editor",title:node.name
+ ,"data-actions":["",location,"module",edit.name,"module"].join("/")
+ ,"data-inputs":JSON.stringify({start:"date",end:"date"})
+ ,style:{"@scope":{":scope":
+ {...layout.dropcap,"text-align":"left","font-size":fontSize+"px",width:"100%",height:"100%"
+ ,"&>span.name":{...layout.input,width:"3em",height:"3em","&:before":layout.ghostspan}
+ ,"&>span[role=form]":
+ {"&:before":merge({width:".5em"},layout.ghostspan,0)
+ ,height:"100%"
+ ,display:"inline-block","white-space":"nowrap"
+ ,"&>span":{display:"inline-block","white-space":"nowrap"}
+ }
+ }}}
+ ,span:
+[{role:"textbox",contenteditable:true,class:"name","#text":node.name}
+,form({put:Object.fromEntries(record)})
+,{class:"field","#text":"+",style:"cursor:pointer"}
+]}     }
+ }
+ },namespaces.svg),spill,lift,infer("querySelector","span.editor"));
+ editor.querySelector("span.name").focus();
+};
+
+ function conceptualise()
+{return Object.entries(seed).reduce(function latch(concepts,[name,concept])
+{path.push(name);
+ let passive=!concept||["string","number"].includes(typeof concept)||["/awesome","/vectors","/d3"].includes(name);
+ let relations=passive?[]:!concept[reference]?reference?[]:concept
+:Array.isArray(concept[reference])||!Object.values(concept[reference]).some(isNaN)?concept[reference]:[concept[reference]];
+ relations=Object.entries(relations).map(([key,relation],index)=>
+ parseInt(key)==index&&!relation.length&&!reference
+?Object.entries(relation).reduce(latch,concepts)
+&&Object.keys(relation).map(relation=>[relation,1])
+:latch(concepts,[key=parseInt(key)==index?typeof relation.name=="string"?relation.name:relation:key,relation])
+&&[[key,typeof relation=="number"?relation:1]]).flat();
+ console.log(concept,relations);
+ relations=Object.fromEntries([...concepts[name]&&concepts[name].relations?concepts[name].relations.length?concepts[name].relations.map(relation=>[relation,1]):Object.entries(concepts[name].relations):[],...relations]);
+ concepts[path.pop()]=Object.assign({data:{name,path:[...path]},parent:concepts[path.slice(-1)[0]]},concept.length||concept,concepts[name],{relations});
+ if(!reference&&!path.length&&Object.keys(seed)[1])
+ concepts[seed.name||""]={data:{relations:{...(concepts[seed.name||""]||{}).relations,[name]:1}}};
+ return concepts;
+},{})
 };
 
  export var tests=
