@@ -14,7 +14,7 @@
  var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  var resource=combine(produce(crop(1),fetch,digest),produce(drop(1,0,produce(["source"],record)),merge),drop(2));
- var graph=whether([has("nodeName"),match(something,{matrix:{}})],GraphXML,reference,sprawl);
+ var graph=whether([has("nodeName"),resource=>{return compound(resource)&&array(resource.nodes)&&array(resource.edges)},match(something,{matrix:{}})],GraphXML,edgelist,reference,sprawl);
  var collapsed=produce(stash(produce(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
  export default produce
 (whether(string,resource),lift
@@ -297,8 +297,19 @@
  array(record)&&record.every(numeric)));
 };
 
+ export function edgelist({nodes,edges},options)
+{// labeled property graph: {nodes:[{label,id,properties}],edges:[{type,from:{id},to:{id},properties}]}.
+ nodes=nodes.map(({id,label,properties={}})=>({id,name:properties.text||label,label,value:properties}));
+ edges.forEach(({type,properties,from,to})=>[from,to].map(({id})=>
+ nodes.find(node=>node.id===id)).forEach((node,index,pair)=>merge(node
+,{[index?"source":"relations"]
+ :new (index?Set:Map)(index?[pair[0]]:[[pair[1],{type,...properties}]])
+ },0)));
+ return nodes.map(node=>merge(node,{source:node.source&&Array.from(node.source)},1));
+};
+
  export function reference(resource,options)
-{// use matrix to define relations. 
+{// use matrix to define relations.
  return compose
 (({fields,records,direction},matrix)=>
  Object.values(Object.entries(matrix).reduce(infer(project,direction)
@@ -454,21 +465,12 @@
 (is(window.SVGSVGElement)(fragment)?fragment:compose(document,spill,lift,crop(1))(
  {svg:
  {"xmlns:xlink":namespaces.xlink,preserveAspectRatio:"xMidYMid meet"
- ,class:"d3"
- ,"data-source":options.source
+ ,class:"d3","data-source":options.source
  ,style:{"@scope":{":scope":
- {"& g.node":
+ {overflow:"visible",width:"100%",height:"100%"
+ ,"& g.node":
  {"&.selected":{filter:"url(#shadow_white)"}
  ,"& text":{"pointer-events":"none"}
- ,"& foreignObject":{transform:"tanslate(-5px,-5px)"}
- ,"& body":{background:"transparent"}
- ,"& form":
- {overflow:"scroll"
- ,color:"inherit"
- ,"font-size":"inherit"
- ,"text-shadow":"black 0px 0px 2px,black 0px 0px 2px,black 0px 0px 2px"
- ,"white-space":"nowrap"
- }
  }
  }}}
  ,defs:{filter:
@@ -1053,23 +1055,22 @@
  let circle=target.querySelector("circle");
  let radius=circle.getAttribute("r");
  let fontSize=Number(radius*2)/4*scale/2;
- let record=Object.entries(node.value);
- record=record.filter(([key,value])=>string(value)||editor.dataset.inputs[key]);
+ let record=basic(node.value)?Object.entries(node.value):[["source",node.value]];
+ record=record.filter(([key,value])=>string(value));
  let editor=compose.call(document.call(target
 ,{foreignObject:
  {x:-radius,y:-radius,height:radius*2,width:400*scale
  ,body:{xmlns:namespaces.xhtml
- ,style:{"@scope":{":scope":{height:"100%",width:"100%"}}}
+ ,style:{"@scope":{":scope":{height:"100%",width:"100%",background:"transparent"}}}
  ,span:
  {class:"editor",title:node.name
  ,"data-actions":["",location,"module",edit.name,"module"].join("/")
- ,"data-inputs":JSON.stringify({start:"date",end:"date"})
  ,style:{"@scope":{":scope":
  {...layout.dropcap,"text-align":"left","font-size":fontSize+"px",width:"100%",height:"100%"
- ,"&>span.name":{...layout.input,width:"3em",height:"3em","&:before":layout.ghostspan}
+ ,"&>span.name":{...layout.input,width:"10em",height:"10em","&:before":layout.ghostspan}
  ,"&>span[role=form]":
  {"&:before":merge({width:".5em"},layout.ghostspan,0)
- ,height:"100%"
+ ,height:"100%","text-shadow":layout.text.outline
  ,display:"inline-block","white-space":"nowrap"
  ,"&>span":{display:"inline-block","white-space":"nowrap"}
  }

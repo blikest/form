@@ -254,7 +254,7 @@
  let module=
  {name:"JS Rebels",short_name:"jsrebels",theme_color:"#ffcbe4",background_color:"#fa99ca"
  ,display:"standalone",scope:"/",start_url:origin,description:"JS Rebels"
- ,orientation:"any",icons:[{src:"/svg/object/node/vector",type:"image/svg+xml",sizes:"any"}]
+ ,orientation:"any",icons:[{src:"/svg/object/node/vector/raster",type:"image/svg+xml",sizes:"any"}]
  };
  return module;
 }};
@@ -272,19 +272,25 @@
  ,css:types.filter(type=>type.includes("css")).length
  ,js:types.filter(type=>type.includes("javascript")).length
  }));
-},checkout(url,cache)
+},checkout(request,cache)
 {// bust timestamp on js only hits the page memory, never this cache or the server (like Interface's resolve/load)
- let raw=url.url||url;
- let script=url.destination==="script"||!url.url;
- let canonical=script?raw.replace(/\?.*$/,""):raw;
- return cache.match(canonical).then(existing=>
- fetch(canonical,{headers:existing?{"If-None-Match":existing.headers.get("ETag")}:{}}).then(fresh=>
+ let raw=request.url||request;
+ let script=request.destination==="script"||!request.url;
+ let identifier=script?raw.replace(/\?.*$/,""):raw;
+ return cache.match(identifier).then(existing=>
+{let headers=new Headers(request.headers);
+ if(existing)headers.set("If-None-Match",existing.headers.get("ETag"));
+ // navigate-mode requests can't be re-fetched with any init override at all.
+ return fetch(request.mode==="navigate"?identifier:request,{headers}).then(fresh=>
  fresh.status===304?existing
-:fresh.status<400?cache.put(canonical,fresh.clone()).then(cached=>
- console.debug("Installed "+canonical)||fresh)
-:existing&&cache.delete(canonical).then(evicted=>
- console.debug("Uninstalled "+canonical+" ("+fresh.status+")")||fresh)).catch(fail=>
- console.error(fail)||existing||Promise.reject(fail)));
+:fresh.status<400?cache.put(identifier,fresh.clone()).then(cached=>
+ console.debug("Installed "+identifier)||fresh)
+:existing&&cache.delete(identifier).then(evicted=>
+ console.debug("Uninstalled "+identifier+" ("+fresh.status+")")||fresh)).catch(fail=>
+ self.clients.matchAll().then(clients=>clients.forEach(client=>client.postMessage(JSON.stringify(
+ {action:"debug",identifier,name:fail?.name,message:fail?.message,stack:fail?.stack}))))||
+ console.error(fail)||existing||Promise.reject(fail));
+});
 },pull()
 {// pull the server cache for offline use — to be called on appinstalled (PWA), not controllerchange (SW).
  produce.call
@@ -555,15 +561,12 @@
  let composer=
  {span:{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
- {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap
- ].reduce(merge,{})
- ,...layout.fields
+ {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap].reduce(merge,{})
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
  ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
  ,"max-width":"calc(100% - 20px)"
  ,background:"var(--isle)","vertical-align":"middle"
  ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
- ,"&:hover>span[method=send]+.messages":{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
  ,"&>.messages":
  {position:"absolute",bottom:"100%",left:0,overflow:"scroll",cursor:"auto"
  ,display:"block","margin-left":"1em","max-height":"calc(100vh - 6em)","max-width":"300px","pointer-events":"none"
@@ -574,6 +577,7 @@
  ,"&:last-of-type":{animation:"fadeout 6s"}
  }
  }
+ ,[["&:hover>span[method=send]+.messages","&:focus-within>span[method=send]+.messages"]]:{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
  }}}]
  ,span:[inner]
  }};
@@ -611,7 +615,7 @@
  {position:"absolute",top:0,left:0,width:"100%",height:"100%","pointer-events":"none"
  ,"&>svg":{position:"absolute",top:"50%",left:"50%",width:"1.5em",height:"1.5em","pointer-events":"auto"}
  }
- ,"&>span#signal":{color:"black","text-shadow":Array(25).fill("var(--note) 0px 0px .25em").join()}
+ ,"&>span#signal":{color:"black","text-shadow":layout.text.outline}
  }}}}});
  let past=toggle.firstChild.nextSibling;
  toggle[(past?"replace":"append")+"Child"](next,past);
