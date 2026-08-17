@@ -41,13 +41,13 @@
 :[breadth*(1+gap),(length||breadth)+10].map((size,index)=>size*(index&&range?1:monospace)).sort(size=>vertical?1:-1);
  let space=radial?[-width,-width,width*2,width*2]:[-width/2,-height/2,width,height];
  merge(arguments[0],{space});
- if(this.__zoom)
- zoom.call(this
-,{transform:[box(this),space].reduce(([x,y,width,height],next)=>
- pan(this.__zoom
-,[x,y].map((past,index)=>past?past-next[index]:past)
-,[width,height].map((past,index)=>past?next[index+2]/past:1)))
- });
+//  if(this.__zoom)
+//  zoom.call(this
+// ,{transform:[box(this),space].reduce(([x,y,width,height],next)=>
+//  pan(this.__zoom
+// ,[x,y].map((past,index)=>past?past-next[index]:past)
+// ,[width,height].map((past,index)=>past?next[index+2]/past:1)))
+//  });
  return space.join(" ");
 },call(fragment)
 {if(!browser||fragment.datum().still)return;
@@ -106,8 +106,10 @@
  }
  });
 },call(nodes){if(browser)drag(nodes);}
- ,fill:node=>paint(node)
- ,transform({x=0,y=0,source})
+ ,fill(node)
+{let {color:field}=select(ascend.call(this)[0]).datum();
+ return paint(node,undefined,field);
+},transform({x=0,y=0,source})
 {let svg=ascend.call(this)[0];
  let {spread}=select(svg).datum();
  let {up,down,right,left,radial,force}={[spread]:true};
@@ -120,7 +122,10 @@
  ,r(node)
 {let {size:field,spread}=select(ascend.call(this)[0]).datum();
  return spread==="force"?scale(size(node,field)):5;
-},fill:node=>paint(node)||"var(--text)"
+},fill(node)
+{let {color:field}=select(ascend.call(this)[0]).datum();
+ return paint(node,undefined,field)||"var(--text)";
+}
  // ,title:{text({value,name}){return value?.progress?.concat("%")||this.remove();}}
  }
 ,{fold(node)
@@ -299,9 +304,9 @@
 
  export function edgelist({nodes,edges},options)
 {// labeled property graph: {nodes:[{label,id,properties}],edges:[{type,from:{id},to:{id},properties}]}.
- nodes=nodes.map(({id,label,properties={}})=>({id,name:properties.text||label,label,value:properties}));
+ nodes=nodes.map(value=>({name:value.properties.name,label:value.label,value}));
  edges.forEach(({type,properties,from,to})=>[from,to].map(({id})=>
- nodes.find(node=>node.id===id)).forEach((node,index,pair)=>merge(node
+ nodes.find(node=>node.value.id===id)).forEach((node,index,pair)=>merge(node
 ,{[index?"source":"relations"]
  :new (index?Set:Map)(index?[pair[0]]:[[pair[1],{type,...properties}]])
  },0)));
@@ -428,8 +433,8 @@
  nodes.forEach(node=>Object.assign(node,horizontal?{x:-node.x}:{y:-node.y}));
  if(!range)
  return nodes;
- let start=extreme(nodes.map(({value})=>value[range]))[0]*ratio;
- nodes.forEach(node=>node.x=node.value[range]*ratio-start);
+ let start=extreme(nodes.map(({value})=>value?.[range]||0))[0]*ratio;
+ nodes.forEach(node=>node.x=node.value?.[range]*ratio-start||0);
  return nodes;
 };
 
@@ -635,9 +640,19 @@
 :trace(node.source[0],path?[node.name,...path]:path);
 };
 
- function paint(node,scale)
+ var randomcolors=new Map();
+
+ function randomcolor(key)
+{if(!randomcolors.has(key))
+ randomcolors.set(key,"hsl("+Math.floor(Math.random()*360)+",70%,50%)");
+ return randomcolors.get(key);
+};
+
+ function paint(node,scale,field)
 {if(string(node))
  return {R:color.red,A:color.yellow,C:color.green}[node]||color.indigo;
+ if(field&&defined(node?.[field]))
+ return randomcolor(node[field]);
  let {progress}=node.value||{};
  return defined(progress)
 ?Number(progress)?color.health(Number(progress)/100):"#616161"
@@ -713,7 +728,7 @@
  let {source,target,value}=link;
  return [source,target].map((concept,vertex)=>
  ["imposure","exposure","outdegree","indegree"].map((score,index)=>
- concept[score]=index%2==vertex?(concept[score]||0)+(index<2&&value||1)*rate:concept[score]||0)&&
+ concept[score]=index%2==vertex?(concept[score]||0)+(index<2&&numeric(value)&&value||1)*rate:concept[score]||0)&&
  Object.assign(concept
 ,{degree:concept.indegree+concept.outdegree
  ,centrality:concept.exposure+concept.imposure
@@ -810,13 +825,14 @@
  let spacing=scale(population/complexity||1);
  let {size:field}=select(simulation.fragment).datum();
  combine
-(infer(),infer("alpha",1)//,infer("alphaDecay",0.3)
+(infer("alpha",1)//,infer("alphaDecay",0.3)
 ,infer("nodes",nodes,nodeindex)
 ,compose("charge","force",infer("strength",node=>scale(size(node,field))**2*-2))
 ,compose("collision","force",infer("radius",node=>scale(size(node,field))))
-,compose("link","force"
+,compose
+("link","force"
 ,infer("links",links,linkindex)
-,infer("strength",({value})=>(value*2||tension))
+,infer("strength",({value})=>(value*2||tension/2))
 ,infer("distance",({source,target})=>scale(size(source,field)*2+size(target,field)*2)||spacing)
 //,infer("distance",({source:{centrality:source},target:{centrality:target}})=>scale(source+target)||spacing)
 ))(simulation);

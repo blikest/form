@@ -71,7 +71,7 @@
  [fragment]=compose.call(body,{title,icon:"/svg/object/node/vector",scripts:[],styles:style},hypertext,document,spill,lift);
  merge(fields
  // root needs explicit /get method to reach json representation. 
-,{source:path(window.origin+(this===routes?"/get":request.url))
+,{source:path(window.origin+(this===routes?"/get":request.url)).slice(1)
  ,resource:this!==routes&&
  await compose.call(this.get?.(...arguments)||this,{url:address,headers:request.headers},stage,digest,cede)
  },1);
@@ -217,7 +217,7 @@
  }};
 }}}
  ,calendar()
-{return compose("toString",JSON.parse,calendar,["body"],record,{type:"text/calendar"},merge)(this);
+{return compose("toString",note,JSON.parse,note,calendar,["body"],record,{type:"text/calendar"},merge)(this);
 },actions()
 {return {imports:{"/Blik_2023_inference.js":["","compose","wait"]}
  ,exports:
@@ -253,14 +253,16 @@
 {let {origin}=url(request);
  let module=
  {name:"JS Rebels",short_name:"jsrebels",theme_color:"#ffcbe4",background_color:"#fa99ca"
- ,display:"standalone",scope:"/",start_url:origin,description:"JS Rebels"
- ,orientation:"any",icons:[{src:"/svg/object/node/vector/raster",type:"image/svg+xml",sizes:"any"}]
+ ,display:"standalone",scope:"/",start_url:origin,description:"JS Rebels",orientation:"any",icons:
+[{src:"/svg/object/node/vector?fill=%23303030",type:"image/svg+xml",sizes:"any"}
+,{src:"/svg/object/node/vector/raster?fill=%23303030&width=512&height=512&background=black",type:"image/png",sizes:"512x512"}
+]
  };
  return module;
 }};
 
  export var serviceworker={imports:
- {"/Blik_2023_inference.js":["","compose","induce","infer","note","exit","observe"]
+ {"/Blik_2023_inference.js":["","compose","produce","induce","infer","note","rank","exit","observe"]
  }
  ,exports:
  {name:"Service worker"
@@ -287,8 +289,6 @@
  console.debug("Installed "+identifier)||fresh)
 :existing&&cache.delete(identifier).then(evicted=>
  console.debug("Uninstalled "+identifier+" ("+fresh.status+")")||fresh)).catch(fail=>
- self.clients.matchAll().then(clients=>clients.forEach(client=>client.postMessage(JSON.stringify(
- {action:"debug",identifier,name:fail?.name,message:fail?.message,stack:fail?.stack}))))||
  console.error(fail)||existing||Promise.reject(fail));
 });
 },pull()
@@ -326,7 +326,7 @@
  return event.waitUntil(caches.open("assets").then(cache=>
  cache.match(import.meta.url).then(existing=>
  checkout(import.meta.url,cache).then(fresh=>
- fresh.headers.get("ETag")!==existing?.headers.get("ETag")&&
+ [existing,fresh].map(copy=>copy?.headers.get("ETag")).reduce((past,next)=>past!==next)&&
  self.registration.update()).catch(fail=>
  census(cache).then(stats=>
  self.clients.matchAll({includeUncontrolled:true}).then(clients=>
@@ -372,7 +372,7 @@
  {...observe({focus({isTrusted:focus,target})
 {if(target.nodeName==="#text")
  target=target.parentNode;
- if(target.role!=="textbox")
+ if(!["textbox","menu"].includes(target.role))
  return;
  let [form,label]=["[role=form]","[title]"].map(tag=>target.closest(tag));
  form.classList.toggle("focused");
@@ -383,9 +383,6 @@
  toggle.call(form,"get");
  if(method==="get"&&name!=="source"&&!value)
  toggle.call(form,"erase");
- let singular=Array.from(form.querySelectorAll("span[role=textbox]"));
- if(singular.length>1)
- form.style.setProperty("--scroll","-"+form.scrollLeft);
  if(type=="text")
  cursor(target);
  label?.setAttribute("focused",label.getAttribute("focused")!=="true");
@@ -518,7 +515,28 @@
  ,toggle,submission,profile
  }
  };
- let inner=merge(form({get:fields})
+ let composer=
+ {span:{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
+ ,"@scope":{":scope":
+ {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap].reduce(merge,{})
+ ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
+ ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
+ ,"max-width":"calc(100% - 20px)"
+ ,background:"var(--isle)","vertical-align":"middle"
+ ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
+ ,"&>.messages":
+ {position:"absolute",bottom:"100%",left:0,overflow:"scroll",cursor:"auto"
+ ,display:"block","margin-left":"1em","max-height":"calc(100vh - 6em)","max-width":"300px","pointer-events":"none"
+ ,"&>.message":
+ {opacity:0,animation:"fadeout 2s","padding-left":0,"margin-bottom":"0.5em"
+ ,...layout.message
+ ,"&>span>.title+span":{}
+ ,"&:last-of-type":{animation:"fadeout 6s"}
+ }
+ }
+ ,[["&:hover>span[method=send]+.messages"]]:{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
+ }}}]
+ ,span:[merge(form({get:fields})
 ,{id:"fields",style:[{id:"fields-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
  {...layout.fields
@@ -557,29 +575,7 @@
  ,"&.toggling":{"&>span":{width:0,"min-width":0},padding:0}
  }}}]
  ,span:[{id:"extend",role:"textbox",contenteditable:true}]
- },0);
- let composer=
- {span:{id:"composer",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
- ,"@scope":{":scope":
- {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap].reduce(merge,{})
- ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
- ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
- ,"max-width":"calc(100% - 20px)"
- ,background:"var(--isle)","vertical-align":"middle"
- ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
- ,"&>.messages":
- {position:"absolute",bottom:"100%",left:0,overflow:"scroll",cursor:"auto"
- ,display:"block","margin-left":"1em","max-height":"calc(100vh - 6em)","max-width":"300px","pointer-events":"none"
- ,"&>.message":
- {opacity:0,animation:"fadeout 2s","padding-left":0,"margin-bottom":"0.5em"
- ,...layout.message
- ,"&>span>.title+span":{}
- ,"&:last-of-type":{animation:"fadeout 6s"}
- }
- }
- ,[["&:hover>span[method=send]+.messages","&:focus-within>span[method=send]+.messages"]]:{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
- }}}]
- ,span:[inner]
+ },0)]
  }};
  return capture.call(composer,["",file,"module","composer","module"].join("/"));
 };
@@ -642,7 +638,7 @@
  compose(document,spill,lift,infer(insert,"under",frame))(progress);
  resource=resource||buffer(compose(fetch,digest),()=>fetch(route,{method:"put",body:""}).then(()=>""))(route+query);
  let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
- await compose.call(resource,profile,["get"],record,form,pass(clear),document.bind(this),spill);
+ buffer(produce(profile,["get"],record,form,pass(clear),document.bind(this),spill.bind(frame.controller)),note)(resource);
  let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
  let fail=compose(crop(1),note.bind(1),"stack",note,document);
  let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
