@@ -282,16 +282,18 @@
  let raw=request.url||request;
  let script=request.destination==="script"||!request.url;
  let identifier=script?raw.replace(/\?.*$/,""):raw;
+ let referrer=request.referrer;
  return cache.match(identifier).then(existing=>
 {let headers=new Headers(request.headers);
  if(existing)headers.set("If-None-Match",existing.headers.get("ETag"));
- // navigate-mode request headers can't be overridden by fetch init argument.
- return fetch(request.mode==="navigate"?identifier:request,{headers}).then(conditional=>
+ // navigate-mode request headers can't be overridden by fetch context.
+ return fetch(request.mode==="navigate"?identifier:request,{headers,referrer}).then(conditional=>
  conditional.status===304?existing:conditional.status<400
-?fetch(request).then(response=>cache.put(identifier,response.clone()).then(cached=>
- console.debug("Installed "+identifier)||response))
-:existing&&cache.delete(identifier).then(evicted=>
- console.debug("Uninstalled "+identifier+" ("+conditional.status+")")||conditional)).catch(fail=>
+?cache.put(identifier,conditional.clone()).then(cached=>
+ console.debug("Installed "+identifier)||conditional)
+:existing?cache.delete(identifier).then(evicted=>
+ console.debug("Uninstalled "+identifier+" ("+conditional.status+")")||conditional)
+:conditional).catch(fail=>
  console.error(fail)||existing||Promise.reject(fail));
 });
 },pull()
