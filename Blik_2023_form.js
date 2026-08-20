@@ -285,13 +285,13 @@
  return cache.match(identifier).then(existing=>
 {let headers=new Headers(request.headers);
  if(existing)headers.set("If-None-Match",existing.headers.get("ETag"));
- // navigate-mode requests can't be re-fetched with any init override at all.
- return fetch(new Request(request.mode==="navigate"?identifier:request,{headers})).then(fresh=>
- fresh.status===304?existing
-:fresh.status<400?cache.put(identifier,fresh.clone()).then(cached=>
- console.debug("Installed "+identifier)||fresh)
+ // navigate-mode request headers can't be overridden by fetch init argument.
+ return fetch(request.mode==="navigate"?identifier:request,{headers}).then(conditional=>
+ conditional.status===304?existing:conditional.status<400
+?fetch(request).then(response=>cache.put(identifier,response.clone()).then(cached=>
+ console.debug("Installed "+identifier)||response))
 :existing&&cache.delete(identifier).then(evicted=>
- console.debug("Uninstalled "+identifier+" ("+fresh.status+")")||fresh)).catch(fail=>
+ console.debug("Uninstalled "+identifier+" ("+conditional.status+")")||conditional)).catch(fail=>
  console.error(fail)||existing||Promise.reject(fail));
 });
 },pull()
