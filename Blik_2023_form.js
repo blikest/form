@@ -14,6 +14,7 @@
  import wikipedia from "./Blik_2024_wikipedia.js";
  import * as svg from "./Blik_2024_svg.js";
  import local,{syndication,persistence,encryption,publish,published,classify,classified,permit} from "./Blik_2024_static.js";
+ import mail from "./Blik_2025_email.js";
  merge(syndication,
  {rss2json:{key:undefined}
  ,google:{api:undefined}
@@ -24,11 +25,11 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  // Port excludes published paths from cache. 
- await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$)(?!.*\.js$).*\/Blik_/,/^(?!.*\/interface$).*\/author/);
+ await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$)(?!.*\.js$).*\/Blik_/,/^(?!.*\/interface$).*\/(author|mail)/);
  var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
 
  export default
- {...local
+ {...local,mail
  ,svg(){return svg;}
  // ,fonts:compose.call
 // (fonts.truetype,Object.entries,infer("map",([name,variants])=>
@@ -40,7 +41,9 @@
 //  }
 // ]),Object.fromEntries)(variants.length?{"":variants}:variants)
 // ]),Object.fromEntries,["truetype"],record,fonts,merge
- ,author:persistence("Blik_2024_author.json")
+ ,author:prune.call(persistence("Blik_2024_author.json"),([field,value],path)=>field==="get"&&!path.length
+?compose(value,prune(([field,value])=>["signature","code"].includes(field)?undefined:value,0,2))
+:value)
  ,media:compose(crop(1),"toString",media,collect,document,spill,lift,crop(1))
  ,interface:async function(request)
 {let queries=query(url(request));
@@ -283,7 +286,7 @@
 {let headers=new Headers(request.headers);
  if(existing)headers.set("If-None-Match",existing.headers.get("ETag"));
  // navigate-mode requests can't be re-fetched with any init override at all.
- return fetch(request.mode==="navigate"?identifier:request,{headers}).then(fresh=>
+ return fetch(new Request(request.mode==="navigate"?identifier:request,{headers})).then(fresh=>
  fresh.status===304?existing
 :fresh.status<400?cache.put(identifier,fresh.clone()).then(cached=>
  console.debug("Installed "+identifier)||fresh)

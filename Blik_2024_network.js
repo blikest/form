@@ -26,9 +26,9 @@
 
  export var svg=
  {fold:false
- ,id:(node)=>deselect([node].flat()[0].name||"get"),class:"d3"
+ ,id:(node)=>deselect([node].flat()[0]?.name||"get"),class:"d3"
  ,"data-options":(nodes)=>JSON.stringify(prune.call(nodes,([field,value])=>isNaN(field)?value:undefined,1,0))
- ,title(node){return [node].flat()[0].name;}
+ ,title(node){return [node].flat()[0]?.name;}
  ,viewBox({monospace=10,spread="force",gap=0.2,range})
 {let {up,down,force,radial}={[spread]:true};
  let vertical=Boolean(up||down);
@@ -1077,18 +1077,17 @@
 ,{foreignObject:
  {x:-radius,y:-radius,height:radius*2,width:400*scale
  ,body:{xmlns:namespaces.xhtml
- ,style:{"@scope":{":scope":{height:"100%",width:"100%",background:"transparent"}}}
+ ,style:{"@scope":{":scope":{height:"100%",width:"100%",background:"transparent",color:"black"}}}
  ,span:
  {class:"editor",title:node.name
  ,"data-actions":["",location,"module",edit.name,"module"].join("/")
  ,style:{"@scope":{":scope":
  {...layout.dropcap,"text-align":"left","font-size":fontSize+"px",width:"100%",height:"100%"
- ,"&>span.name":{...layout.input,width:"10em",height:"10em","&:before":layout.ghostspan}
+ ,"&>span.name":{...layout.input,width:"6em",height:"100%","&:before":layout.ghostspan}
  ,"&>span[role=form]":
- {"&:before":merge({width:".5em"},layout.ghostspan,0)
- ,height:"100%","text-shadow":layout.text.outline
- ,display:"inline-block","white-space":"nowrap"
- ,"&>span":{display:"inline-block","white-space":"nowrap"}
+ {height:"100%","text-shadow":layout.text.outline
+ ,display:"inline-block","white-space":"nowrap",overflow:"scroll","padding-left":"0.5em"
+ ,"&>span":{display:"block","white-space":"nowrap","&>span:focus":{"white-space":"normal"}}
  }
  }}}
  ,span:
