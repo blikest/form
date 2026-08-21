@@ -265,7 +265,7 @@
 }};
 
  export var serviceworker={imports:
- {"/Blik_2023_inference.js":["","compose","produce","induce","infer","note","rank","exit","observe"]
+ {"/Blik_2023_inference.js":["","compose","produce","induce","infer","note","rank","exit","observe","string"]
  }
  ,exports:
  {name:"Service worker"
@@ -280,11 +280,14 @@
 },checkout(request,cache)
 {// bust timestamp on js only hits the page memory, never this cache or the server (like Interface's resolve/load)
  let raw=request.url||request;
- let script=request.destination==="script"||!request.url;
+ // reload and install message/event request string specifiers of js.  
+ let script=request.destination==="script"||string(request);
  let identifier=script?raw.replace(/\?.*$/,""):raw;
  let referrer=request.referrer;
  return cache.match(identifier).then(existing=>
 {let headers=new Headers(request.headers);
+ // express script destination from imports lost by fetch with accept header.
+ if(script)headers.set("Accept","text/javascript");
  if(existing)headers.set("If-None-Match",existing.headers.get("ETag"));
  // navigate-mode request headers can't be overridden by fetch context.
  return fetch(request.mode==="navigate"?identifier:request,{headers,referrer}).then(conditional=>
@@ -296,7 +299,7 @@
 :conditional).catch(fail=>
  console.error(fail)||existing||Promise.reject(fail));
 });
-},pull()
+},install()
 {// pull the server cache for offline use — to be called on appinstalled (PWA), not controllerchange (SW).
  produce.call
 ("/sources",fetch,"json",Object.keys,infer("filter",file=>
@@ -315,7 +318,7 @@
 {console.log(address+" activated.");
  event.waitUntil(Promise.all(
 [caches.keys().then(keys=>Promise.all(keys.filter(key=>key!=="assets").map(key=>caches.delete(key))))
- // dispatches controllerchange event on clients' navigator.serviceWorker-s.
+ // dispatches controllerchange event on clients' navigator.serviceWorker-s. 
 ,self.clients.claim()
 ]));
 },fetch(event)
@@ -326,7 +329,7 @@
 {let {action}=event.data||{};
  // bypass the browser's own slow update polling, but only when the conditional fetch found a real change.
  if(action==="PWAinstall")
- return event.waitUntil(pull());
+ return event.waitUntil(install());
  if(action==="reload")
  return event.waitUntil(caches.open("assets").then(cache=>
  cache.match(import.meta.url).then(existing=>
