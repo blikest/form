@@ -1,5 +1,6 @@
  import {merge} from "./Blik_2023_inference.js";
- import {scaleLinear} from './Bostock_2011_d3.js';
+ import {compound,array} from "./Blik_2026_type.js";
+ import {scaleLinear,scaleOrdinal,rgb,hsl,interpolateHsl} from './Bostock_2011_d3.js';
 
  export var color=
  {velvet:"#750000"
@@ -21,18 +22,35 @@
  ,stakeholder:"#4285F4"
  ,flora:"rgba(46,125,50)"
  ,fauna:"rgba(198,40,40)"
- ,nature:["rgb(247,194,35)","rgb(27,154,89)","rgb(66,133,244)"]
+ };
+ merge(color
+,{nature:["rgb(247,194,35)","rgb(27,154,89)","rgb(66,133,244)"]
  ,vibrant:["#ea4335","#fbbc05","#2E7D32","#4285F4"]
+ ,git:
+ {work:{0:"hsl(199,18%,84%)",1:"hsl(123,39%,74%)",2:"hsl(60,100%,50%)"}
+ ,stage:{0:"hsl(199,18%,84%)",1:"hsl(123,39%,74%)",2:"hsl(54,100%,80%)",3:"hsl(340,71%,88%)"}
+ }
  ,rainbow(...input){this.rainbow=spectrum(...["red","yellow","green","blue"].map(key=>this[key]));return this.rainbow(...input);}
  ,health(...input){this.health=spectrum(...["green","lime","lemon","orange","velvet"].map(key=>this[key]));return this.health(...input);}
  ,google(...input){this.google=spectrum(...["#ea4335","#fbbc05","#2E7D32","#4285F4","rgb(106,68,233)"]);return this.google(...input);}
- };
+});
 
  export function spectrum(...spectrum)
-{spectrum=spectrum.flat();
+{if(spectrum.length===1&&compound(spectrum[0])&&!array(spectrum[0]))
+ return scaleOrdinal(Object.values(spectrum[0])).domain(Object.keys(spectrum[0]));
+ spectrum=spectrum.flat();
  let domain=Array.from({length:spectrum.length});
  domain=domain.map((item,index,{length})=>index/(length-1)).reverse();
  return scaleLinear().range(spectrum).domain(domain);
+};
+
+ export function blend(...colors)
+{colors=colors.flat().filter(Boolean).map(color=>/^hsla?\(/i.test(color)?hsl(color):rgb(color));
+ if(!colors.length)return undefined;
+ if(colors.every(color=>"h" in color))
+ return colors.reduce((a,b)=>interpolateHsl(a,b)(0.5));
+ let {r,g,b}=colors.reduce((sum,c)=>({r:sum.r+c.r,g:sum.g+c.g,b:sum.b+c.b}));
+ return rgb(r/colors.length,g/colors.length,b/colors.length)+"";
 };
 
  export var fontface=
@@ -67,7 +85,14 @@
 
  export var text=
  {glow:{"text-shadow":"white 0px 0px 2px,white 0px 0px 2px",transition:"all 0.3s"}
+ ,glare:{"text-shadow":"rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px"}
  ,outline:Array(25).fill("var(--note) 0px 0px .25em").join()
+ };
+
+ export var toggle=
+ {cursor:"pointer","font-weight":"bold",color:"var(--text)","outline":"none","line-height":"1em"
+ ,"&:hover,&:focus":{...text.glare,color:"var(--highlight)"}
+ ,"&:checked,&[aria-checked=true]":{color:"var(--highlight)"}
  };
 
  export var vignette=
@@ -94,8 +119,12 @@
  {"a,span[role='link']":{"text-decoration":"none",position:"relative",color:"#0097a7"}
  };
 
+ export var checkbox=
+ {appearance:"none","font-family":"inherit",width:"auto",...toggle
+ };
+
  export var input=
- {display:"inline-block","text-shadow":"inherit","line-height":"1em",cursor:"auto"
+ {display:"inline-block","text-shadow":"inherit","line-height":"1em",cursor:"text"
  ,outline:"none",transition:"all var(--transition)"
  ,"&[role=textbox],&[role=menu]":
  {"box-sizing":"border-box"
@@ -103,15 +132,9 @@
  ,"font-family":"inherit","font-size":"inherit"
  }
  ,"&[role=radio]":{display:"none"}
- ,"&[role=checkbox]":
- {appearance:"none","font-family":"inherit",cursor:"pointer",width:"auto"
- ,"&:hover":{"text-shadow":"rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px,rgb(255,255,255) 0px 0px 10px"}
- ,"&:after":{content:"' ?'","margin-left":"3px","margin-right":"3px"}
- ,"&:focus:after":{"text-shadow":"rgb(255,255,255) 0px 0px 10px, rgb(255,255,255) 0px 0px 10px, rgb(255,255,255) 0px 0px 10px"}
- ,"&:checked,&[aria-checked=true]":{"&:after":{content:"'✓'",color:"var(--highlight)"}}
- }
+ ,"&[role=checkbox]":checkbox
  ,"&~svg":{"margin-right":"0.5em"}
- ,"&:focus":{"&+ul,&+span[role=list]":{display:"block"}}
+ ,"&:focus":{"&~ul,&~span[role=list]":{display:"block"}}
  };
 
  export var label=

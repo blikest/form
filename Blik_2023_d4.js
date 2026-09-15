@@ -1,6 +1,6 @@
  import * as d3 from './Bostock_2011_d3.js';
  import {select,selectAll} from './Bostock_2011_d3_select.js';
- import {merge,prune,numeric,note,defined,simple,exit} from "./Blik_2023_inference.js";
+ import {merge,prune,numeric,note,defined,simple,exit,abort} from "./Blik_2023_inference.js";
  import {qualify,window,document} from "./Blik_2023_fragment.js";
 
 // Data-Driven Document Declarations (D4).
@@ -44,7 +44,7 @@
  Object.entries(fragment).reduce((selection,entry)=>
  Object.values(extension).reduce((applied,extension)=>
  applied||extension.apply(selection,entry),undefined)||
- exit("extension entry doesn't satisfy "+Object.keys(extension).join('/')+' namespaces: '+entry),selection);
+ abort(exit("extension entry doesn't satisfy "+Object.keys(extension).join('/')+' namespaces: '+entry)),selection);
  return this;
 }
 

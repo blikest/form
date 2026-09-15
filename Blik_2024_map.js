@@ -1,4 +1,4 @@
- import {defined, compose, rank, expect, observe, infer, either, tether, swap, crop, not, note, slip, wait, buffer, control, drop, each, string, functor,pass, compound, array, is, has, revert, exit, whether, collect, combine,extract,search, merge, prune,record} from "./Blik_2023_inference.js";
+ import {defined, compose, rank, expect, observe, infer, either, tether, swap, crop, not, note, slip, wait, buffer, control, drop, each, string, functor,pass, compound, array, is, has, revert, exit, abort as terminate, whether, collect, combine,extract,search, merge, prune,record} from "./Blik_2023_inference.js";
  import {calendar, date, nearest, normalize, quadrate, round, time} from './Blik_2023_search.js';
  import {window,document, qualify, demarkup, snap, namespaces, ascend} from './Blik_2023_fragment.js';
  import {mime,records,url} from './Blik_2023_meta.js';
@@ -488,7 +488,7 @@
  // performance.mark("a")
  let next=Object.entries(grid);
  let fold=await compose.call
-(next,infer("sort",([field,tile])=>kept[field]&&-1),infer("map", buffer(compose(combine(unfold,drop(1)),lift,pass(track,name,this,true),crop(1)), infer())),rank,collect,"flat",whether(infer("some",is(Error)),compose(drop(),"aborted "+next.length+" "+name+" tiles: "+next[0]?.[0],Error,exit),infer()),whether(infer("some",has("geometry"))
+(next,infer("sort",([field,tile])=>kept[field]&&-1),infer("map", buffer(compose(combine(unfold,drop(1)),lift,pass(track,name,this,true),crop(1)), infer())),rank,collect,"flat",whether(infer("some",is(Error)),compose(drop(),"aborted "+next.length+" "+name+" tiles: "+next[0]?.[0],Error,exit,terminate),infer()),whether(infer("some",has("geometry"))
  /*,browser?delegate.bind(worker,"dissolve"):*/
 ,dissolve,infer())
 );
@@ -558,7 +558,7 @@
 
  export function acquire(source, tile)
 {if (!defined(this))
- exit(Error(acquire.name+" called without scope to track abortcontrollers."));
+ terminate(exit(Error(acquire.name+" called without scope to track abortcontrollers.")));
  let csv = /.csv$/.test(source);
  let fail = Error(source + " aborted.");
  if (tile === false)
@@ -566,9 +566,9 @@
  if (this[source])
  return control(this[source]);
  let {signal}=this[source]=new AbortController();
- let halt=pass(context=>signal.aborted&&exit(fail));
+ let halt=pass(context=>signal.aborted&&terminate(exit(fail)));
  return control(this[source],({signal})=>
- compose.call(source,wait(1000),halt,{signal},fetch,halt, whether(compose("status",is(200)),"arrayBuffer",compose(combine("status", "statusText"),lift,collect,": ","join",Error,exit)),halt,{tile,source},csv?compose(records,infer("map",({id,...record},index)=>({[id||index]:record})),infer("reduce",merge)):georead, halt).catch(exit).finally(term=>delete this[source]));
+ compose.call(source,wait(1000),halt,{signal},fetch,halt, whether(compose("status",is(200)),"arrayBuffer",compose(combine("status", "statusText"),lift,collect,": ","join",Error,exit,terminate)),halt,{tile,source},csv?compose(records,infer("map",({id,...record},index)=>({[id||index]:record})),infer("reduce",merge)):georead, halt).catch(compose(exit,terminate)).finally(term=>delete this[source]));
 };
 
  export async function georead(buffer,{color,tile,source}={})

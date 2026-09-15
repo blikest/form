@@ -10,11 +10,12 @@
  import {forceSimulation as force3d,forceX,forceY,forceZ,forceLink,forceCenter,forceCollide,forceManyBody} from './Vasturiano_2016_force3d.js';
  import extend from "./Blik_2023_d4.js";
  import * as vectors from "./Blik_2024_svg.js";
+ import {functor} from "./Blik_2026_type.js";
  var browser=defined(globalThis.window);
  var location=new URL(import.meta.url).pathname.replace(/.*\//,"");
 
  var resource=combine(produce(crop(1),fetch,digest),produce(drop(1,0,produce(["source"],record)),merge),drop(2));
- var graph=whether([has("nodeName"),resource=>{return compound(resource)&&array(resource.nodes)&&array(resource.edges)},match(something,{matrix:{}})],GraphXML,edgelist,reference,sprawl);
+ var graph=whether([has("nodeName"),resource=>{return compound(resource)&&array(resource.nodes)&&array(resource.edges);},match(something,{matrix:{}})],GraphXML,edgelist,reference,sprawl);
  var collapsed=produce(stash(produce(dataset,differ(search(["options","collapse"])),rank)),lift,tether(collapse),1,tether(zoom));
  export default produce
 (whether(string,resource),lift
@@ -107,8 +108,8 @@
  });
 },call(nodes){if(browser)drag(nodes);}
  ,fill(node)
-{let {color:field}=select(ascend.call(this)[0]).datum();
- return paint(node,undefined,field);
+{let {category:field,spectrum}=select(ascend.call(this)[0]).datum();
+ return paint(node,undefined,field,spectrum);
 },transform({x=0,y=0,source})
 {let svg=ascend.call(this)[0];
  let {spread}=select(svg).datum();
@@ -116,15 +117,15 @@
  return force?"translate("+[x,y].map(x=>x.toPrecision(5).replace(/e\+\d+/,""))+")"
 :radial?"rotate("+(x*180/Math.PI-90)+") translate("+y+",0)"
 :"translate("+[x,y]+") rotate("+(right?0:down?90:up?-90:0)+")";
-}//,title:{text:({name,source,value,nodes,...intension})=>JSON.stringify(intension)}
+},title:{text:({name,...value})=>JSON.stringify(prune.call(value,({1:value})=>!compound(value)?value:undefined))}
  ,circle:
 [{name({name,source,nodes}){return source&&!nodes?source.name+"_"+name:null;}
  ,r(node)
 {let {size:field,spread}=select(ascend.call(this)[0]).datum();
  return spread==="force"?scale(size(node,field)):5;
 },fill(node)
-{let {color:field}=select(ascend.call(this)[0]).datum();
- return paint(node,undefined,field)||"var(--text)";
+{let {category:field,spectrum}=select(ascend.call(this)[0]).datum();
+ return paint(node,undefined,field,spectrum)||"var(--text)";
 }
  // ,title:{text({value,name}){return value?.progress?.concat("%")||this.remove();}}
  }
@@ -273,10 +274,8 @@
  return infer("default",options.source,options,this)(module);
 },click({target}){target.closest(".node")||clear({target});}}
  ,"g.link":
- {...observe({hover({target})
-{target=target.closest(".link");
- target.style.removeProperty("filter");
- target.setAttribute("opacity",target.getAttribute("opacity")<1?1:0.5);
+ {...observe({hover({target,isTrusted})
+{target.closest(".link").setAttribute("opacity",isTrusted?1:0.5);
 }})
  }
  ,"g.node":
@@ -333,7 +332,7 @@
  export function sprawl(resource,options={})
 {// parse object as a nodes. 
  // {node:{node:[{node:"node",relations:["node"]},"node"]}} or [{name,relations}]
- let {relations,intension,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix,range}=options;
+ let {relations,intension,spread,title,monospace=10,still,source,gradual,linear=true,depth,matrix,range,category}=options;
  let direct=false&&!Object.keys(search.call(resource,({1:value})=>
  !simple(value)&&!numeric(value))).length;
  if(direct)
@@ -348,7 +347,7 @@
  }));
  if(source&&linear&&Object.keys(resource).length>1)
  resource=record(resource,[source==="/get"?window.location.origin:source]);
- let {resource:{nodes}}=prune.call({resource},infer(split,options),false,["value",relations,range,intension]);
+ let {resource:{nodes}}=prune.call({resource},infer(split,options),false,["value",relations,range,intension,category].flat());
  prune.call(nodes,backlink,false,["source","value"]);
  if(!linear)
  nodes=unfold.call({nodes},childfold).slice(1).map(deduplicate);
@@ -364,15 +363,16 @@
 //  return node;
 };
 
- export function split(scope,{relations,intension},[name,value],path=[],trace=[])
+ export function split(scope,{relations,intension,category},[name,value],path=[],trace=[])
 {// split entries into nodes. 
  let fields="value,name,nodes,depth".split(",");
  let node=compound(scope)&&has.call(scope,fields)&&Object.keys(scope).length===fields.length;
  if(node)return value;
  let entry=path.at(-1)==="nodes";
  if(entry&&array(scope))
- return rank((compound(value)?Object.entries(value):[[value]]).filter(not(match([intension]))).map(entry=>
- split(value,{relations,intension},entry,path,trace)));
+ return rank((compound(value)?Object.entries(value):[[value]]).filter(([field])=>
+ ![intension,category].flat().includes(field)).map(entry=>
+ split(value,arguments[1],entry,path,trace)));
  let nodes=compound(value)?[relations&&value[relations]||value].flat().filter(node=>
  node&&(!compound(node)||Object.keys(node).length)):undefined;
  // search.prune collects array indices in path, which doubles the depth. 
@@ -465,7 +465,15 @@
 
  export function chart(nodes,options={},fragment)
 {merge(options,{spread:"force"},0);
- let {axis}=options;
+ let {axis,category,spectrum}=options;
+ if(spectrum)
+ merge(options
+,{spectrum:whether
+(compose(Object.values,infer("every",string))
+,layout.spectrum
+,prune(([field,value])=>layout.spectrum(string(value)?layout.color[value]:value))
+)(string(spectrum)?layout.color[spectrum]:spectrum)
+ });
  return compose.call
 (is(window.SVGSVGElement)(fragment)?fragment:compose(document,spill,lift,crop(1))(
  {svg:
@@ -474,7 +482,7 @@
  ,style:{"@scope":{":scope":
  {overflow:"visible",width:"100%",height:"100%"
  ,"& g.node":
- {"&.selected":{filter:"url(#shadow_white)"}
+ {"&.selected>circle":{filter:"url(#shadow_white)"}
  ,"& text":{"pointer-events":"none"}
  }
  }}}
@@ -502,10 +510,10 @@
  let inverse=up||left;
  let [field]=Object.entries({vertical,horizontal,radial}).find(({1:value})=>value)||[];
  let line=bezier[field];
- if(line&&linear)
+ if(line&&(linear||radial))
  return line(link);
  let {source,target}=link;
- let [x,y,width,height]=space;
+ let [,,width,height]=space;
  let [zone,flow]=vertical?"xy":"yx";
  let horizon=vertical?width:height;
  let curve=!horizontal&&!vertical&&!layered?""
@@ -530,8 +538,7 @@
 ,[target[zone],target[flow]-distance]
 ]:[[source[zone],ascent],[target[zone],descent]]
 ).map(point=>point[vertical?"flat":"reverse"]()).join(" ");
- let end=radial?["cos","sin"].map(sin=>Math[sin](x-Math.PI/2)*y):[target.x,target.y];
- return "M"+[source.x,source.y]+"C"+curve+" "+end;
+ return "M"+[source.x,source.y]+"C"+curve+" "+[target.x,target.y];
 };
 
  function pattern(node)
@@ -635,7 +642,7 @@
  function box(svg){return demarkup(svg,"viewBox").viewBox.split(" ").map(Number);};
 
  export function trace(node,path)
-{console.log(node);return !node.source?.[0]
+{return !node.source?.[0]
 ?[node.name,...path||[]]
 :trace(node.source[0],path?[node.name,...path]:path);
 };
@@ -648,11 +655,24 @@
  return randomcolors.get(key);
 };
 
- function paint(node,scale,field)
+ export var domain=
+ {default:
+ {spread(){return ["force","right","left","up","down"];}
+ ,category()
+{return Object.keys(prune.call(this,([field,value])=>compound(value)?undefined:value,1));
+}}
+ };
+
+ function property(node,field){return node?.value?.[field]??node?.[field];}
+
+ function paint(node,scale,field,spectrum)
 {if(string(node))
- return {R:color.red,A:color.yellow,C:color.green}[node]||color.indigo;
- if(field&&defined(node?.[field]))
- return randomcolor(node[field]);
+ return spectrum?spectrum(node):color.indigo;
+ if(array(field))
+ return layout.blend(field.map(field=>
+ (functor(spectrum)?spectrum:spectrum?.[field])?.(String(property(node,field)))));
+ if(field&&defined(property(node,field)))
+ return spectrum?spectrum(property(node,field)):randomcolor(property(node,field));
  let {progress}=node.value||{};
  return defined(progress)
 ?Number(progress)?color.health(Number(progress)/100):"#616161"
@@ -717,10 +737,10 @@
 (drop(1,0,produce(forage,rank,each(infer("each",dim(true))))),lift
 ,crop(2,whether(array,produce(selectAll,"data",collect,slip(Set),Reflect.construct)))
 ,(nodes,links,cluster)=>cluster?.size
-?links.filter(({source,target})=>[source,target].every(node=>cluster.has(node))).each(infer("dispatchEvent",new Event("pointerover",{bubbles:true})))&&
- nodes.filter(node=>cluster.has(node)).each(highlight(true))
-:links.each(infer("dispatchEvent",new Event("pointerover",{bubbles:true})))&&
- nodes.each(dim(false)).each(highlight(false))
+?links.each(function({source,target}){dim.call(this,![source,target].every(node=>cluster.has(node)));})&&
+ nodes.filter(node=>cluster.has(node)).each(dim(false))//.each(highlight(true))
+:links.each(dim(false))&&
+ nodes.each(dim(false))//.each(highlight(false))
 );
 
  function degree(link,rate=1)
@@ -910,15 +930,14 @@
 };
 
  export function dim(on=true)
-{function set(){this.style[on?"setProperty":"removeProperty"]("filter","brightness(0.2)");};
+{function set()
+{this.style[on?"setProperty":"removeProperty"]("filter","brightness(0.2)");
+};
  return defined(this)?set.call(this):set;
 };
 
  export function highlight(on=true)
-{function set()
-{this.style.removeProperty("filter");
- extend.call(this,{fold:false,filter:"url(#shadow"+(on?"_white":"")+")"});
-};
+{function set(){extend.call(this,{fold:false,filter:"url(#shadow"+(on?"_white":"")+")"});};
  return defined(this)?set.call(this):set;
 };
 
@@ -962,7 +981,7 @@
  label.style.display="block";
  selected.querySelector("foreignObject")?.remove();
 }
- let composer=target.closest("body").querySelector("#composer");
+ let composer=target.closest("body").querySelector(".form");
  return fill.call(composer,{source:"",gradual:true});
 };
 
@@ -994,7 +1013,7 @@
  if(!ctrlKey)
  clear({target:node});
  node.classList.add("selected");
- let composer=node.closest("body").querySelector("#composer");
+ let composer=node.closest("body").querySelector(".form");
  let scope=select(node).datum();
  scope.fx=scope.x;
  scope.fy=scope.y;
@@ -1070,9 +1089,13 @@
  let scale=target.closest("svg").getScreenCTM().a;
  let circle=target.querySelector("circle");
  let radius=circle.getAttribute("r");
- let fontSize=Number(radius*2)/4*scale/2;
+ let {spread}=select(ascend.call(target)[0]).datum();
+ let force=spread==="force";
+ let fontSize=force?Number(radius*2)/4*scale/2:radius*2;
  let record=basic(node.value)?Object.entries(node.value):[["source",node.value]];
- record=record.filter(([key,value])=>string(value));
+ record=record.filter(([key,value])=>!compound(value));
+ if(!force)
+ record=[["name",node.name],...record];
  let editor=compose.call(document.call(target
 ,{foreignObject:
  {x:-radius,y:-radius,height:radius*2,width:400*scale
@@ -1083,21 +1106,24 @@
  ,"data-actions":["",location,"module",edit.name,"module"].join("/")
  ,style:{"@scope":{":scope":
  {...layout.dropcap,"text-align":"left","font-size":fontSize+"px",width:"100%",height:"100%"
- ,"&>span.name":{...layout.input,width:"6em",height:"100%","&:before":layout.ghostspan}
+ ,"&>span.name":{...layout.input,width:radius*2+"px",height:"100%","&:before":layout.ghostspan}
  ,"&>span[role=form]":
- {height:"100%","text-shadow":layout.text.outline
+ {height:"100%"
  ,display:"inline-block","white-space":"nowrap",overflow:"scroll","padding-left":"0.5em"
- ,"&>span":{display:"block","white-space":"nowrap","&>span:focus":{"white-space":"normal"}}
+ ,"vertical-align":"top",color:circle.getAttribute("fill"),"line-height":"100%"
+ ,...!force&&{"&:before":layout.ghostspan}
+ ,"&>span":{display:force?"block":"inline-block","vertical-align":"top","white-space":"nowrap","&>span:focus":{"white-space":"normal"}}
+ ,"&>span[title=name]>span:first-child":{display:"none"}
  }
  }}}
  ,span:
-[{role:"textbox",contenteditable:true,class:"name","#text":node.name}
+[{role:"textbox",contenteditable:force||undefined,class:"name","#text":force?node.name:""}
 ,form({put:Object.fromEntries(record)})
 ,{class:"field","#text":"+",style:"cursor:pointer"}
 ]}     }
  }
  },namespaces.svg),spill,lift,infer("querySelector","span.editor"));
- editor.querySelector("span.name").focus();
+ editor.querySelector("span[contenteditable]").focus();
 };
 
  function conceptualise()
