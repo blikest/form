@@ -1,7 +1,7 @@
  import {note,lift,debug,extract,model,spill,crop,swap,is,are,either,functor,buffer,rank,compound,collect,same,pass,stash,compose,each,infer,tether,combine,string,whether,drop,slip,exit,numeric,match,when,has,basic,heritage,observe,merge,search,prune,route,record,major,flatten} from "./Blik_2023_inference.js";
 
 
- import media,{window,document,hypertext,throttle,capture,defer,form,progress,insert,namespaces,css,fill,deselect,expand,spell,demarkup,stylerules,memory,image,canvas} from "./Blik_2023_fragment.js";
+ import media,{window,document,hypertext,throttle,capture,defer,form,field,insert,namespaces,css,fill,deselect,expand,spell,demarkup,stylerules,memory,image,canvas} from "./Blik_2023_fragment.js";
  import {url,serialize,proceduralize,parse,mime,calendar,cookie,query,path} from "./Blik_2023_meta.js";
  import * as layout from "./Blik_2023_layout.js";
  import {fontface,animation} from "./Blik_2023_layout.js";
@@ -25,7 +25,7 @@
  var address=new URL(import.meta.url).pathname;
  export const file=address.replace(/.*\//,"");
  // Port excludes published paths from cache. 
- await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$)(?!.*\.js$).*\/Blik_/,/^(?!.*\/interface$).*\/(author|mail)/);
+ //await publish(/^(?!.*\/module)(?!.*\/sourcemap)(?!.*\/interface$)(?!.*\.js$).*\/Blik_/,/^(?!.*\/interface$).*\/(author|mail)/);
  var {default:fonts}=await command.call(import.meta.url,"./Blik_2025_fonts.json");
 
  export default
@@ -49,15 +49,15 @@
 {let queries=query(url(request));
  let fragment=match(["author",string])(arguments[3])?"author":basic(this)?"network":"fragment";
  let {controls,...fields}={source:"",fragment,...queries};
- let [form]=compose(composer,document,spill,lift)(fields);
- let wrapper=form.querySelector("[role=form]");
- await toggle.call(wrapper,"get");
+ let [span]=compose(composer,document,spill,lift)(fields);
+ let form=span.querySelector("[role=form]");
+ await toggle.call(form,"get");
  let body=
  {style:
 [extract.call(layout,["body","a","blockquote","table"])
 ,{".interface":layout.frame},layout.theme,layout.goo,layout.link
 ].reduce(merge)
- ,span:form
+ ,span
  };
  let {averia,oswald,ranger}=fontface;
  let style=css(
@@ -78,9 +78,9 @@
  ,resource:this!==routes&&
  await compose.call(this.get?.(...arguments)||this,{url:address,headers:request.headers},stage,digest,cede)
  },1);
- await buffer(compose(tether(submission.get),throttle))(wrapper,fields);
+ await buffer(compose(tether(submission.get),throttle))(form,fields);
  if(String(controls)==="false")
- form.remove();
+ span.remove();
  return fragment;
 },network:compose
 (combine(swap(null),crop(1),compose(drop(1),query)),tether(network),throttle,{style:"background:#222222"},tether(document)
@@ -350,7 +350,7 @@
  return {imports:
  {"/Blik_2023_interface.js":["","command","locate","digest","fetch","socket"]
  ,"/Blik_2023_inference.js":";note;unit;merge;route;record;search;prune;spill;lift;debug;expect;compose;combine;pass;stash;trace;drop;crop;slip;infer;tether;whether;wait;observe;buffer;swap;when;array;has;each;differ;rank;collect;is;match;basic;defined;functor;extract;major".split(";")
- ,"/Blik_2023_fragment.js":";* as fragment;document;form;progress;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;cursor;capture;css;focus;drag;memory".split(";")
+ ,"/Blik_2023_fragment.js":";document;form;field;image;canvas;demarkup;insert;navigate;detransform;transform;stretch;vectorspace;error;drillresize;deselect;namespaces;keyboard;spell;expand;parse;semiotics;destroy;reference;fill;qualify;capture;css;drag;memory".split(";")
  ,"/Blik_2023_layout.js":["* as layout"]
  ,"/Blik_2023_meta.js":["","domain","url","query","path"]
  ,"/Blik_2023_search.js":["","unfold"]
@@ -358,39 +358,27 @@
  }
  ,exports:
  {default:
- {"[role=form]":
+ {".form":
+ {...observe({point({x,y,target,isTrusted:click})
+{if(target.closest("span[role=list]")||target.closest("ul")||target.closest(".extend"))
+ return;
+ drag.pointerdown.call(this,...arguments);
+}})
+ }
+ ,"[role=form]":
  {async submit(event)
 {event?.preventDefault();
  this.style.pointerEvents="none";
  let form=this;
  let {method}=demarkup(form,"method");
  let fields=fill.call(form)[method]||{};
+ await buffer(submission[method].bind(form),note)(fields);
  if(fields.source)
  fill.call(form,{[method]:{source:""}});
- await buffer(submission[method].bind(form),note)(fields);
  this.style.pointerEvents="";
 }}
- ,".form":
- {...observe({point({x,y,target,isTrusted:click})
-{if(target.closest("span[role=list]")||target.closest("ul"))
- return;
- drag.pointerdown.call(this,...arguments);
-}})
- }
  ,"span[name]":
- {...observe({focus({target})
-{if(target.nodeName==="#text")
- target=target.parentNode;
- if(!["textbox","menu"].includes(target.role))
- return;
- let [form,label]=["[role=form]","[title]"].map(tag=>target.closest(tag));
- form.classList.toggle("focused");
- let {type}=demarkup(target,["name","text"]);
- if(type=="text")
- cursor(target);
- label?.setAttribute("focused",label.getAttribute("focused")!=="true");
-}})
- ,input({target})
+ {input({target})
 {let form=target.closest("[role=form]");
  let value=target.textContent;
  let {name}=demarkup(target,"name");
@@ -405,8 +393,10 @@
  toggle.call(form,method);
  if(name!=="source")return;
  let matching=Array.from(target.parentNode.querySelectorAll("li")).filter(li=>
- li.children.length<2&&li.classList.contains("hover")).map(leaf=>
- unfold.call(leaf,li=>li.parentNode.closest("li")).toReversed().map(li=>li?.firstChild?.textContent||"").join("/"));
+ li.children.length<2).map(leaf=>
+ unfold.call(leaf,li=>li.parentNode.closest("li"))).filter(branch=>
+ branch.every(li=>li?.style.display!=="none")).map(branch=>branch.reverse().map(li=>
+ li?.firstChild?.textContent||"").join("/"));
  let svg=panel(form)?.querySelector("svg.d3");
  let source=panel(form).dataset.source;
  let root=source==="/get"?form.ownerDocument.defaultView.location.origin:source;
@@ -416,8 +406,7 @@
  form.ownerDocument.getElementById(deselect([segments[index-1]||[],segment].join("-"))));
 }).filter(Boolean);
  if(svg)
- value?command.call(import.meta.url,"/Blik_2024_network.js","region",svg,cluster)
- :command.call(import.meta.url,"/Blik_2024_network.js","region",svg);
+ command.call(import.meta.url,"/Blik_2024_network.js","region",svg,value?cluster:undefined);
 },change({target})
 {let form=target.closest("[role=form]");
  let value=target.textContent;
@@ -428,7 +417,7 @@
  return compose.call(form,{sidestep:form.getAttribute("sidestep")?undefined:true},tether(document),spill,lift)
 ,sidestep&&sidestepped||compose
 (fetch,digest,whether(compound,unit,swap(value)),collect
-,source=>fragment.form({[form.getAttribute("method")]:{source}})
+,source=>({span:field(["source",source])})
 ,document.bind(form),spill,lift
 )(sidestep
 ?form.ownerDocument.defaultView.location.href.replace
@@ -438,14 +427,13 @@
 :panel(form).dataset.source);
 }}
  ,"span[name=source]":
- {...observe({focus({isTrusted:focus})
-{if(focus)
- return this.dispatchEvent(new Event("input",{bubbles:true}));
- let form=this.closest("[role=form]");
+ {focusin()
+{this.dispatchEvent(new Event("input",{bubbles:true}));
+},focusout()
+{let form=this.closest("[role=form]");
  let svg=panel(form)?.querySelector("svg.d3");
  svg&&command.call(import.meta.url,"/Blik_2024_network.js","region",svg);
-}})
- }
+}}
  ,".actions>#unsign":
  {async click()
 {let author=memory("author",match({expires:major(Date.now())}));
@@ -487,74 +475,47 @@
  });
 }})
  }
- ,"#extend":
- {input(event)
-{event.stopPropagation();
- let {target,inputType:type}=event;
- if(type!=="insertParagraph")return;
- event.preventDefault();
- let value=target.textContent;
- if(!value)
- return this.dispatchEvent(new Event("submit",{bubbles:true}));
- this.querySelector("[data-type]").dispatchEvent(new Event("click",{bubbles:true}));
-}}
- ,"#extend>span[data-type]":
- {click()
-{let wrapper=this.closest("#extend");
- let input=wrapper.querySelector("[role=textbox]");
- let value=input.textContent;
- if(!value)return;
- let form=wrapper.closest("[role=form]");
- let method=form.getAttribute("method");
- let seed={text:"",menu:{},toggle:false}[this.dataset.type];
- compose.call(form,fragment.form({[method]:{[value]:seed}}),tether(document),spill,lift);
- form.appendChild(wrapper);
- form.querySelector("[name="+value+"]").focus();
- input.textContent="";
-},keydown({keyCode})
-{let {space}=keyboard(keyCode);
- if(!space)return;
- this.dispatchEvent(new Event("click",{bubbles:true}));
-}}
  }
  ,toggle,submission,profile,panel
  }
  };
- let icons=Object.entries({menu:"✓",toggle:"✓",text:"_"}).map(([type,text])=>(
- {dataset:{type},title:type,tabindex:0
- ,"#text":text
- }));
+ let parts=form({get:fields});
  let composer=
  {span:{class:"form",style:[{id:"composer-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
  {...[layout.material,layout.pill,layout.animation.fade.out,layout.dropcap].reduce(merge,{})
  ,position:"fixed","z-index":100,bottom:"0px",left:"0px",margin:"1em",height:"5em",cursor:"grab"
+ ,"max-width":"calc(100% - 2em)"
+ ,"anchor-name":"--scrollable"
+ ,"overflow":"scroll"
  ,"&.right":{left:"unset",right:"0px"},"&.top":{bottom:"unset",top:"0px"}
- ,"max-width":"calc(100% - 20px)"
+ ,"box-sizing":"border-box"
  ,background:"var(--isle)","vertical-align":"middle"
  ,"font-family":"averia","font-size":"var(--size)",transition:"all var(--transition)"
+ ,"padding-right":"1.5em"
  ,"&>.messages":
- {position:"absolute",bottom:"100%",left:0,overflow:"scroll",cursor:"auto"
+ {position:"fixed","position-anchor":"--scrollable",bottom:"anchor(top)",left:"anchor(left)",overflow:"visible",cursor:"auto"
  ,display:"block","margin-left":"1em","max-height":"calc(100vh - 6em)","max-width":"300px","pointer-events":"none"
  ,"&>.message":
- {opacity:0,animation:"fadeout 2s","padding-left":0,"margin-bottom":"0.5em"
+ {opacity:0,animation:"fadeout 2s","padding-left":0,"margin-bottom":"0.5em","max-width":"min(100vw,500px)"
  ,...layout.message
  ,"&>span>.title+span":{}
  ,"&:last-of-type":{animation:"fadeout 6s"}
  }
  }
- ,[["&:hover>span[method=send]+.messages"]]:{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
+ ,[["&:hover>span[method=send]~.messages"]]:{"pointer-events":"all",[["&>.message","&>.message:last-of-type"]]:{opacity:1,animation:"fadein 1s"}}
+ ,"&:not(:hover)>[role=form]:not(.focused)~span.extend":{width:0,display:"none"}
+ ,"&>[role=form]:not(.focused)~span.edit":{width:0,display:"none"}
+ ,[["&>[role=form]:not([method=get])~span.extend","&>[role=form]:not([method=get])~span.edit"]]:{display:"none"}
  }}}]
- ,span:[merge(form({get:fields})
+ ,span:[merge(parts[0]
 ,{id:"fields",style:[{id:"fields-pill",fragment:"/Blik_2023_form.js/composer"
  ,"@scope":{":scope":
  {...layout.fields
- ,"padding-right":"1.5em","max-width":"calc(100% - 3.5em)"
  ,"&:not(.focused):not(:hover)":
- {[[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
- "&[method="+method+"]>span:not([title="+primary+"])"),"&>span#extend"]]:{width:0,display:"none"}
+ {[Object.entries({send:"message",get:"source"}).map(([method,primary])=>
+ "&[method="+method+"]>span:not([title="+primary+"])")]:{width:0,display:"none"}
  }
- ,"&:not([method=get])>span#extend":{display:"none"}
  ,"&>span[title]":
 [{cursor:"auto",padding:"0 .4em"
  ,"&>span":
@@ -570,7 +531,6 @@
  }
 ,Object.entries({message:"",source:"",fragment:"as",title:"of",category:"on",spread:"by",matrix:"from",relations:"with"}).map(([field,value])=>(
  {["&[title="+field+"]"]:{"&>span:first-child":{display:"none"},"&:before":{content:"'"+value+"'"}}}))
-,{"&[title=source]>span[data-action=edit]":{display:"none"}}
 ].flat().reduce(merge)
  ,[["source","message"].map(title=>"&>span#"+title)]:
  {"&>ul":
@@ -580,16 +540,10 @@
  }
  ,...Object.fromEntries(["get","put","send"].map((method,index)=>
  ["&[method="+method+"]>span[title]:not(."+(index?method:"get")+")",{display:"none"}]))
- ,"&>span#extend":
- {"&>span[role=textbox]":{...layout.input,"&:empty:after":{content:'"..."'},"&:hover,&:focus":layout.text.glow}
- ,"&>span[data-type]":{display:"none",...layout.toggle}
- ,"&>span[data-type=menu]":{filter:"drop-shadow(2px 0px 1px)"}
- ,"&>span[role=textbox]:not(:empty)~span[data-type]":{display:"inline",margin:"0 0 0 .5em",outline:"none"}
- }
  ,"&.toggling":{"&>span":{width:0,"min-width":0},padding:0}
  }}}]
- ,span:[{id:"extend",span:[{role:"textbox",contenteditable:true},...icons]}]
- },0)]
+ },0)
+,...parts.slice(1)]
  }};
  return capture.call(composer,["",file,"module","composer","module"].join("/"));
 };
@@ -609,16 +563,15 @@
  ,put:{name:message,code}
  }[method]||{},[method],record,form,slip(this),tether(document),spill,lift
 );
- this.append(...[this.querySelector("#code"),this.querySelector("#extend")].filter(Boolean));
  if(active)
- focus(this.querySelector(qualify(active)));
+ this.querySelector(qualify(active))?.dispatchEvent(new FocusEvent("focusin",{bubbles:true}));
  let composer=this.closest(".form");
  let picture=method==="send"&&author?.icon;
  let node=picture&&await buffer(compose(fetch,digest,whether(is(Blob),compose(image,canvas),infer())),swap({role:"img"}))(picture);
  let [next]=node?.nodeType?[node]:await compose(document,spill,lift)(node?{canvas:node}:{svg:{...search.call(svg.object,icon.split("/"))}});
  let toggle=await compose(tether(document),spill,lift,drop(1,2))
  (composer,{span:{id:"toggle",sort:0,style:{"@scope":{"#toggle:scope":
- {height:"4em",width:"4em",cursor:"pointer",position:"relative",padding:".5em"
+ {height:"4em",width:"4em",cursor:"pointer",position:"sticky",left:"0px","z-index":100,padding:".5em"
  ,"&>svg,&>canvas,&>img":{width:"100%",height:"100%",fill:"var(--isle)","clip-path":"circle(50%)","background-color":"black"}
  ,"&>.actions":
  {position:"absolute",top:0,left:0,width:"100%",height:"100%","pointer-events":"none"
@@ -641,6 +594,7 @@
  var submission=
  {async get({source="",resource,...fields})
 {fields=prune.call(fields,([field,value])=>compound(value)&&"value" in value?value.value:value,0,0);
+ source=compound(source)&&"value" in source?source.value:source;
  source=compound(source)?flatten(source).join("/"):source;
  fields.fragment=compound(fields.fragment)?flatten(fields.fragment).join("/"):fields.fragment;
  let {origin,pathname:path}=this.ownerDocument.defaultView.location;
@@ -654,20 +608,19 @@
  let composer=this.closest(".form")||this;
  let frame=panel(this)||
  compose(document,spill,lift,infer(insert,"before",composer),cede)({div:{class:"interface"}});
+ let precedent=frame.children.length===1?frame.firstChild:frame;
  frame.dataset.source=route;
  frame.controller?.abort("Rendering canceled.");
  frame.controller=new AbortController();
- compose(document,spill,lift,infer(insert,"under",frame))(progress);
  resource=resource||buffer(compose(fetch,digest),()=>fetch(route,{method:"put",body:""}).then(()=>""))(route+query);
- let clear=compose(swap(form({get:{source:""}})),document.bind(this),spill,crop(1));
- await buffer(produce(profile,["get"],record,note,form,pass(clear),document.bind(this),spill.bind(frame.controller)),note)(resource,fields.fragment,fields);
+ let clear=compose(swap({span:field(["source",""])}),document.bind(this),spill,crop(1));
+ await buffer(produce(profile,["get"],record,form,pass(clear),document.bind(this),spill.bind(frame.controller)),note)(resource,fields);
  let [module,feature]=await locate.call(import.meta.url,"./"+fields.fragment);
  let fail=compose(crop(1),note.bind(1),"stack",note,document);
- let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},fields.incumbent||this.ownerDocument.defaultView);
+ let fragment=await buffer(command.bind(import.meta.url),fail)(module,feature,resource,{source:route,...fields},precedent);
  return compose
 (document.bind(frame),spill.bind(frame.controller)
 ,buffer(lift,compose(fail,document.bind(frame),spill,lift))
-,pass(compose("firstChild","remove"))
 ,"firstChild"
 )(fragment);
 },async put(fields)
@@ -697,21 +650,21 @@
  toggle.call(this,"send");
 }};
 
- export async function profile(resource,fragment,options={})
+ export async function profile(resource,{fragment,...options}={})
 {let source=basic(resource)?resource:"";
  let fragments={fragment:"",script:"",chart:"",network:"",extrude:"",map:"",canvas:""};
  if(!fragment)
  return {source,fragment:fragments};
  let [specifier,feature]=await locate.call(import.meta.url,"./"+fragment);
  let module=await import(specifier);
- let schema=module.domain?.[feature];
- let domain=schema&&prune.call(schema,([field,value])=>
-{let candidates=value.call(resource);
- let keyed=compound(candidates)&&!Array.isArray(candidates);
- let chosen=options[field]??(keyed?Object.keys(candidates)[0]:candidates[0]);
- return {value:keyed?candidates[chosen]??chosen:chosen,domain:candidates};
+ let domain=prune.call(module.domain?.[feature]||null,([field,value])=>
+{let domain=value.call(resource);
+ if(domain===undefined)
+ return options[field]!==undefined?{value:options[field],domain}:undefined;
+ let choice=options[field]??(simple(domain)?Object.keys(domain)[0]:domain[0]);
+ return {value:domain[choice]??choice,domain};
 },0,0);
- return {source,fragment:{value:fragment,domain:fragments},...(domain?merge(domain,options,0):options)};
+ return {source,fragment:{value:fragment,domain:fragments},...domain?merge(domain,options,0):options};
 };
 
  export var relay=

@@ -177,7 +177,7 @@
  ,"&:first-of-type":{width:"2em",height:"2em","&>img,&>svg,&>canvas":{width:"100%",height:"100%"}}
  }};
  export var ghostspan={content:"''",display:"inline-block",height:"100%","vertical-align":"middle",width:0};
- export var fields={overflow:"scroll",height:"100%","box-sizing":"border-box","white-space":"nowrap","&:before":ghostspan};
+ export var fields={height:"100%","box-sizing":"border-box","white-space":"nowrap","&:before":ghostspan};
  export var radio=
  {"border-radius":"100%","background-color":"black",transform:"scale(0.8)"
  ,"&[checked=true]":

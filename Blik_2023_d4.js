@@ -1,15 +1,16 @@
- import * as d3 from './Bostock_2011_d3.js';
+ import {string} from "./Blik_2026_type.js";
+ import {merge,prune,numeric,functor,compound,note,defined,simple,exit,abort} from "./Blik_2023_inference.js";
+ import {qualify,window,document,css} from "./Blik_2023_fragment.js";
  import {select,selectAll} from './Bostock_2011_d3_select.js';
- import {merge,prune,numeric,note,defined,simple,exit,abort} from "./Blik_2023_inference.js";
- import {qualify,window,document} from "./Blik_2023_fragment.js";
+ import * as d3 from './Bostock_2011_d3.js';
 
 // Data-Driven Document Declarations (D4).
 
  export default function extend({fold=value=>[value],match,drop=true,update=false,...fragment},name)
 {// extend bound nodes (and subselections qualified by fragment class/id attributes)
- // with described nodes/attributes/events/operations (fragment).
+ // with declared nodes/attributes/events/operations (fragment).
  // (d3's fluent interface of select/datum/selectAll/data/append/attr/etc as a declarative reduction). 
- // Nodes are unfolded by "matching" identities on a "fold" (hylomorphism; inherited by default).
+ // Nodes are unfolded to "match" identities in a "fold" (inherited and indexed by default). 
  // To update existing nodes, specify {fold: false} or {update: true or a function returning them}. 
  // To preserve unmatched nodes, consume them in a "drop" function. 
  // To spawn extension of an empty selection, specify "name". 
@@ -28,15 +29,16 @@
  if(!name&&!precedent)throw "can't append nodes without a name or precedent.";
  else
  selection=selection.data(fold,match).call(selection=>//.join(enter=>extend.call(enter.append(name||target),fragment));
- // "extension" only applies to new nodes by default, where the implicit "merge" of the common "join" does not apply. 
- // the recursion to bypass it is tail-call optimized instead.
+ // "extension" only applies to new nodes by default, which the implicit "merge" of the common "join" doesn't distinguish. 
+ // this recursion to bypass it is tail-call optimized instead. 
  selection.exit().call(selection=>selection.size()&&drop&&(drop===true?selection:drop(selection))?.remove())),
  selection=selection.enter().append(name||precedent).merge(selection.size()
 ?(update
 ?update===true
-?selection//(console.log('updating',selection.nodes(),'with',selection.data()),selection) // track updates
+?//console.info('updating',selection.nodes(),'with',selection.data())|| // track updates
+ selection
 :update?.(selection)
-// d3 is only meant to persist matched values if update is specified.
+ // d3 is only meant to persist matched values if update is specified.
 :!selection.datum(function restore(){return values[nodes.indexOf(this)];}))||
  select(null)
 :selection);
@@ -50,21 +52,19 @@
 
  const extension=
 {event(field,value)
-{const events=['load','click','change','input'];
- const mouseevents=['enter','leave','over','out','down','up','move'].map(event=>'mouse'+event);
- const focusevents=['','in','out'].map(event=>'focus'+event);
- events.push(...mouseevents,...focusevents);
- if (events.includes(field)&&value instanceof Function)
+{if(events.includes(field)&&functor(value))
  return this.on(field,value);
 },style(field,value)
 {if(field!=='style')
  return;
- if(typeof value==='string')
- return this.attr(field, value);
- if(value instanceof Function)
+ if(string(value))
+ return this.attr(field,value);
+ if(functor(value))
  return this.each(function(){extension.style.call(select(this),field,value.call(this,...arguments));});
  if(!value)
  return this;
+ if(Object.values(value).some(simple))
+ return this.append(field).text(css(value)),this;
  return Object.entries(value).reduce((selection,entry)=>selection[field](...entry),this);
 },operation(field,value)
 {// specify operations to include in case of namespace collision with fragments/attributes.
@@ -77,16 +77,23 @@
  return this;
  const [scope,operation]=field==='transition'?[this[field](),'duration']:[this,field];
  return scope[operation]?.(...(field==='classed'?[value,true]:[value].filter(defined)));
-},fragment(field, value)
+},fragment(field,value)
 {const compoundattributes=['viewBox','transform','class'];
- if(typeof value==='object'&&!compoundattributes.includes(field))
+ if(compound(value)&&!compoundattributes.includes(field))
  return [value].flat().filter(Boolean).reduce((selection,fragment)=>
- extend.call(selection,fragment,field),this);
+ extend.call(selection,fragment,field)
+,this);
 },attribute(field,value)
 {try
 {return this.attr(field,value);
 }catch(fail){console.log(fail);}
 }};
+
+ var events=['load','click','change','input'];
+ var mouseevents=['enter','leave','over','out','down','up','move'].map(event=>'mouse'+event);
+ var pointerevents=['enter','leave','over','out','down','up','move'].map(event=>'pointer'+event);
+ var focusevents=['','in','out'].map(event=>'focus'+event);
+ events.push(...mouseevents,...pointerevents,...focusevents);
 
  export function jss(style)
 {return Object.fromEntries(Object.entries(style).map(([field,value])=>
